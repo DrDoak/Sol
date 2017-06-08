@@ -23,7 +23,8 @@ public class textbox : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		line = GetComponent<LineRenderer> ();
-		line.sortingOrder = 4;
+		line.sortingOrder = 0;
+		line.transform.position = new Vector3 (transform.position.x, transform.position.y, -3);
 		mText = GetComponentInChildren<Text> ();
 		if (!typing) {
 			mText.text = fullText;
@@ -31,6 +32,13 @@ public class textbox : MonoBehaviour {
 	}
 	void OnDestroy() {
 		mManager.removeTextbox (gameObject);
+	}
+
+	public void setColor(Color tC) {
+		GetComponentInChildren<Image> ().color = tC;
+		GetComponentInChildren<Text> ().color = new Color(1.0f - tC.r,1.0f - tC.g, 1.0f - tC.b,tC.a + 0.5f);
+		line.startColor = tC;
+		line.endColor = tC;
 	}
 	
 	// Update is called once per frame

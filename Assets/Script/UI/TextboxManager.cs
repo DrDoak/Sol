@@ -17,6 +17,7 @@ public class TextboxManager : MonoBehaviour {
 	void Start () {
 		textboxes = new List<GameObject> ();
 		cam = FindObjectOfType<Camera> ();
+		TextboxColor = new Color (1.0f, 0.0f, 0.0f, 0.5f);
 	}
 	
 	// Update is called once per frame
@@ -55,6 +56,7 @@ public class TextboxManager : MonoBehaviour {
 			LineRenderer line = newTextbox.GetComponent<LineRenderer> ();
 			line.SetPosition (0, new Vector3 (newPos.x, newPos.y, 0f));
 			textboxes.Add (newTextbox);
+			tb.setColor (TextboxColor);
 		}
 	}
 

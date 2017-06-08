@@ -51,35 +51,14 @@ public class AtkSuper : AtkDash {
 	public override void recoveryTick() {
 		if (GetComponent<Player>() != null) {
 			if (Input.GetKeyDown (playerKey) && attackable.energy >= 20.0f) {
-				if (FindObjectOfType<GameManager>().checkOnBeat ()) {
-					successfulInterupt = true;
-					if (Input.GetKey ("a")) {
-						GetComponent<Movement> ().setFacingLeft( true);
-					} else if (Input.GetKey("d")) {
-						GetComponent<Movement> ().setFacingLeft( false);
-					} else {
-						/*Attackable[] enemies = FindObjectsOfType<Attackable> ();
-						float minDist = float.MaxValue;
-						Vector3 minPos = new Vector3();
-						Vector3 mPos = transform.position;
-						foreach (Attackable e in enemies) {
-							float dist = Vector3.Distance (mPos, e.transform.position);
-							if ( e.faction != attackable.faction && dist < minDist){ 
-								minDist = dist;
-								minPos = e.transform.position;
-							}
-						}
-						if (minDist < 500f && minPos.x > mPos.x) {
-							GetComponent<Movement> ().setFacingLeft( true);
-						} else if (minDist < 500f) {
-							GetComponent<Movement> ().setFacingLeft( false);
-						}*/
-					}
-					GetComponent<Fighter> ().endAttack ();
-					GetComponent<Fighter> ().tryAttack ("super");
-				} else {
-					attackable.modifyEnergy (-100.0f);
+				successfulInterupt = true;
+				if (Input.GetKey ("a")) {
+					GetComponent<Movement> ().setFacingLeft( true);
+				} else if (Input.GetKey("d")) {
+					GetComponent<Movement> ().setFacingLeft( false);
 				}
+				GetComponent<Fighter> ().endAttack ();
+				GetComponent<Fighter> ().tryAttack ("super");
 			}
 		}
 	}

@@ -21,17 +21,6 @@ public class Player : MonoBehaviour {
 	Vector2 velocity;
 	Vector2 jumpVector;
 	float velocityXSmoothing;
-
-	//controls
-	public string leftKey = "a";
-	public string rightKey = "d";
-	public string upKey = "w";
-	public string downKey = "s";
-	public string jumpKey = "w";
-
-	public string attackKey = "j";
-	public string reflectKey = "l";
-	public string guardKey = "k";
 	//-------------------
 
 	bool spawnNextToEndzone = false;
@@ -90,7 +79,7 @@ public class Player : MonoBehaviour {
 	}
 	public void onHitConfirm(GameObject otherObj) {
 		Fighter mF = otherObj.GetComponent<Fighter> ();
-		if (GetComponent<Fighter>().onBeat && GetComponent<Fighter>().currentAttackName != "super") {
+		if (GetComponent<Fighter>().currentAttackName != "super") {
 			float increase = 3.0f;
 			increase += (3f * Mathf.Min(10f,mF.hitCombo));
 			if (!controller.onGround) {
@@ -115,32 +104,26 @@ public class Player : MonoBehaviour {
 		inputY = 0.0f;
 
 		if (controller.canMove) {
+			inputY = Input.GetAxis ("Vertical");
 
-			if (Input.GetKey (upKey)) {
-				inputY = 1.0f;
-			} else if (Input.GetKey (downKey)) {
-				inputY = -1.0f;
-			}
-
-			if (Input.GetKeyDown (downKey)) {
+			/*if (Input.GetKeyDown (downKey)) {
 				attemptingInteraction = true;
 			} else {
 				attemptingInteraction = false;
-			}
+			}*/
 			//Movement controls
-			if (Input.GetKey (leftKey)) { 
+			inputX = Input.GetAxis("Horizontal");
+			if (inputX < 0.0f) { 
 				anim.SetBool ("tryingToMove", true);
 				controller.setFacingLeft (true);
-				inputX = -1.0f; 
-			} else if (Input.GetKey (rightKey)) { 
+			} else if (inputX > 0.0f) { 
 				anim.SetBool ("tryingToMove", true);
-				inputX = 1.0f; 
 				controller.setFacingLeft (false);
 			}
 			//Attack/Reflect/Guard Animations
-			if (Input.GetKeyDown (attackKey)) {
+			if (Input.GetButton("Attack")) {
 				
-				if (Input.GetKey (downKey)) {
+				if (inputY < -0.9f) {
 					if (controller.onGround) {
 						gameObject.GetComponent<Fighter> ().tryAttack ("down");
 						AudioSource.PlayClipAtPoint (DelayedSlash, gameObject.transform.position);
@@ -149,7 +132,7 @@ public class Player : MonoBehaviour {
 						gameObject.GetComponent<Fighter> ().tryAttack ("airdown");
 						AudioSource.PlayClipAtPoint (ShortDelayedSlash, gameObject.transform.position);
 					}
-				} else if (Input.GetKey (upKey)) {
+				} else if (inputY > 0.9f) {
 					if (controller.onGround) {
 						gameObject.GetComponent<Fighter> ().tryAttack ("up");
 						AudioSource.PlayClipAtPoint (ShortDelayedSlash, gameObject.transform.position);
@@ -157,7 +140,7 @@ public class Player : MonoBehaviour {
 						gameObject.GetComponent<Fighter> ().tryAttack ("airup");
 						AudioSource.PlayClipAtPoint (MultiSlash, gameObject.transform.position);
 					}
-				}else if (Input.GetKey (leftKey) || Input.GetKey (rightKey)) {
+				}else if (Mathf.Abs(inputX) > 0.9f) {
 					AudioSource.PlayClipAtPoint (Slash, gameObject.transform.position);
 					gameObject.GetComponent<Fighter> ().tryAttack ("dash");
 				} else {
@@ -165,24 +148,23 @@ public class Player : MonoBehaviour {
 					gameObject.GetComponent<Fighter> ().tryAttack ("attack");
 				}
 			}
-			if (Input.GetKeyDown (reflectKey)) {
+			if (Input.GetButton("Super")) {
 				if (attackable.energy >= 100.0f){
 					gameObject.GetComponent<Fighter> ().tryAttack ("super");
 					AudioSource.PlayClipAtPoint (MultiSlash, gameObject.transform.position);
 				}
 			}
-			if (Input.GetKeyDown (guardKey)) {
-				if (Input.GetKey(downKey) ) {
+			if (Input.GetButton("Special")) {
+				if (inputY < -0.9f ) {
 					gameObject.GetComponent<Fighter> ().tryAttack ("reflect");
 					AudioSource.PlayClipAtPoint (FailedReflect, gameObject.transform.position);
 				} else {
 					gameObject.GetComponent<Fighter> ().tryAttack ("guard");
 				}
-
 			}
 
 			
-			if (Input.GetKeyDown (jumpKey)) {
+			if (Input.GetButton("Jump")) {
 				if (controller.collisions.below) {
 					//velocity.y = jumpVelocity;
 					//controller.velocity.y = jumpVelocity * Time.deltaTime;
@@ -194,7 +176,6 @@ public class Player : MonoBehaviour {
 					velocity.y = jumpVelocity;
 					isJump = false;
 					controller.addSelfForce (jumpVector, 0f);
-
 					//gameManager.soundfx.gameObject.transform.Find ("P1Jump").GetComponent<AudioSource> ().Play ();
 					canDoubleJump = false;
 				}

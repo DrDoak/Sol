@@ -22,14 +22,6 @@ public class fan : MonoBehaviour {
 
 
 		float xOffset = 0;
-		if (!overrideDir) {
-			if (gameObject.GetComponent<Spawnable> ().angleDiff.x < 0) {
-				facingLeft = true;
-
-			} else {
-				facingLeft = false;
-			}
-		}
 		if (facingLeft) {
 			xOffset = -7;
 			GetComponent<SpriteRenderer> ().flipX = true;

@@ -3,14 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent (typeof (FollowPlayer))]
-public class AttackIfClose : Beats {
+public class AttackIfClose : MonoBehaviour {
 
 	public float attackDist = 0.5f;
 	public string attackName = "attack";
+	public bool aimToPlayer = true;
 	FollowPlayer followai;
-	public int attackOnBeat = 1;
-	public float chance = 1.0f;
+	public float attackChance = 1.0f;
+	public float minInterval = 2.0f;
 	bool inRange = false;
+	float sinceLastAttack;
 
 	Movement movt;
 	// Use this for initialization
@@ -18,31 +20,30 @@ public class AttackIfClose : Beats {
 		followai = GetComponent<FollowPlayer> ();
 		movt = GetComponent<Movement> ();
 		inRange = false;
-		base.init ();
 	}
-	void OnDestroy() {
-		base.dest ();
-	}
+	void OnDestroy() {}
 	
 	// Update is called once per frame
 	void Update () {
 		if (followai.targetSet && movt.canMove) {	
 			if (Vector3.Distance (followai.followObj.transform.position, transform.position) < attackDist) {
-				inRange = true;
-			} else {
-				inRange = false;
+				if (sinceLastAttack > minInterval) {
+					tryAttack ();
+				}
 			}
 		} else {
 			inRange = false;
 		}
+		sinceLastAttack += Time.deltaTime;
 	}
 
-	public override void onBeat (int beatNo) {
-		//Debug.Log ("on simple beat");
-		if (inRange && beatNo == attackOnBeat && Random.Range(0.0f,1.0f) <= chance) {
-			//Debug.Log ("trying attack: " + attackName);
-			followai.moveToPlayer ();
+	public void tryAttack () {
+		if (Random.Range(0.0f,1.0f) <= attackChance) {
+			if (aimToPlayer && followai) {
+				followai.moveToPlayer ();
+			}
 			gameObject.GetComponent<Fighter> ().tryAttack (attackName);
+			sinceLastAttack = 0.0f;
 		}
 	}
 }

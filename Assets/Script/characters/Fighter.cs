@@ -20,11 +20,8 @@ public class Fighter : MonoBehaviour {
 	AttackInfo currentAttack;
 	public string currentAttackName;
 	bool hitboxCreated;
-	public bool onBeat;
 	public bool reflectProj;
 	float maxStun;
-
-	float beatTime;
 	float animationRatio;
 	bool startingNewAttack;
 
@@ -44,8 +41,7 @@ public class Fighter : MonoBehaviour {
 			if (!attacks.ContainsKey(a.attackName))
 				attacks.Add (a.attackName, a);
 		}
-		beatTime = 60.0f / FindObjectOfType<BeatTracker> ().Tempo;
-		animationRatio = FindObjectOfType<BeatTracker> ().Tempo / 100.0f;
+		animationRatio = 1f;
 	}
 
 	// Update is called once per frame
@@ -74,7 +70,7 @@ public class Fighter : MonoBehaviour {
 
 //					if (currentAttack.soundFX != null) {currentAttack.soundFX.Play ();}
 					if (AttackSound != null) {AudioSource.PlayClipAtPoint (AttackSound, gameObject.transform.position);}
-					if (currentAttack.attackFX && onBeat) { addEffect (currentAttack.attackFX,currentAttack.recoveryTime + 0.2f); }
+					if (currentAttack.attackFX) { addEffect (currentAttack.attackFX,currentAttack.recoveryTime + 0.2f); }
 
 					if (currentAttack.createHitbox) {
 						Vector2 realKB = currentAttack.knockback;
@@ -85,12 +81,6 @@ public class Fighter : MonoBehaviour {
 						if (gameObject.GetComponent<Movement> ().facingLeft) {
 							realKB = new Vector2 (-currentAttack.knockback.x, currentAttack.knockback.y);
 							realOff = new Vector2 (-currentAttack.offset.x, currentAttack.offset.y);
-						}
-						if (!onBeat && GetComponent<Player> ()) {
-							Player plyr = GetComponent<Player> ();
-							stun *= plyr.mistimedStunRatio;
-							realKB *= plyr.mistimedKBRatio;
-							damage *= plyr.mistimedDamageRatio;
 						}
 						hbm.hitboxReflect = reflectProj;
 						hbm.stun = stun;
@@ -138,7 +128,6 @@ public class Fighter : MonoBehaviour {
 
 	public void registerStun(float st, bool defaultStun,hitbox hb) {
 		if (defaultStun) {
-			//Debug.Log ("stunning?");
 			startHitState (st);
 		}
 		if (currentAttack != null) {
@@ -197,16 +186,11 @@ public class Fighter : MonoBehaviour {
 	}
 	public bool tryAttack(string attackName) {
 		if (currentAttackName == "none" && attacks.ContainsKey(attackName)) {
-			if (gameManager.checkOnBeat()) {
-				onBeat = true;
-			} else {
-				onBeat = false;
-			}
 			hitboxCreated = false;
 			currentAttackName = attackName;
 			currentAttack = attacks[currentAttackName];
-			startUpTime = (currentAttack.startUpTime * beatTime) - (Time.deltaTime * 2);
-			recoveryTime = currentAttack.recoveryTime * beatTime;
+			startUpTime = (currentAttack.startUpTime) - (Time.deltaTime * 2);
+			recoveryTime = currentAttack.recoveryTime;
 			anim.SetInteger ("attack", currentAttack.animationID);
 			anim.speed = currentAttack.animSpeed * animationRatio;
 			movement.canMove = false;

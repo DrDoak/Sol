@@ -87,9 +87,10 @@ public class Attackable : MonoBehaviour {
 		
 		if (hb.mAttr != null) {
 			foreach (string k in resistences.Keys) {
-				if (hb.mAttr.BinarySearch(k) != null) {
+				if (hb.mAttr.Contains(k)) {
+				//if (hb.mAttr.BinarySearch(k) != null) {
 					if (GetComponent<Fighter> ()) {
-						Debug.Log ("registering stun");
+						//Debug.Log ("registering stun");
 						GetComponent<Fighter> ().registerStun( hb.stun,false,hb);
 					}
 					if (k == "shot") {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RespawnObj : MonoBehaviour {
+public class Spawner : MonoBehaviour {
 
 	public GameObject respawnObj;
 	public float interval = 3.0f;
@@ -12,7 +12,7 @@ public class RespawnObj : MonoBehaviour {
 	public bool permanentObject = false;
 	public string groupID = "none";
 	float currentTime;
-	public Vector2 focusAreaSize = new Vector2(0,0);
+	public bool singlePointRespawn = true;
 	// Use this for initialization
 	void Start () {
 		MeshRenderer mr = GetComponent<MeshRenderer> ();
@@ -23,6 +23,11 @@ public class RespawnObj : MonoBehaviour {
 			currentTime = interval;
 		}
 	}
+
+	void OnDrawGizmos() {
+		Gizmos.color = new Color (0, 1, 0, .5f);
+		Gizmos.DrawCube (transform.position, transform.localScale);
+	}
 	
 	// Update is called once per frame
 	void Update () {
@@ -30,16 +35,18 @@ public class RespawnObj : MonoBehaviour {
 			
 			currentTime += Time.deltaTime;
 			if (currentTime > interval && spawnedItems < max_items) { 
-				//			Debug.Log ("spawning obj");
-				//			Debug.Log (respawnObj);
-				float newX = transform.position.x + Random.Range (-focusAreaSize.x / 2, focusAreaSize.x / 2);
-				float newY = transform.position.y + Random.Range (-focusAreaSize.y / 2, focusAreaSize.y / 2);
+				float newX = transform.position.x ;
+				float newY = transform.position.y ;
+				if (!singlePointRespawn) {
+					newX += Random.Range (-transform.localScale.x / 2, transform.localScale.x / 2);
+					newY += Random.Range (-transform.localScale.y / 2, transform.localScale.y / 2);
+				}
 				GameObject obj = GameObject.Instantiate (respawnObj, new Vector3 (newX, newY, 0), Quaternion.identity);
 				spawnedItems += 1;
 				//			Debug.Log (spawnedItems);
 				currentTime = 0f;
-				obj.AddComponent<Respawnable> ();
-				obj.GetComponent<Respawnable> ().spawnPoint = this;
+				obj.AddComponent<SpawnedObj> ();
+				obj.GetComponent<SpawnedObj> ().mSpawner = this;
 				if (obj.GetComponent<Attackable> ()) { 
 					obj.GetComponent<Attackable> ().groupID = groupID;
 				}

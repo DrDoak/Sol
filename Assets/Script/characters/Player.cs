@@ -5,6 +5,7 @@ using UnityEngine.UI;
 [RequireComponent (typeof (Movement))]
 [RequireComponent (typeof (Fighter))]
 [RequireComponent (typeof (Attackable))]
+[RequireComponent (typeof (ReturnToCheckpoint))]
 public class Player : MonoBehaviour {
 
 	// Movement 
@@ -22,9 +23,6 @@ public class Player : MonoBehaviour {
 	Vector2 jumpVector;
 	float velocityXSmoothing;
 	//-------------------
-
-	bool spawnNextToEndzone = false;
-
 	bool attemptingInteraction = false;
 	Movement controller;
 	Attackable attackable;
@@ -57,7 +55,6 @@ public class Player : MonoBehaviour {
 		anim = GetComponent<Animator> ();
 		controller = GetComponent<Movement> ();
 		attackable = GetComponent<Attackable> ();
-		Fighter f = GetComponent<Fighter> ();
 		Reset ();
 		gravity = -(2 * jumpHeight) / Mathf.Pow (timeToJumpApex, 2);
 		controller.setGravityScale (gravity * (1.0f/60f));
@@ -68,8 +65,7 @@ public class Player : MonoBehaviour {
 	}
 
 	public void Reset() {
-		if (spawnNextToEndzone)
-			startPosition = new Vector2 (105f, 14f); // this is right next to the endzone. (in Scene.unity)
+		GetComponent<ReturnToCheckpoint>().resetPos();
 		transform.position = startPosition;
 		controller.accumulatedVelocity = Vector2.zero;
 		attackable.resetHealth ();
@@ -121,7 +117,7 @@ public class Player : MonoBehaviour {
 				controller.setFacingLeft (false);
 			}
 			//Attack/Reflect/Guard Animations
-			if (Input.GetButton("Attack")) {
+			if (Input.GetButtonDown("Attack")) {
 				
 				if (inputY < -0.9f) {
 					if (controller.onGround) {
@@ -148,13 +144,13 @@ public class Player : MonoBehaviour {
 					gameObject.GetComponent<Fighter> ().tryAttack ("attack");
 				}
 			}
-			if (Input.GetButton("Super")) {
+			if (Input.GetButtonDown("Super")) {
 				if (attackable.energy >= 100.0f){
 					gameObject.GetComponent<Fighter> ().tryAttack ("super");
 					AudioSource.PlayClipAtPoint (MultiSlash, gameObject.transform.position);
 				}
 			}
-			if (Input.GetButton("Special")) {
+			if (Input.GetButtonDown("Special")) {
 				if (inputY < -0.9f ) {
 					gameObject.GetComponent<Fighter> ().tryAttack ("reflect");
 					AudioSource.PlayClipAtPoint (FailedReflect, gameObject.transform.position);
@@ -162,9 +158,8 @@ public class Player : MonoBehaviour {
 					gameObject.GetComponent<Fighter> ().tryAttack ("guard");
 				}
 			}
-
-			
-			if (Input.GetButton("Jump")) {
+				
+			if (Input.GetButtonDown("Jump")) {
 				if (controller.collisions.below) {
 					//velocity.y = jumpVelocity;
 					//controller.velocity.y = jumpVelocity * Time.deltaTime;

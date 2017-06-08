@@ -20,4 +20,5 @@ public class hitboxMulti : hitbox {
 		}		
 		base.updateTick ();
 	}
+
 }

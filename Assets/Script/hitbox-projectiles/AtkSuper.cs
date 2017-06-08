@@ -10,14 +10,13 @@ public class AtkSuper : AtkDash {
 	public Vector2 minKnockback;
 	public Vector2 maxKnockback;
 	public string playerKey = "l";
-	public List<Attackable> collidedObjs = new List<Attackable> (); 
+	List<Attackable> multiHitObjs = new List<Attackable> (); 
 	bool successfulInterupt = false;
-	Attackable attackable;
+	Attackable atk;
 
 	// Use this for initialization
 	void Start () {
-		attackable = GetComponent<Attackable> ();
-		Vector3 newPos = new Vector3(transform.position.x, transform.position.y, 0);
+		atk = GetComponent<Attackable> ();
 	}
 
 	
@@ -25,13 +24,13 @@ public class AtkSuper : AtkDash {
 	void Update () {}
 	public override void onStartUp() {
 		base.onStartUp ();
-		collidedObjs.Clear ();
+		multiHitObjs.Clear ();
 		successfulInterupt = false;
-		attackable.modifyEnergy (-20.0f);
+		atk.modifyEnergy (-20.0f);
 	}
 
 	public override void onHitConfirm(GameObject other) {
-		if (!collidedObjs.Contains (other.GetComponent<Attackable> ())) {
+		if (!multiHitObjs.Contains (other.GetComponent<Attackable> ())) {
 			GameObject mH = Instantiate (multiHitbox, other.transform.position, Quaternion.identity);
 			hitboxMulti newBox = mH.GetComponent<hitboxMulti> ();
 			newBox.setDamage (damage);
@@ -44,7 +43,7 @@ public class AtkSuper : AtkDash {
 			newBox.stun = stun;
 			newBox.refreshTime = multiHitInterval;
 			newBox.randomizeKnockback (minKnockback.x, maxKnockback.x, minKnockback.y, maxKnockback.y);
-			collidedObjs.Add (other.GetComponent<Attackable> ());
+			multiHitObjs.Add (other.GetComponent<Attackable> ());
 		}
 
 	}
@@ -64,7 +63,7 @@ public class AtkSuper : AtkDash {
 	}
 	public override void onConclude() {
 		if (!successfulInterupt) {
-			attackable.modifyEnergy (-100.0f);
+			atk.modifyEnergy (-100.0f);
 		}
 	}
 }

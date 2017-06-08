@@ -63,7 +63,6 @@ public class GameManager : MonoBehaviour {
 	}
 
 	void startGame() {
-		GUIHandler guihandler = FindObjectOfType<GUIHandler> ();
 		if (Player1) {
 			Player1.Reset ();}
 		gameStarted = true;

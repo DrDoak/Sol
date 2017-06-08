@@ -56,7 +56,7 @@ public class CameraFollow : MonoBehaviour {
 	}
 
 	void OnDrawGizmos() {
-		Gizmos.color = new Color (1, 0, 0, .5f);
+		Gizmos.color = new Color (0, 0, 1, .1f);
 		Gizmos.DrawCube (focusArea.centre, focusAreaSize);
 	}
 

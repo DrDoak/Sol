@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TextboxWhenNear : MonoBehaviour {
+public class TextboxTrigger : MonoBehaviour {
 
 	public string displayText;
 	public bool typeText = true;
@@ -21,9 +21,11 @@ public class TextboxWhenNear : MonoBehaviour {
 			currentInterval -= Time.deltaTime;
 		}
 	}
-
+	void OnDrawGizmos() {
+		Gizmos.color = new Color (1, 0, 1, .5f);
+		Gizmos.DrawCube (transform.position, transform.localScale);
+	}
 	internal void OnTriggerEnter2D(Collider2D other) {
-//		Debug.Log ("detection with obj: " + other.gameObject.GetComponent<Player> ().ToString());
 		if (other.gameObject.GetComponent<Player> () && currentInterval <= 0.0f) {
 			currentInterval = interval;
 			tm.addTextbox (displayText,gameObject,typeText);

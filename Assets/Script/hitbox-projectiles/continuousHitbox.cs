@@ -55,7 +55,10 @@ public class continuousHitbox : MonoBehaviour {
 	public void setTimedHitbox(bool timed) {
 		timedHitbox = timed;
 	}
-
+	void OnDrawGizmos() {
+		Gizmos.color = new Color (1, 0, 0, .5f);
+		Gizmos.DrawCube (transform.position, transform.localScale);
+	}
 	internal void OnTriggerEnter2D(Collider2D other) {
 		//Debug.Log ("collision detected with Continuous hitbox");
 		if (other.gameObject.GetComponent<Attackable>()) {

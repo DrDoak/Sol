@@ -77,6 +77,10 @@ public class hitbox : MonoBehaviour {
 	public void addAttribute(string attr) {
 		mAttr.Add (attr);
 	}
+	void OnDrawGizmos() {
+		Gizmos.color = new Color (1, 0, 0, .5f);
+		Gizmos.DrawCube (transform.position, transform.localScale);
+	}
 	public void randomizeKnockback(float minX,float maxX,float minY, float maxY) {
 		randomKnockback = true;
 		fixedKnockback = true;
@@ -123,7 +127,6 @@ public class hitbox : MonoBehaviour {
 	}
 	internal string OnTriggerEnter2D(Collider2D other)
 	{
-		string hitResult = "none";
 		if (reflect && other.gameObject.GetComponent<Projectile> () && creator) {
 			creator.GetComponent<HitboxMaker> ().registerHit (other.gameObject);
 		}

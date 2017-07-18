@@ -22,8 +22,6 @@ public class EndZone : MonoBehaviour {
 //			displayTimePassed = 0f;
 //			controller.gameOver = true;
 //			controller.winner = 1;
-			gameManager.winner = 1;
-			gameManager.gameOver = true;
 			other.gameObject.GetComponent<Player> ().transform.position = other.gameObject.GetComponent<Player> ().startPosition;
 		}
 	}
@@ -35,18 +33,6 @@ public class EndZone : MonoBehaviour {
 	}
 
 	internal void Update() {
-//		Debug.Log ("start: " + displayStart + ", passed: " + displayTimePassed + ", display=" + display);
-//		if (display) {
-//			if (displayTimePassed < displayTime) {
-//				displayTimePassed = Time.time - displayStart;
-//			} else {
-//				display = false;
-//				WinMessage.text = "";
-//			}
-//		}
 	}
-
-//	void OnGUI() {
-//		GUI.Label (new Rect (0, 0, Screen.width, Screen.height), WinMessage.text);
-//	}
+		
 }

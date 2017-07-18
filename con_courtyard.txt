@@ -1,0 +1,1 @@
+{"actors":[{"name":"Sol","pos":{"x":188.09437561035157,"y":29.950000762939454,"z":0.0},"health":100.0,"prefabPath":"Sol","targetID":"upperHall","targetDir":"right"}]}

@@ -21,7 +21,7 @@ public class Attackable : MonoBehaviour {
 	public float deathTime = 0.0f;
 	public Color deathColor = new Color(0.0f,0.0f,0.0f);
 	float currDeathTime;
-	SpriteRenderer renderer;
+	SpriteRenderer SR;
 
 	public AudioClip Hit;
 
@@ -34,7 +34,8 @@ public class Attackable : MonoBehaviour {
 		movementController = gameObject.GetComponent<Movement> ();
 		health = Mathf.Min (health, max_health);
 		currDeathTime = deathTime;
-		renderer = GetComponent<SpriteRenderer> ();
+		SR = GetComponent<SpriteRenderer> ();
+		bottomOfTheWorld = FindObjectOfType<GameManager> ().bottomOfWorld;
 	}
 	
 	// Update is called once per frame
@@ -56,7 +57,7 @@ public class Attackable : MonoBehaviour {
 						mainP.startLifetime = deathTime + 1.0f;
 					}
 				}
-				renderer.color = Color.Lerp (Color.white, deathColor, (deathTime - currDeathTime) / deathTime);
+				SR.color = Color.Lerp (Color.white, deathColor, (deathTime - currDeathTime) / deathTime);
 				currDeathTime -= Time.deltaTime;
 			} else {
 				if (gameObject.name.Contains ("Enemy")) {
@@ -139,13 +140,14 @@ public class Attackable : MonoBehaviour {
 		}
 		//Debug.Log("Health afterwards: " + health);
 		if (health < 0) {
-			alive = false;
+			//alive = false;
 		} else {
 			alive = true;
 		}
 	}
 
 	public void modifyEnergy(float energyDiff) {
+		
 		energy = Mathf.Max(Mathf.Min(max_energy, energy + energyDiff),0);
 		if (energyDiff > 10) {
 			GameObject.Instantiate (HealEffect, transform.position, Quaternion.identity);

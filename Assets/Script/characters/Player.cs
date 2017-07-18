@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine.UI;
 
+[RequireComponent (typeof (PersItem))]
 [RequireComponent (typeof (Movement))]
 [RequireComponent (typeof (Fighter))]
 [RequireComponent (typeof (Attackable))]
@@ -52,6 +53,7 @@ public class Player : MonoBehaviour {
 	//public float lastHealth;
 
 	internal void Start()  {
+		//Object.DontDestroyOnLoad (this);
 		anim = GetComponent<Animator> ();
 		controller = GetComponent<Movement> ();
 		attackable = GetComponent<Attackable> ();
@@ -61,17 +63,13 @@ public class Player : MonoBehaviour {
 		jumpVelocity = Mathf.Abs(gravity) * timeToJumpApex;
 		jumpVector = new Vector2 (0f, jumpVelocity);
 		gameManager = FindObjectOfType<GameManager> ();
-		startPosition = transform.position;
 	}
 
 	public void Reset() {
-		GetComponent<ReturnToCheckpoint>().resetPos();
-		transform.position = startPosition;
-		controller.accumulatedVelocity = Vector2.zero;
+		//GetComponent<ReturnToCheckpoint>().resetPos();
 		attackable.resetHealth ();
 		attackable.energy = 0.0f;
 		attackable.alive = true;
-		// reset should also bring back the startblock, if we want to keep using it.
 	}
 	public void onHitConfirm(GameObject otherObj) {
 		Fighter mF = otherObj.GetComponent<Fighter> ();
@@ -158,9 +156,17 @@ public class Player : MonoBehaviour {
 					gameObject.GetComponent<Fighter> ().tryAttack ("guard");
 				}
 			}
+			if (Input.GetButtonDown("Interact")) {
+				Debug.Log ("Attempting interaction from player");
+				GetComponent<Character> ().playerInteraction ();
+			}
+
 				
 			if (Input.GetButtonDown("Jump")) {
-				if (controller.collisions.below) {
+				if (inputY < -0.9f) {
+					GetComponent<Movement>().setDropTime(1.0f);
+				}
+				else if (controller.collisions.below) {
 					//velocity.y = jumpVelocity;
 					//controller.velocity.y = jumpVelocity * Time.deltaTime;
 					controller.addSelfForce (jumpVector, 0f);

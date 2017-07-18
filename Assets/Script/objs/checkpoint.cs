@@ -16,7 +16,6 @@ public class checkpoint : MonoBehaviour {
 	}
 	internal void OnTriggerEnter2D(Collider2D other)
 	{
-		string hitResult = "none";
 		if (other.gameObject.GetComponent<ReturnToCheckpoint> ()) {
 			other.gameObject.GetComponent<ReturnToCheckpoint> ().setCheckpoint (transform.position + offset);
 		}

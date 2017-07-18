@@ -7,8 +7,9 @@ public class Movement : MonoBehaviour {
 	public LayerMask collisionMask;
 
 	const float skinWidth = .015f;
-	public int horizontalRayCount = 4;
-	public int verticalRayCount = 4;
+	int horizontalRayCount = 4;
+	int verticalRayCount = 4;
+
 	public Vector2 playerInput = Vector2.zero;
 	public Vector2 accumulatedVelocity = Vector2.zero;
 	public bool isGravity = true;
@@ -16,7 +17,7 @@ public class Movement : MonoBehaviour {
 	public float speed;
 	public bool facingLeft = false;
 	public bool canMove = true;
-	public float terminalVelocity = -0.5f;
+	float terminalVelocity = -0.5f;
 
 	float maxClimbAngle = 80;
 
@@ -32,14 +33,34 @@ public class Movement : MonoBehaviour {
 	List<float> timeForces = new List<float>();
 	public bool onGround = true;
 	Vector2 playerForce = new Vector2();
+	public float dropThruTime = 0.0f;
+	Vector2 spawnPos;
+	bool resetPos = false;
 
 	void Start() {
 		bCollider = GetComponent<BoxCollider2D> ();
-		//bCollider = GetComponent<CapsuleCollider2D> ();
 		sprite = GetComponent<SpriteRenderer> ();
 		CalculateRaySpacing ();
 		canMove = true;
 		setFacingLeft (facingLeft);
+		doSpawnStuff ();
+	}
+	void doSpawnStuff() {
+		if (resetPos) {
+			if (GetComponent<ReturnToCheckpoint> ()) {
+				ReturnToCheckpoint rc = GetComponent<ReturnToCheckpoint> ();
+				rc.setCheckpoint (spawnPos);
+				rc.resetPos ();
+			} else {
+				transform.position = new Vector3 (spawnPos.x, spawnPos.y, transform.position.z);
+				GetComponent<Movement> ().accumulatedVelocity = Vector2.zero;
+			}
+			resetPos = false;
+		}
+	}
+	public void setSpawnPos(Vector2 sp) {
+		resetPos = true;
+		spawnPos = sp;
 	}
 
 	public void Move(Vector2 velocity) {
@@ -55,6 +76,7 @@ public class Movement : MonoBehaviour {
 
 	void FixedUpdate() {
 		//Debug.Log (Time.deltaTime);
+		dropThruTime = Mathf.Max(0f,dropThruTime - Time.fixedDeltaTime);
 		if (Mathf.Abs(accumulatedVelocity.x) > 0.3f) {
 			if (collisions.below) {
 				accumulatedVelocity.x *= (1.0f - Time.fixedDeltaTime * 2.0f);
@@ -131,7 +153,72 @@ public class Movement : MonoBehaviour {
 		playerInput = input;
 		playerForce = veloc;
 	}
-
+	bool handleStairs(RaycastHit2D hit,Vector2 vel) {
+		if (hit.collider.gameObject.GetComponent<JumpThru> ()) {
+			if (dropThruTime > 0f) {
+				return true;
+			}
+			if (hit.collider.gameObject.GetComponent<EdgeCollider2D> ()) {
+				EdgeCollider2D ec = hit.collider.gameObject.GetComponent<EdgeCollider2D> ();
+				Vector2[] points = ec.points;
+				Vector2 leftPoint = Vector2.zero;
+				bool foundLeft = false;
+				Vector2 rightPoint = Vector2.zero;
+				bool foundRight = false;
+				foreach (Vector2 p in points) {
+					float xDiff = (ec.transform.position.x + p.x) - transform.position.x;
+					if (xDiff < -0.01f) {
+						if (foundRight) {
+							float yDiff = p.y - rightPoint.y;
+							if (yDiff > 0.01f) {
+								if (vel.x > 0f) {
+									return true;
+								} else {
+									return false;
+								}
+							} else if (yDiff < -0.01f) {
+								if (vel.x > 0f) {
+									return false;
+								} else {
+									return true;
+								}
+							}
+						} else {
+							if (Vector2.Equals(Vector2.zero,leftPoint)) {
+								leftPoint = p;
+								foundLeft = true;
+							}
+						}
+					} else if (xDiff > 0.01f) {
+						if (foundLeft) {
+							float yDiff = p.y - leftPoint.y;
+							if (yDiff > 0.01f) {
+								if (vel.x < 0f) {
+									return true;
+								} else {
+									return false;
+								}
+							} else if (yDiff < -0.01f) {
+								if (vel.x < 0f) {
+									return false;
+								} else {
+									return true;
+								}
+							}
+						} else {
+							if (Vector2.Equals(Vector2.zero,rightPoint)) {
+								rightPoint = p;
+								foundRight = true;
+							}
+						}
+					}
+				}
+			} else {
+				return true;
+			}
+		}
+		return false;
+	}
 	void HorizontalCollisions(ref Vector2 velocity) {
 		float directionX = Mathf.Sign (velocity.x);
 		float rayLength = Mathf.Abs (velocity.x) + skinWidth;
@@ -140,33 +227,40 @@ public class Movement : MonoBehaviour {
 			Vector2 rayOrigin = (directionX == -1)?raycastOrigins.bottomLeft:raycastOrigins.bottomRight;
 			rayOrigin += Vector2.up * (horizontalRaySpacing * i);
 			RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.right * directionX, rayLength, collisionMask);
-
-			Debug.DrawRay(rayOrigin, Vector2.right * directionX * rayLength,Color.red);
+			if (hit) {
+				Debug.DrawRay(rayOrigin, Vector2.right * directionX * rayLength,Color.red);
+			} else {
+				Debug.DrawRay(rayOrigin, Vector2.right * directionX * rayLength,Color.green);
+			}
 
 			if (hit && !hit.collider.isTrigger) {
 
-				float slopeAngle = Vector2.Angle(hit.normal, Vector2.up);
+				if (handleStairs(hit,velocity) ){
+					
+				} else {
+					float slopeAngle = Vector2.Angle (hit.normal, Vector2.up);
 
-				if (i == 0 && slopeAngle <= maxClimbAngle) {
-					float distanceToSlopeStart = 0;
-					if (slopeAngle != collisions.slopeAngleOld) {
-						distanceToSlopeStart = hit.distance-skinWidth;
-						velocity.x -= distanceToSlopeStart * directionX;
-					}
-					ClimbSlope(ref velocity, slopeAngle);
-					velocity.x += distanceToSlopeStart * directionX;
-				}
-
-				if (!collisions.climbingSlope || slopeAngle > maxClimbAngle) {
-					velocity.x = (hit.distance - skinWidth) * directionX;
-					rayLength = hit.distance;
-
-					if (collisions.climbingSlope) {
-						velocity.y = Mathf.Tan(collisions.slopeAngle * Mathf.Deg2Rad) * Mathf.Abs(velocity.x);
+					if (i == 0 && slopeAngle <= maxClimbAngle) {
+						float distanceToSlopeStart = 0;
+						if (slopeAngle != collisions.slopeAngleOld) {
+							distanceToSlopeStart = hit.distance - skinWidth;
+							velocity.x -= distanceToSlopeStart * directionX;
+						}
+						ClimbSlope (ref velocity, slopeAngle);
+						velocity.x += distanceToSlopeStart * directionX;
 					}
 
-					collisions.left = directionX == -1;
-					collisions.right = directionX == 1;
+					if (!collisions.climbingSlope || slopeAngle > maxClimbAngle) {
+						velocity.x = (hit.distance - skinWidth) * directionX;
+						rayLength = hit.distance;
+
+						if (collisions.climbingSlope) {
+							velocity.y = Mathf.Tan (collisions.slopeAngle * Mathf.Deg2Rad) * Mathf.Abs (velocity.x);
+						}
+
+						collisions.left = directionX == -1;
+						collisions.right = directionX == 1;
+					}
 				}
 			}
 		}
@@ -181,27 +275,24 @@ public class Movement : MonoBehaviour {
 			Vector2 rayOrigin = (directionY == -1)?raycastOrigins.bottomLeft:raycastOrigins.topLeft;
 			rayOrigin += Vector2.right * (verticalRaySpacing * i + velocity.x);
 			RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.up * directionY, rayLength, collisionMask);
-		
-			//Debug.DrawRay(rayOrigin, Vector2.up * directionY * rayLength,Color.red);
-
 			if (hit && !hit.collider.isTrigger) {
-				velocity.y = (hit.distance - skinWidth) * directionY;
-				/*if ((directionY > 0) && accumulatedVelocity.y > 0) {
-					accumulatedVelocity.y = -(accumulatedVelocity.y * 0.7f);
-				}*/
-				rayLength = hit.distance;
-				if (collisions.climbingSlope) {
-					velocity.x = velocity.y / Mathf.Tan (collisions.slopeAngle * Mathf.Deg2Rad) * Mathf.Sign (velocity.x);
-				}
+				if (hit.collider.gameObject.GetComponent<JumpThru> () && ( velocity.y > 0 || dropThruTime > 0f)){ //|| handleStairs(hit,velocity))){
+				} else {
+					velocity.y = (hit.distance - skinWidth) * directionY;
+					rayLength = hit.distance;
+					if (collisions.climbingSlope) {
+						velocity.x = velocity.y / Mathf.Tan (collisions.slopeAngle * Mathf.Deg2Rad) * Mathf.Sign (velocity.x);
+					}
 
-				collisions.below = directionY == -1;
-				collisions.above = directionY == 1;
+					collisions.below = directionY == -1;
+					collisions.above = directionY == 1;
+				}
 			}
 		}
 		falling = "none";
 		onGround = false;
 		rayLength = rayLength + 0.1f;
-		if (true) { //directionY == -1) {
+		if (true) {
 			bool collide = false;
 			bool started = false;
 			rayLength = 0.3f;
@@ -209,25 +300,29 @@ public class Movement : MonoBehaviour {
 				Vector2 rayOrigin = raycastOrigins.bottomLeft; //true ? raycastOrigins.bottomLeft : raycastOrigins.topLeft;
 				rayOrigin += Vector2.right * (verticalRaySpacing * i + velocity.x);
 				RaycastHit2D hit = Physics2D.Raycast (rayOrigin, Vector2.up * -1f, rayLength, collisionMask);
-
-				if (hit && !hit.collider.isTrigger) {
-					Debug.DrawRay(rayOrigin, Vector2.up * directionY * rayLength,Color.red);
-					onGround = true;
-					if ( started && !collide) {
-						falling = "left";
-					}
-					collide = true;
-				}  else {
-					Debug.DrawRay(rayOrigin, Vector2.up * directionY * rayLength,Color.green);
-					if (started && collide) {
-						falling = "right";
+				if (hit && hit.collider.gameObject.GetComponent<JumpThru> () && (dropThruTime > 0f )) {
+				} else {
+					if (hit && !hit.collider.isTrigger) {
+						Debug.DrawRay(rayOrigin, Vector2.up * directionY * rayLength,Color.red);
+						onGround = true;
+						if ( started && !collide) {
+							falling = "left";
+						}
+						collide = true;
+					}  else {
+						Debug.DrawRay(rayOrigin, Vector2.up * directionY * rayLength,Color.green);
+						if (started && collide) {
+							falling = "right";
+						}
 					}
 				}
 				started = true;
 			}
 		}
 	}
-
+	public void setDropTime(float tm) {
+		dropThruTime = tm;
+	}
 	void ClimbSlope(ref Vector2 velocity, float slopeAngle) {
 		float moveDistance = Mathf.Abs (velocity.x);
 		float climbVelocityY = Mathf.Sin (slopeAngle * Mathf.Deg2Rad) * moveDistance;

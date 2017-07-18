@@ -153,6 +153,10 @@ public class Fighter : MonoBehaviour {
 			if (GetComponent<Player> ()) { //Stopgap in order to test beat recognition power.
 				GetComponent<Player> ().onHitConfirm(otherObj);
 			}
+			if (GetComponent<Character> ()) {
+				HitConfirmEvent e = new HitConfirmEvent ();
+				GetComponent<Character> ().broadcastToObservers (e);
+			}
 		}
 	}
 
@@ -197,6 +201,10 @@ public class Fighter : MonoBehaviour {
 			currentAttack.onStartUp ();
 			currentAttack.timeSinceStart = 0.0f;
 			startingNewAttack = true;
+			if (GetComponent<Character> ()) {
+				AttackEvent e = new AttackEvent ();
+				GetComponent<Character> ().broadcastToObservers (e);
+			}
 			return true;
 		}
 		return false;

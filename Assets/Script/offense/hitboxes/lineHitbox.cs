@@ -12,7 +12,8 @@ public class lineHitbox : hitbox {
 	void Start ()
 	{
 		line = GetComponent<LineRenderer> ();
-		line.SetVertexCount (2);
+		//line.SetVertexCount (2);
+		line.positionCount = 2;
 		line.startWidth = 0.2f;
 		line.startColor = Color.red;
 	}
@@ -21,7 +22,7 @@ public class lineHitbox : hitbox {
 	{
 		base.updateTick ();
 		RaycastHit2D hit;
-		hit = Physics2D.Raycast (transform.position, aimPoint, range); // transform.position + (transform.right * (float)offset) can be used for casting not from center.
+		hit = Physics2D.Raycast (transform.position, aimPoint, range);
 		if (foundPoint) {
 			line.SetPosition (0, transform.position);
 			line.SetPosition (1, endPoint);

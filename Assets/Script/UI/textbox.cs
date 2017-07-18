@@ -19,6 +19,7 @@ public class textbox : MonoBehaviour {
 	int lastCharacter;
 	public float pauseAfterType = 2f;
 	Text mText;
+	Color tC;
 
 	// Use this for initialization
 	void Start () {
@@ -29,16 +30,22 @@ public class textbox : MonoBehaviour {
 		if (!typing) {
 			mText.text = fullText;
 		}
+		initColor ();
 	}
 	void OnDestroy() {
 		mManager.removeTextbox (gameObject);
+		if (targetedObj.GetComponent<Character> ()) {
+			targetedObj.GetComponent<Character> ().onTBComplete ();
+		}
 	}
-
-	public void setColor(Color tC) {
+	public void initColor() {
 		GetComponentInChildren<Image> ().color = tC;
 		GetComponentInChildren<Text> ().color = new Color(1.0f - tC.r,1.0f - tC.g, 1.0f - tC.b,tC.a + 0.5f);
 		line.startColor = tC;
 		line.endColor = tC;
+	}
+	public void setColor(Color C) {
+		tC = C;
 	}
 	
 	// Update is called once per frame

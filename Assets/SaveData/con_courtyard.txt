@@ -1,0 +1,1 @@
+{"actors":[{"regID":"Sol-Con_roadway(176.0, 31.4, 0.0)","name":"Sol","pos":{"x":188.19068908691407,"y":29.950000762939454,"z":0.0},"health":100.0,"prefabPath":"Sol","targetID":"upperHall","targetDir":"right"}]}

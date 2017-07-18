@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" nextobjectid="1">
+<map version="1.0" tiledversion="1.0.1" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" nextobjectid="3">
  <properties>
   <property name="unity:scale" value="0.0625"/>
  </properties>
  <tileset firstgid="1" name="test" tilewidth="32" tileheight="32" tilecount="110" columns="10">
-  <image source="../Sprites/tiles/test.png" trans="ffffff" width="320" height="352"/>
+  <image source="../Tiles/tiles/test.png" trans="ffffff" width="320" height="352"/>
   <terraintypes>
    <terrain name="ground" tile="-1"/>
    <terrain name="block" tile="-1"/>
@@ -36,6 +36,7 @@
   <tile id="43" terrain="1,,1,1"/>
   <tile id="44" terrain=",1,1,1"/>
  </tileset>
+ <tileset firstgid="111" source="con_outside.tsx"/>
  <layer name="Background1" width="50" height="50">
   <properties>
    <property name="unity:sortingOrder" type="int" value="-3"/>
@@ -210,6 +211,12 @@
  <objectgroup name="walls">
   <properties>
    <property name="unity:layer" value="Obstacle"/>
+  </properties>
+ </objectgroup>
+ <objectgroup name="jumpThru">
+  <properties>
+   <property name="unity:layer" value="Obstacle"/>
+   <property name="unity:tag" value="jumpThru"/>
   </properties>
  </objectgroup>
  <layer name="Foreground1" width="50" height="50">

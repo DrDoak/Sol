@@ -65,31 +65,6 @@ public class GUIHandler : MonoBehaviour {
 
 	void Update() {
 		/*
-		if (allButtons == null) {
-			allButtons = gameManager.allButtons;
-		}
-
-		if (allPowers == null) {
-			allPowers = gameManager.allPowers;
-		}
-*/
-		/*if (Input.GetKeyDown(KeyCode.H)) {
-			if (P1Instructions.activeSelf) {
-				P1Instructions.gameObject.SetActive(false);
-			} else {
-				P1Instructions.gameObject.SetActive(true);
-			}
-		}*/
-		/*
-		if (Input.GetKeyDown(KeyCode.Mouse2)) {
-			if (P2Instructions.activeSelf) {
-				P2Instructions.gameObject.SetActive(false);
-			} else {
-				P2Instructions.gameObject.SetActive(true);
-			}
-		}
-		*/
-
 		var P1 = FindObjectOfType<Player> ();
 		var P1Controller = P1.GetComponent<Attackable> ();
 		//var P2 = FindObjectOfType<PlayerCursor> ();
@@ -97,49 +72,7 @@ public class GUIHandler : MonoBehaviour {
 		//P2EnergyBar.value = P2.currentPower;
 
 		P1EnergyBar.value = P1Controller.energy;
-		/*
-		foreach(KeyValuePair<string, Button> entry in allButtons) {
-			Color buttonColor;
-			if (entry.Key == P2.leftObj.name) {
-				buttonColor = leftColor;
-			} else if (entry.Key == P2.rightObj.name) {
-				buttonColor = rightColor;
-			} else {
-				buttonColor = Color.white;
-			}
-
-			if (P2.currentPower < allPowers[entry.Key].cost) {
-				buttonColor = buttonColor - new Color(0.2f, 0.2f, 0.2f, 0f);
-			}
-			entry.Value.GetComponent<Image> ().color = buttonColor;
-
-			if ((Input.mousePosition.y <= entry.Value.transform.position.y) && (Input.mousePosition.y >= entry.Value.transform.position.y - 30)
-			    && (Input.mousePosition.x >= entry.Value.transform.position.x) && (Input.mousePosition.x <= entry.Value.transform.position.x + 50)) {
-				P2EnergyShower.gameObject.SetActive (true);
-				P2EnergyShower.value = allPowers [entry.Key].cost;
-				P2EnergyShowing = entry.Key;
-			} else if (entry.Key == P2EnergyShowing) {
-				P2EnergyShower.gameObject.SetActive (false);
-			}
-		}
-	*/
-		if (gameManager.gameOver) {
-			
-			if (gameManager.winner == 1) {
-				displayText ("Player 1 wins! (Attempt " + attemptNumber + ")", 3f);
-				gameManager.gameOver = false;
-				gameManager.winner = 0;
-				P1HealthBar.value = 0;
-			} else {
-				attemptNumber += 1;
-				displayText ("Attempt " + attemptNumber, 2f);
-				gameManager.gameOver = false;
-				gameManager.winner = 0;
-				P1HealthBar.value = 0;
-			}
-		} else {
-			P1HealthBar.value = P1Controller.health;
-		}
+		P1HealthBar.value = P1Controller.health;
 
 		if (displayTextMessage) {
 			if (displayTimePassed < displayTime) {
@@ -164,6 +97,7 @@ public class GUIHandler : MonoBehaviour {
 			}
 		}*/
 
+		/*
 		if (mainMenu) {
 			if (menuTimePassed < menuTime) {
 				menuTimePassed = Time.time - menuStart;
@@ -171,6 +105,7 @@ public class GUIHandler : MonoBehaviour {
 				SceneManager.LoadScene ("MainMenu", LoadSceneMode.Single);
 			}
 		}
+		*/
 	}
 
 	public void displayText(string msg, float dTime) {
@@ -179,24 +114,7 @@ public class GUIHandler : MonoBehaviour {
 		displayTime = dTime;
 		displayStart = Time.time;
 		displayTimePassed = 0f;
-	//	var sound = gameManager.soundfx.gameObject.transform;
-		if (gameManager.winner == 1) {
-			//if (!sound.Find ("P1Win").GetComponent<AudioSource> ().isPlaying ) {
-			//	sound.Find ("P1Win").GetComponent<AudioSource> ().Play ();
-				GoToMainMenu (3f);
-			//}
-		} else {
-			//sound.Find ("P1Death").GetComponent<AudioSource> ().Play ();
-		}
 	}
-	/*
-	public void P2EnergyBarFlashRed() {
-		flashRed = true;
-		flashTime = 0.4f;
-		flashStart = Time.time;
-		flashTimePassed = 0f;
-	}
-	*/
 	// goes to main menu in 2 seconds
 	private void GoToMainMenu(float wTime) {
 		if (mainMenu == false) {

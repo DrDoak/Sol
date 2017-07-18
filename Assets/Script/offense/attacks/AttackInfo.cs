@@ -17,7 +17,6 @@ public class AttackInfo : MonoBehaviour {
 	public int animationID = 1;
 	public int recoveryAnimID = -1;
 	public float animSpeed = 1f;
-//	public AudioSource soundFX;
 
 	public float timeSinceStart = 0.0f;
 	public string hitType = "melee";
@@ -48,9 +47,8 @@ public class AttackInfo : MonoBehaviour {
 
 	public virtual void recoveryTick() {}
 
-	public virtual void onHitConfirm(GameObject other) {
-	}
-	public virtual void onInterrupt(float stunTime, bool successfulHit, hitbox hb) {
-	}
+	public virtual void onHitConfirm(GameObject other) {}
+
+	public virtual void onInterrupt(float stunTime, bool successfulHit, hitbox hb) {}
 }
 

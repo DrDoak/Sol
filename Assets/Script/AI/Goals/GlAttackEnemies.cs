@@ -28,8 +28,7 @@ public class GlAttackEnemies : Goal {
 		if (e.eventType == "sight") {
 			Character tC = e.targetChar;
 			if (tC.faction != mChar.faction) {
-				initAttackProp.mEvent = e;
-				mChar.addProposal (initAttackProp);
+				mChar.addProposal (initAttackProp,e);
 			}
 		}
 	}

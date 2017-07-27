@@ -138,9 +138,13 @@ public class Attackable : MonoBehaviour {
 		} else if (damage < 0) {
 			GameObject.Instantiate (HealEffect, transform.position, Quaternion.identity);
 		}
+		if (GetComponent<Character> ()) {
+			GetComponent<Character> ().health = health;
+			GetComponent<Character> ().healthPerc = health / max_health;
+		}
 		//Debug.Log("Health afterwards: " + health);
 		if (health < 0) {
-			//alive = false;
+			alive = false;
 		} else {
 			alive = true;
 		}

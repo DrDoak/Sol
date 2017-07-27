@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour {
 	string curRoomName;
 	bool toInit = false;
 	List<string> registeredPermItems;
+	List<Cutscene> currentCutscenes;
 
 	void Awake () {
 		if (manager == null) {
@@ -30,6 +31,7 @@ public class GameManager : MonoBehaviour {
 		}else if  (manager != this) {
 			Destroy (this);
 		}
+		currentCutscenes = new List<Cutscene> ();
 		registeredPermItems = new List<string> ();
 		SceneManager.sceneLoaded += initRoom;
 	}
@@ -107,6 +109,9 @@ public class GameManager : MonoBehaviour {
 			Debug.Log (SceneManager.GetActiveScene ().name);
 			//SceneManager.LoadScene ("MainMenu", LoadSceneMode.Single);
 		}
+		foreach (Cutscene c in currentCutscenes) {
+			c.cutsceneUpdate (Time.deltaTime);
+		}
 	}
 
 	public void moveItem(GameObject gm,string newRoom, Vector3 newPos) {
@@ -149,5 +154,11 @@ public class GameManager : MonoBehaviour {
 		c.data.regID = id;
 		Debug.Log ("saved ID is: " + c.data.regID);
 		return false;
+	}
+	public void addCutscene(Cutscene c) {
+		currentCutscenes.Insert (0, c);
+	}
+	public void concludeCutscene(Cutscene c) {
+		currentCutscenes.Remove (c);
 	}
 }

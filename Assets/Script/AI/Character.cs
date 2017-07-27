@@ -15,6 +15,9 @@ public class Character : Interactable {
 	public float detectionRange = 15.0f;
 	public float absoluteDetection = 1.0f;
 	public string faction = "noFaction";
+	public bool facingLeft = false;
+	public float health = 100.0f;
+	public float healthPerc = 1.0f;
 	float sinceLastScan;
 	float scanInterval = 0.5f;
 	float postLineVisibleTime = 3.0f;
@@ -31,6 +34,8 @@ public class Character : Interactable {
 	public bool recreated = false;
 	bool registryChecked = false;
 
+	bool autonomy = false;
+
 	float interactRange = 0.9f;
 
 	//Skills:
@@ -39,9 +44,15 @@ public class Character : Interactable {
 	public float logic = 0.0f;
 	public Personality pers;
 
-	//others I came up with
-	public float loyalty = 0.0f;
-
+	public void setAutonomy(bool active) {
+		autonomy = active;
+		if (GetComponent<NPC> ()) {
+			GetComponent<NPC> ().autonomy = active;
+		}
+		if (GetComponent<Player> ()) {
+			GetComponent<Player> ().autonomy = active;
+		}
+	}
 	void Start () {
 		init ();
 	}

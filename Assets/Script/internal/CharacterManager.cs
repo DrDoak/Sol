@@ -12,9 +12,7 @@ public class CharacterManager : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
-		
-	}
+	void Update () {}
 
 	public void registerChar(Character c) {
 		registeredChars.Add (c.name, c);
@@ -25,7 +23,24 @@ public class CharacterManager : MonoBehaviour {
 		if (registeredChars.ContainsKey(name)) {
 			Debug.Log ("found the key for character: " + name);
 			registeredChars [name].setDialogueSequence (ds);
-
 		}
+	}
+	public Character findChar(string targetName) {
+		foreach (string k in registeredChars.Keys) {
+			if (registeredChars[k].name == targetName) {
+				return registeredChars[k];
+			}
+		}
+		Debug.Log ("Character not found: "+ targetName);
+		return null;
+	}
+	public Character findChar(Character targetC) {
+		foreach (string k in registeredChars.Keys) {
+			if (registeredChars[k] == targetC) {
+				return registeredChars[k];
+			}
+		}
+		Debug.Log ("Character not found: "+ targetC.name);
+		return null;
 	}
 }

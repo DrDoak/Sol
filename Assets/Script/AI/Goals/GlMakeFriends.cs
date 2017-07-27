@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CutsceneManager : MonoBehaviour {
+public class GlMakeFriends : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {

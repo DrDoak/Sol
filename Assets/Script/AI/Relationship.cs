@@ -31,7 +31,7 @@ public class Relationship {
 	public float egoSocial = 0.0f;
 
 	public float boldness = 0.0f;
-	public float temperament = 50.0f;
+	public float temperament = 0.5f;
 	public float emotionLogic = 0.0f;
 	public float opennessAllegiance = 0.0f;
 	public float agreeableness = 0.0f;

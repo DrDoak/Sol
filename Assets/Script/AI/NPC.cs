@@ -12,6 +12,7 @@ public class NPC : Character {
 	List<Proposal> currentProposals;
 	List<Proposal> currentActions;
 	public OffenseAI offense;
+	public bool autonomy= true;
 
 	void Start () {
 		base.init ();
@@ -26,13 +27,20 @@ public class NPC : Character {
 	// Update is called once per frame
 	void Update () {
 		base.updateScan ();
-		if (newProposals.Count > 0) {
+		if (autonomy && newProposals.Count > 0) {
 			executeValidProposals ();
 		}
 	}
 
-	public void addProposal(Proposal p) {
+	public void addProposal(Proposal p, Event e) {
+		addProposal (p, e, -100f);
+	}
+	public void addProposal(Proposal p, Event e,float rating) {
 		if (!newProposals.Contains (p)) {
+			p.mEvent = e;
+			if (rating > -100f) {
+				p.rating = rating;
+			}
 			newProposals.Add (p);
 		}
 	}

@@ -49,8 +49,7 @@ public class Player : MonoBehaviour {
 	public AudioClip MultiSlash;
 	public AudioClip FailedReflect;
 	public AudioClip SuccessfulReflect;
-
-	//public float lastHealth;
+	public bool autonomy = true;
 
 	internal void Start()  {
 		//Object.DontDestroyOnLoad (this);
@@ -97,7 +96,7 @@ public class Player : MonoBehaviour {
 		inputX = 0.0f;
 		inputY = 0.0f;
 
-		if (controller.canMove) {
+		if (controller.canMove && autonomy) {
 			inputY = Input.GetAxis ("Vertical");
 
 			/*if (Input.GetKeyDown (downKey)) {

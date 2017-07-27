@@ -388,6 +388,9 @@ public class Movement : MonoBehaviour {
 				sprite.flipX = false;
 			}
 		}
+		if (GetComponent<Character> ()) {
+			GetComponent<Character> ().facingLeft = facingLeft;
+		}
 	}
 
 }

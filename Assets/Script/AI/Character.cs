@@ -45,9 +45,10 @@ public class Character : Interactable {
 	public Personality pers;
 
 	public void setAutonomy(bool active) {
+		Debug.Log ("Setting autonomy " + gameObject + " bool " + active);
 		autonomy = active;
 		if (GetComponent<NPC> ()) {
-			GetComponent<NPC> ().autonomy = active;
+			GetComponent<NPC> ().setAutonomy(active);
 		}
 		if (GetComponent<Player> ()) {
 			GetComponent<Player> ().autonomy = active;
@@ -57,6 +58,7 @@ public class Character : Interactable {
 		init ();
 	}
 	protected void init() {
+		Debug.Log ("init from character");
 		movt = GetComponent<Movement> ();
 		tm = FindObjectOfType<TextboxManager> ();
 		sinceLastScan = UnityEngine.Random.Range (0.0f, scanInterval);
@@ -67,7 +69,7 @@ public class Character : Interactable {
 			faction = GetComponent<Attackable> ().faction;
 		}
 		pers = new Personality ();
-		//FindObjectOfType<CharacterManager> ().registerChar (this);
+		FindObjectOfType<CharacterManager> ().registerChar (this);
 	}
 	public void registryCheck() {
 		if (data.regID == "") {
@@ -111,7 +113,9 @@ public class Character : Interactable {
 		presetDS = ds;
 	}
 	public void onTBComplete() {
-		presetDS.parseNextElement ();
+		if (isPresetDS) {
+			presetDS.parseNextElement ();
+		}
 	}
 	public virtual void initiateDialogueRequest(Character targetChar) {
 		//DialogueElement dialogOpt = chooseDialogueOption (getDialogueOptions(targetChar,null));

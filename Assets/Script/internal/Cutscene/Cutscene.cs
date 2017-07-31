@@ -2,28 +2,33 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class Cutscene : MonoBehaviour {
 	GameManager gm;
 	CharacterManager cm;
+
 	List<CutscenePiece> eventList;
 	List<Character> lockedCharacters;
 	CutscenePiece currentEvent;
 	public bool instantStart = true;
+	bool toStart = false;
 	void Start() {
 		init ();
+	}
+	void Update() {
+		if (toStart) {
+			toStart = false;
+			startCutscene ();
+		}
 	}
 	public void init() {
 		gm = GameObject.FindObjectOfType<GameManager> ();
 		cm = GameObject.FindObjectOfType<CharacterManager> ();
+		lockedCharacters = new List<Character> ();
 		eventList = new List<CutscenePiece> (GetComponents<CutscenePiece> ());
 		eventList.Sort((p1,p2)=>p1.order.CompareTo(p2.order));
-		foreach (CutscenePiece cp in eventList) {
-			cp.parent = this;
-			cp.gm = gm;
-			cp.cm = cm;
-		}
 		if (instantStart) {
-			startCutscene ();
+			toStart = true;
 		}
 	}
 	public virtual void cutsceneUpdate(float dt) {
@@ -31,7 +36,9 @@ public class Cutscene : MonoBehaviour {
 	}
 
 	public void lockCharacter(string charName) {
+		Debug.Log ("searching for char:" + charName);
 		Character c = cm.findChar (charName);
+		Debug.Log (c);
 		c.setAutonomy (false);
 		lockedCharacters.Add (c);
 	}
@@ -54,6 +61,15 @@ public class Cutscene : MonoBehaviour {
 		cp.order = eventList.Count;
 	}
 	public void startCutscene() {
+		Debug.Log ("Starting Cutscene!!!");
+		foreach (CutscenePiece cp in eventList) {
+			cp.parent = this;
+			cp.gm = gm;
+			cp.cm = cm;
+			if (cp.targetCharName != "notSet") {
+				lockCharacter (cp.targetCharName);
+			}
+		}
 		currentEvent = eventList [0];
 		currentEvent.onEventStart ();
 	}

@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class CPDialogueBox : CutscenePiece {
 	public string text;
-	public string targetCharName;
 	public string animation = "none";
 	public bool type = true;
 	TextboxManager tm;

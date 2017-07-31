@@ -103,7 +103,7 @@ public class NPCMovement : MonoBehaviour {
 		targetSet = true;
 		followObj = target;
 	}
-	void endTarget() {
+	public void endTarget() {
 		targetSet = false;
 		targetObj = false;
 		followObj = null;

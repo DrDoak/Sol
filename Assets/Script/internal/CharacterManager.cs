@@ -7,7 +7,8 @@ public class CharacterManager : MonoBehaviour {
 	Dictionary<string,Character> registeredChars;
 	List<string> runEvents;
 	// Use this for initialization
-	void Start () {
+	void Awake () {
+		Debug.Log ("start cm init!");
 		registeredChars = new Dictionary<string,Character> ();
 	}
 	
@@ -26,7 +27,9 @@ public class CharacterManager : MonoBehaviour {
 		}
 	}
 	public Character findChar(string targetName) {
+		Debug.Log (registeredChars);
 		foreach (string k in registeredChars.Keys) {
+			Debug.Log (registeredChars [k]);
 			if (registeredChars[k].name == targetName) {
 				return registeredChars[k];
 			}

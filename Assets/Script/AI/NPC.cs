@@ -31,7 +31,13 @@ public class NPC : Character {
 			executeValidProposals ();
 		}
 	}
-
+	public void setAutonomy(bool au) {
+		autonomy = au;
+		if (au) {
+		} else {
+			GetComponent<NPCMovement> ().endTarget ();
+		}
+	}
 	public void addProposal(Proposal p, Event e) {
 		addProposal (p, e, -100f);
 	}

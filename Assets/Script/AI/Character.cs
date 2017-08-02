@@ -58,7 +58,7 @@ public class Character : Interactable {
 		init ();
 	}
 	protected void init() {
-		Debug.Log ("init from character");
+//		Debug.Log ("init from character");
 		movt = GetComponent<Movement> ();
 		tm = FindObjectOfType<TextboxManager> ();
 		sinceLastScan = UnityEngine.Random.Range (0.0f, scanInterval);

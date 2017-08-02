@@ -10,7 +10,7 @@ public class Goal {
 	public Goal () {}
 
 	public virtual void respondToEvent(Event e) {
-		Debug.Log ("responding to: " + e.eventType);
+//		Debug.Log ("responding to: " + e.eventType);
 		if (e.eventType == "sight") {
 			Relationship ci = mChar.getCharInfo (e.targetChar);
 			sightEvent (e, ci,mChar.pers);

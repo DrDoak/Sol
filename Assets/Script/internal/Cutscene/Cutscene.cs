@@ -7,7 +7,7 @@ public class Cutscene : MonoBehaviour {
 	GameManager gm;
 	CharacterManager cm;
 
-	List<CutscenePiece> eventList;
+	List<CutscenePiece> eventList = new List<CutscenePiece>();
 	List<Character> lockedCharacters;
 	CutscenePiece currentEvent;
 	public bool instantStart = true;
@@ -20,13 +20,13 @@ public class Cutscene : MonoBehaviour {
 			toStart = false;
 			startCutscene ();
 		}
+		if (currentEvent) {
+			cutsceneUpdate (Time.deltaTime);
+		}
 	}
 	public void init() {
 		gm = GameObject.FindObjectOfType<GameManager> ();
 		cm = GameObject.FindObjectOfType<CharacterManager> ();
-		lockedCharacters = new List<Character> ();
-		eventList = new List<CutscenePiece> (GetComponents<CutscenePiece> ());
-		eventList.Sort((p1,p2)=>p1.order.CompareTo(p2.order));
 		if (instantStart) {
 			toStart = true;
 		}
@@ -36,19 +36,21 @@ public class Cutscene : MonoBehaviour {
 	}
 
 	public void lockCharacter(string charName) {
-		Debug.Log ("searching for char:" + charName);
+		Debug.Log ("Attempting to lock character: " + charName);
 		Character c = cm.findChar (charName);
-		Debug.Log (c);
 		c.setAutonomy (false);
 		lockedCharacters.Add (c);
 	}
 	public void lockCharacter(Character searchC) { 
+		Debug.Log ("Attempting to lock character: " + searchC.name);
 		Character c = cm.findChar(searchC);
 		c.setAutonomy (false);
 		lockedCharacters.Add (c);
+		Debug.Log ("Done with lock");
 	}
 	public void concludeCutscene () {
 		foreach (Character c in lockedCharacters) {
+			Debug.Log ("unlocking char:" + c.name);
 			c.setAutonomy (true);
 		}
 		gm.concludeCutscene (this);
@@ -58,14 +60,19 @@ public class Cutscene : MonoBehaviour {
 		eventList.Add (cp);
 		cp.parent = this;
 		cp.gm = gm;
-		cp.order = eventList.Count;
+		if (cp.order == 0) {
+			cp.order = eventList.Count;
+		}
+		eventList.Sort((p1,p2)=>p1.order.CompareTo(p2.order));
 	}
 	public void startCutscene() {
-		Debug.Log ("Starting Cutscene!!!");
+		Debug.Log ("Starting CS. CPs:");
+		lockedCharacters = new List<Character> ();
 		foreach (CutscenePiece cp in eventList) {
 			cp.parent = this;
 			cp.gm = gm;
 			cp.cm = cm;
+			Debug.Log ("LOCKING:" + cp.targetCharName);
 			if (cp.targetCharName != "notSet") {
 				lockCharacter (cp.targetCharName);
 			}
@@ -74,11 +81,13 @@ public class Cutscene : MonoBehaviour {
 		currentEvent.onEventStart ();
 	}
 	public void progressEvent() {
+		Debug.Log ("Progressing to next cutscene");
 		eventList.Remove (currentEvent);
 		if (eventList.Count > 0) {
 			currentEvent = eventList [0];
 			currentEvent.onEventStart ();
 		} else {
+			Debug.Log ("no more, concluding");
 			concludeCutscene ();
 		}
 	}

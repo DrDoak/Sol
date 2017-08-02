@@ -14,6 +14,10 @@ public class CutscenePiece : MonoBehaviour{
 	public string targetCharName = "notSet";
 	public virtual void onEventStart() {
 	}
+	protected void init() {
+		parent = GetComponent<Cutscene> ();
+		parent.addEvent (this);
+	}
 	public virtual void activeTick(float dt) {
 	}
 	public void completeEvent() {

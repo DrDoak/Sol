@@ -114,7 +114,7 @@ public class NPC : Character {
 	public void onHit(Character otherChar) {
 	}
 	public override void respondToEvent(Event e) {
-		Debug.Log ("Responding to Event: " + e.eventType);
+//		Debug.Log ("Responding to Event: " + e.eventType);
 		foreach (Goal g in currentGoals) {
 			g.respondToEvent (e);
 		}

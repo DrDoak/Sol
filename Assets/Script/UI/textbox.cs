@@ -20,6 +20,7 @@ public class textbox : MonoBehaviour {
 	public float pauseAfterType = 2f;
 	Text mText;
 	Color tC;
+	public bool conclude = false;
 
 	// Use this for initialization
 	void Start () {
@@ -33,6 +34,7 @@ public class textbox : MonoBehaviour {
 		initColor ();
 	}
 	void OnDestroy() {
+		conclude = true;
 		mManager.removeTextbox (gameObject);
 		if (targetedObj.GetComponent<Character> ()) {
 			targetedObj.GetComponent<Character> ().onTBComplete ();

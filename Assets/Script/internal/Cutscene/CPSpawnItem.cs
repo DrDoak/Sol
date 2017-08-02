@@ -5,11 +5,12 @@ using UnityEngine;
 public class CPSpawnItem : CutscenePiece {
 	public GameObject spawnObj;
 	public Vector3 spawnLoc;
-	public Color debugColor = Color.cyan;
+	Color debugColor = Color.cyan;
 	Vector3 ident;
 	// Use this for initialization
 	void Start () {
 		ident = new Vector3 (1,1,1);
+		init ();
 	}
 	
 	// Update is called once per frame
@@ -20,6 +21,6 @@ public class CPSpawnItem : CutscenePiece {
 	}
 	void OnDrawGizmos() {
 		Gizmos.color = debugColor;
-		Gizmos.DrawCube (spawnLoc,ident);
+		Gizmos.DrawCube (spawnLoc,new Vector3(1,1,1));
 	}
 }

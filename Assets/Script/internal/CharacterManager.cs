@@ -8,7 +8,7 @@ public class CharacterManager : MonoBehaviour {
 	List<string> runEvents;
 	// Use this for initialization
 	void Awake () {
-		Debug.Log ("start cm init!");
+//		Debug.Log ("start cm init!");
 		registeredChars = new Dictionary<string,Character> ();
 	}
 	
@@ -22,14 +22,13 @@ public class CharacterManager : MonoBehaviour {
 	}
 	public void setDialogueSequence(string name, DialogueSequence ds) {
 		if (registeredChars.ContainsKey(name)) {
-			Debug.Log ("found the key for character: " + name);
+			//Debug.Log ("found the key for character: " + name);
 			registeredChars [name].setDialogueSequence (ds);
 		}
 	}
 	public Character findChar(string targetName) {
 		Debug.Log (registeredChars);
 		foreach (string k in registeredChars.Keys) {
-			Debug.Log (registeredChars [k]);
 			if (registeredChars[k].name == targetName) {
 				return registeredChars[k];
 			}

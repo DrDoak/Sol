@@ -11,7 +11,7 @@ public class CutscenePiece : MonoBehaviour{
 	[HideInInspector]
 	public CharacterManager cm;
 	public int order;
-	public string targetCharName = "notSet";
+	public string targetCharName = "none";
 	public virtual void onEventStart() {
 	}
 	protected void init() {

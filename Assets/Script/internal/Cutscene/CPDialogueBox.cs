@@ -18,11 +18,14 @@ public class CPDialogueBox : CutscenePiece {
 	public override void onEventStart() {
 		tb = tm.addTextbox (text, cm.findChar (targetCharName).gameObject, type);
 		talkTarget = cm.findChar (talkTo);
+		speaker = cm.findChar (targetCharName);
 	}
 	public override void activeTick (float dt) {
 		if (talkTarget != null) {
 			if (talkTarget.transform.position.x > speaker.transform.position.x) {
+				speaker.GetComponent<Movement> ().setFacingLeft (false);
 			} else {
+				speaker.GetComponent<Movement> ().setFacingLeft (true);
 			}
 		}
 		if (tb == null || tb.conclude) {

@@ -25,7 +25,7 @@ public class Player : MonoBehaviour {
 	float velocityXSmoothing;
 	//-------------------
 	bool attemptingInteraction = false;
-	Movement controller;
+	Movement movement;
 	Attackable attackable;
 	Animator anim;
 	GameManager gameManager;
@@ -51,14 +51,21 @@ public class Player : MonoBehaviour {
 	public AudioClip SuccessfulReflect;
 	public bool autonomy = true;
 
+	bool targetSet = false;
+	bool targetObj = false;
+	Vector3 targetPoint;
+	public float minDistance = 1.0f;
+	public float abandonDistance = 10.0f;
+	public Player followObj;
+
 	internal void Start()  {
 		//Object.DontDestroyOnLoad (this);
 		anim = GetComponent<Animator> ();
-		controller = GetComponent<Movement> ();
+		movement = GetComponent<Movement> ();
 		attackable = GetComponent<Attackable> ();
 		Reset ();
 		gravity = -(2 * jumpHeight) / Mathf.Pow (timeToJumpApex, 2);
-		controller.setGravityScale (gravity * (1.0f/60f));
+		movement.setGravityScale (gravity * (1.0f/60f));
 		jumpVelocity = Mathf.Abs(gravity) * timeToJumpApex;
 		jumpVector = new Vector2 (0f, jumpVelocity);
 		gameManager = FindObjectOfType<GameManager> ();
@@ -75,7 +82,7 @@ public class Player : MonoBehaviour {
 		if (GetComponent<Fighter>().currentAttackName != "super") {
 			float increase = 3.0f;
 			increase += (3f * Mathf.Min(10f,mF.hitCombo));
-			if (!controller.onGround) {
+			if (!movement.onGround) {
 				increase *= 1.5f;
 			}
 			GameObject.FindGameObjectWithTag ("ComboCount").GetComponent<Text> ().text = "Last Combo: " + mF.hitCombo.ToString ();
@@ -92,11 +99,19 @@ public class Player : MonoBehaviour {
 		}
 		lastHealth = GetComponent<Attackable> ().health;*/
 
-		if (controller.onGround) {canDoubleJump = true;}
+		if (movement.onGround) {canDoubleJump = true;}
 		inputX = 0.0f;
 		inputY = 0.0f;
-
-		if (controller.canMove && autonomy) {
+		if (!autonomy && movement.canMove) {
+			if (targetObj) {
+				if (followObj == null) {
+					endTarget ();
+					return;
+				}
+				targetPoint = followObj.transform.position;
+			}
+			moveToPoint (targetPoint);
+		}else if (movement.canMove && autonomy) {
 			inputY = Input.GetAxis ("Vertical");
 
 			/*if (Input.GetKeyDown (downKey)) {
@@ -108,16 +123,16 @@ public class Player : MonoBehaviour {
 			inputX = Input.GetAxis("Horizontal");
 			if (inputX < 0.0f) { 
 				anim.SetBool ("tryingToMove", true);
-				controller.setFacingLeft (true);
+				movement.setFacingLeft (true);
 			} else if (inputX > 0.0f) { 
 				anim.SetBool ("tryingToMove", true);
-				controller.setFacingLeft (false);
+				movement.setFacingLeft (false);
 			}
 			//Attack/Reflect/Guard Animations
 			if (Input.GetButtonDown("Attack")) {
 				
 				if (inputY < -0.9f) {
-					if (controller.onGround) {
+					if (movement.onGround) {
 						gameObject.GetComponent<Fighter> ().tryAttack ("down");
 						AudioSource.PlayClipAtPoint (DelayedSlash, gameObject.transform.position);
 						//attackable.modifyEnergy (100f);
@@ -126,7 +141,7 @@ public class Player : MonoBehaviour {
 						AudioSource.PlayClipAtPoint (ShortDelayedSlash, gameObject.transform.position);
 					}
 				} else if (inputY > 0.9f) {
-					if (controller.onGround) {
+					if (movement.onGround) {
 						gameObject.GetComponent<Fighter> ().tryAttack ("up");
 						AudioSource.PlayClipAtPoint (ShortDelayedSlash, gameObject.transform.position);
 					} else {
@@ -165,17 +180,17 @@ public class Player : MonoBehaviour {
 				if (inputY < -0.9f) {
 					GetComponent<Movement>().setDropTime(1.0f);
 				}
-				else if (controller.collisions.below) {
+				else if (movement.collisions.below) {
 					//velocity.y = jumpVelocity;
 					//controller.velocity.y = jumpVelocity * Time.deltaTime;
-					controller.addSelfForce (jumpVector, 0f);
+					movement.addSelfForce (jumpVector, 0f);
 					jumpPersist = 0.2f;
 					//gameManager.soundfx.gameObject.transform.Find ("P1Jump").GetComponent<AudioSource> ().Play ();
 					isJump = true;
 				} else if (canDoubleJump) {
 					velocity.y = jumpVelocity;
 					isJump = false;
-					controller.addSelfForce (jumpVector, 0f);
+					movement.addSelfForce (jumpVector, 0f);
 					//gameManager.soundfx.gameObject.transform.Find ("P1Jump").GetComponent<AudioSource> ().Play ();
 					canDoubleJump = false;
 				}
@@ -186,16 +201,72 @@ public class Player : MonoBehaviour {
 		}
 		//Movement logic
 		float targetVelocityX = inputX * moveSpeed;
-		velocity.x = Mathf.SmoothDamp (velocity.x, targetVelocityX, ref velocityXSmoothing, (controller.collisions.below)?accelerationTimeGrounded:accelerationTimeAirborne);
+		velocity.x = Mathf.SmoothDamp (velocity.x, targetVelocityX, ref velocityXSmoothing, (movement.collisions.below)?accelerationTimeGrounded:accelerationTimeAirborne);
 		Vector2 input = new Vector2 (inputX, inputY);
-		controller.Move (velocity, input);
+		movement.Move (velocity, input);
 		if (!attackable.alive) {
 			Reset ();
 		}
-		anim.SetBool ("grounded", controller.onGround);
+		anim.SetBool ("grounded", movement.onGround);
 		anim.SetBool ("tryingToMove", false);
 		if (inputX != 0.0f) {
 			anim.SetBool ("tryingToMove", true);
 		}		
+	}
+	public void moveToPoint(Vector3 point) {
+		inputX = 0.0f;
+		inputY = 0.0f;
+
+		float dist = Vector3.Distance (transform.position, point);
+		if (dist > abandonDistance || dist < minDistance) {
+			endTarget ();
+		} else {
+			if (movement.canMove) {
+				if (point.x > transform.position.x) {
+					if (dist > minDistance)
+						inputX = 1.0f;
+					movement.setFacingLeft (false);
+
+				} else {
+					if (dist > minDistance)
+						inputX = -1.0f;
+					movement.setFacingLeft (true);
+				}
+			}
+		}
+		float targetVelocityX = inputX * moveSpeed;
+		velocity.x = Mathf.SmoothDamp (velocity.x, targetVelocityX, ref velocityXSmoothing, (movement.collisions.below)?accelerationTimeGrounded:accelerationTimeAirborne);
+		Vector2 input = new Vector2 (inputX, inputY);
+
+		if (movement.canMove && (movement.falling == "left" || movement.falling == "right") && movement.collisions.below) {
+			movement.addSelfForce (new Vector2 (0f, jumpVelocity), 0f);
+		}
+		movement.Move (velocity, input);
+		anim.SetBool ("grounded", movement.onGround);
+		anim.SetBool ("tryingToMove", false);
+		if (inputX != 0.0f) {
+			anim.SetBool ("tryingToMove", true);
+		}
+	}
+	public void setTargetPoint(Vector3 point, float proximity) {
+		setTargetPoint (point, proximity, float.MaxValue);
+	}
+	public void setTargetPoint(Vector3 point, float proximity,float max) {
+		targetPoint = point;
+		minDistance = proximity;
+		abandonDistance = max;
+		targetSet = true;
+	}
+
+	void setTarget(Player target) {
+		targetObj = true;
+		targetSet = true;
+		followObj = target;
+	}
+	public void endTarget() {
+		targetSet = false;
+		targetObj = false;
+		followObj = null;
+		minDistance = 0.2f;
 	}
 }

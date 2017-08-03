@@ -15,7 +15,11 @@ public class CPMoveToPoint : CutscenePiece {
 	void Update () {}
 	public override void onEventStart() {
 		targetNPC = cm.findChar (targetCharName);
-		targetNPC.GetComponent<NPCMovement> ().setTargetPoint (targetPoint, proximity);
+		if (targetNPC.GetComponent<Player> ()) {
+			targetNPC.GetComponent<Player> ().setTargetPoint (targetPoint, proximity);
+		} else {
+			targetNPC.GetComponent<NPCMovement> ().setTargetPoint (targetPoint, proximity);
+		}
 	}
 	public override void activeTick(float dt) {
 		Vector3 pos = targetNPC.transform.position;

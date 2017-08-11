@@ -19,19 +19,18 @@ public class GlSurvival: Goal {
 	}
 
 	void evaluateAttack(Proposal p) {
-		p.rating = 1.0f;
 	}
 	void initiateAttack(Proposal p) {
 		mChar.offense.setTarget (p.mEvent.targetChar);
 	}
 	void evaluateFlee(Proposal p) {
-		p.rating = 1.0f;
+	//	p.rating = 1.0f;
 	}
 	void initiateFlee(Proposal p) {
 		mChar.offense.setTarget (p.mEvent.targetChar);
 	}
 	void evaluateNegotiate(Proposal p) {
-		p.rating = 1.0f;
+	//	p.rating = 1.0f;
 	}
 	void initiateNegotiate(Proposal p) {
 		mChar.offense.setTarget (p.mEvent.targetChar);

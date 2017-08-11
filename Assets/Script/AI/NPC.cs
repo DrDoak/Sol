@@ -6,6 +6,7 @@ using UnityEngine;
 [RequireComponent (typeof (NPCMovement))]
 public class NPC : Character {
 
+	public List<string> goalNames;
 	List<Goal> currentGoals;
 	// Use this for initialization
 	List<Proposal> newProposals;
@@ -22,6 +23,8 @@ public class NPC : Character {
 		currentProposals = new List<Proposal>();
 		Goal g = (Goal)(new GlSurvival ());
 		addGoal (g);
+		Goal g2 = (Goal)(new GlObserve ());
+		addGoal(g2);
 	}
 	
 	// Update is called once per frame
@@ -45,7 +48,7 @@ public class NPC : Character {
 		if (!newProposals.Contains (p)) {
 			p.mEvent = e;
 			if (rating > -100f) {
-				p.rating = rating;
+				p.setRating(rating);
 			}
 			newProposals.Add (p);
 		}
@@ -53,7 +56,7 @@ public class NPC : Character {
 	void executeValidProposals() {
 		foreach (Proposal p in newProposals) {
 			p.evalMethod (p);
-			if (p.rating > 0f) {
+			if (p.getRating() > 0f) {
 				executeProposalEvent (p);
 			}
 		}
@@ -61,7 +64,7 @@ public class NPC : Character {
 			for (int i= currentProposals.Count - 1; i >= 0; i --) {
 				Proposal p = currentProposals [i];
 				p.evalMethod (p);
-				if (p.rating <= 0f) {
+				if (p.getRating() <= 0f) {
 					currentProposals.RemoveAt (i);
 				}
 			}
@@ -83,6 +86,7 @@ public class NPC : Character {
 		if (!currentGoals.Contains (g)) {
 			g.mChar = this;
 			currentGoals.Add (g);
+			goalNames.Add (g.GetType ().ToString ());
 		}
 	}
 	public void removeGoal(Goal g) {
@@ -94,6 +98,7 @@ public class NPC : Character {
 			}
 			g.mChar = null;
 			currentGoals.Remove (g);
+			goalNames.Remove (g.GetType ().ToString ());
 		}
 	}
 	public override void onSight(Character otherChar) {
@@ -101,11 +106,14 @@ public class NPC : Character {
 		se.targetChar = otherChar;
 		respondToEvent (se);
 	}
-	public override void outOfSight(Character otherChar) {
-		SightEvent se = new SightEvent ();
-		se.targetChar = otherChar;
-		se.onSight = false;
-		respondToEvent (se);
+	public override void outOfSight(Character otherChar,bool full) {
+		if (full) {
+		} else {
+			SightEvent se = new SightEvent ();
+			se.targetChar = otherChar;
+			se.onSight = false;
+			respondToEvent (se);
+		}
 	}
 
 	public void onHurtBy(Character otherChar) {
@@ -130,6 +138,9 @@ public class NPC : Character {
 	}
 	public override void acceptDialogue(Character c,DialogueSequence d) {
 
+	}
+	public override void setTargetPoint(Vector3 targetPoint, float proximity) {
+		GetComponent<NPCMovement> ().setTargetPoint (targetPoint, proximity);
 	}
 	public override DialogueSequence chooseDialogueOption(List<DialogueSequence> dList) {
 		if (dList.Count > 0) {

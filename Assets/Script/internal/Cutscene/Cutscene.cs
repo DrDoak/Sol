@@ -36,21 +36,21 @@ public class Cutscene : MonoBehaviour {
 	}
 
 	public void lockCharacter(string charName) {
-		Debug.Log ("Attempting to lock character: " + charName);
+		//Debug.Log ("Attempting to lock character: " + charName);
 		Character c = cm.findChar (charName);
 		c.setAutonomy (false);
 		lockedCharacters.Add (c);
 	}
 	public void lockCharacter(Character searchC) { 
-		Debug.Log ("Attempting to lock character: " + searchC.name);
+		//Debug.Log ("Attempting to lock character: " + searchC.name);
 		Character c = cm.findChar(searchC);
 		c.setAutonomy (false);
 		lockedCharacters.Add (c);
-		Debug.Log ("Done with lock");
+		//Debug.Log ("Done with lock");
 	}
 	public void concludeCutscene () {
 		foreach (Character c in lockedCharacters) {
-			Debug.Log ("unlocking char:" + c.name);
+			//Debug.Log ("unlocking char:" + c.name);
 			c.setAutonomy (true);
 		}
 		gm.concludeCutscene (this);
@@ -66,13 +66,13 @@ public class Cutscene : MonoBehaviour {
 		eventList.Sort((p1,p2)=>p1.order.CompareTo(p2.order));
 	}
 	public void startCutscene() {
-		Debug.Log ("Starting CS. CPs:");
+		//Debug.Log ("Starting CS. CPs:");
 		lockedCharacters = new List<Character> ();
 		foreach (CutscenePiece cp in eventList) {
 			cp.parent = this;
 			cp.gm = gm;
 			cp.cm = cm;
-			Debug.Log ("LOCKING:" + cp.targetCharName);
+			//Debug.Log ("LOCKING:" + cp.targetCharName);
 			if (cp.targetCharName != "notSet") {
 				lockCharacter (cp.targetCharName);
 			}
@@ -81,7 +81,8 @@ public class Cutscene : MonoBehaviour {
 		currentEvent.onEventStart ();
 	}
 	public void progressEvent() {
-		Debug.Log ("Progressing to next cutscene");
+		//Debug.Log ("Progressing to next cutscene");
+		currentEvent.onComplete ();
 		eventList.Remove (currentEvent);
 		if (eventList.Count > 0) {
 			currentEvent = eventList [0];

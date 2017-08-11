@@ -20,7 +20,6 @@ public class CutscenePiece : MonoBehaviour{
 	}
 	public virtual void activeTick(float dt) {
 	}
-	public void completeEvent() {
-		parent.progressEvent ();
+	public virtual void onComplete() {
 	}
 }

@@ -46,7 +46,7 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 	void initRoom(Scene scene, LoadSceneMode mode) {
-		Debug.Log ("initRoom from game. Room:" + SceneManager.GetActiveScene ().name);
+//		Debug.Log ("initRoom from game. Room:" + SceneManager.GetActiveScene ().name);
 		GameObject[] obj = GameObject.FindGameObjectsWithTag ("jumpThru");
 
 		foreach (GameObject go in obj) {
@@ -66,7 +66,7 @@ public class GameManager : MonoBehaviour {
 		mSaves.onRoomLoad (curRoomName);
 		curPlayer = FindObjectOfType<Player> ().gameObject;
 		cameraInit ();
-		Debug.Log ("Done with init room");
+//		Debug.Log ("Done with init room");
 	}
 	void cameraInit() {
 		GameObject camGO = FindObjectOfType<Camera> ().gameObject;

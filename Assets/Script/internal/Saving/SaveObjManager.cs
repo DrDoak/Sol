@@ -28,7 +28,7 @@ public class SaveObjManager : Editor {
 		return ids;
 	}
 	public void onRoomLoad(string roomName) {
-		Debug.Log ("________________ON LOAD ROOM!: " + roomName);
+	//	Debug.Log ("________________ON LOAD ROOM!: " + roomName);
 		//curRoomInfo = getRoom(roomName);
 		curRoom = roomName;
 		roomChangers = GameObject.FindObjectsOfType<RoomChanger> ();

@@ -5,7 +5,7 @@ using UnityEngine;
 [RequireComponent (typeof (Movement))]
 public class NPCMovement : MonoBehaviour {
 
-	public Player followObj;
+	public Character followObj;
 	public float bottomOfTheWorld = -10.0f;
 	Movement movement;
 	float gravity;
@@ -66,7 +66,7 @@ public class NPCMovement : MonoBehaviour {
 			movement.addSelfForce (new Vector2 (0f, jumpVelocity), 0f);
 		}
 		movement.Move (velocity, input);
-		anim.SetBool ("grounded", movement.onGround);
+		//anim.SetBool ("grounded", movement.onGround);
 		anim.SetBool ("tryingToMove", false);
 		if (inputX != 0.0f) {
 			anim.SetBool ("tryingToMove", true);
@@ -98,15 +98,17 @@ public class NPCMovement : MonoBehaviour {
 		targetSet = true;
 	}
 
-	void setTarget(Player target) {
+	void setTarget(Character target) {
 		targetObj = true;
 		targetSet = true;
 		followObj = target;
+		Debug.Log ("new target: " + target.name);
 	}
 	public void endTarget() {
 		targetSet = false;
 		targetObj = false;
 		followObj = null;
+		anim.SetBool ("tryingToMove", false);
 		minDistance = 0.2f;
 	}
 }

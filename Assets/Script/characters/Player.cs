@@ -207,7 +207,7 @@ public class Player : MonoBehaviour {
 		if (!attackable.alive) {
 			Reset ();
 		}
-		anim.SetBool ("grounded", movement.onGround);
+		//anim.SetBool ("grounded", movement.onGround);
 		anim.SetBool ("tryingToMove", false);
 		if (inputX != 0.0f) {
 			anim.SetBool ("tryingToMove", true);
@@ -242,7 +242,7 @@ public class Player : MonoBehaviour {
 			movement.addSelfForce (new Vector2 (0f, jumpVelocity), 0f);
 		}
 		movement.Move (velocity, input);
-		anim.SetBool ("grounded", movement.onGround);
+
 		anim.SetBool ("tryingToMove", false);
 		if (inputX != 0.0f) {
 			anim.SetBool ("tryingToMove", true);

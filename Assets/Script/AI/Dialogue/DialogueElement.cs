@@ -6,4 +6,5 @@ public class DialogueElement {
 	public string text;
 	public List<string> options;
 	public bool isOption;
+	public string animation;
 }

@@ -15,16 +15,11 @@ public class CPMoveToPoint : CutscenePiece {
 	void Update () {}
 	public override void onEventStart() {
 		targetNPC = cm.findChar (targetCharName);
-		if (targetNPC.GetComponent<Player> ()) {
-			targetNPC.GetComponent<Player> ().setTargetPoint (targetPoint, proximity);
-		} else {
-			targetNPC.GetComponent<NPCMovement> ().setTargetPoint (targetPoint, proximity);
-		}
+		targetNPC.setTargetPoint (targetPoint, proximity);
 	}
 	public override void activeTick(float dt) {
 		Vector3 pos = targetNPC.transform.position;
 		float weightedD = Mathf.Sqrt (Mathf.Pow (targetPoint.x - pos.x, 2) + Mathf.Pow (targetPoint.y - pos.y, 2) * 0.15f);
-		Debug.Log (weightedD);
 		if (weightedD < proximity) {
 			parent.progressEvent ();
 		}

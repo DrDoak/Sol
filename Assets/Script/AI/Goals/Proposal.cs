@@ -2,27 +2,29 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Proposal : MonoBehaviour {
+public class Proposal {
 
 	public delegate void proposedMethod(Proposal p);
 	public NPC mNPC;
 	public Event mEvent;
 	public proposedMethod mMethod;
 	public proposedMethod evalMethod;
-	public float rating;
+	float rating = 0.0f;
 	public bool movement = false;
 	// Use this for initialization
-	void Start () {
-		
+	public void setRating(float f) {
+		rating = f;
 	}
-
+		
+	public float getRating() {
+		return rating;
+	}
 	
 	// Update is called once per frame
-	void Update () {
-		
-	}
+	void Update () {}
 
 	protected void resolve() {
 		mNPC.resolveProposal (this);
 	}
+
 }

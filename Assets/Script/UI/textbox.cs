@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class textbox : MonoBehaviour {
 
 	public TextboxManager mManager;
+	public DialogueSequence masterSequence;
 	GameObject targetedObj;
 	LineRenderer line;
 	bool typing;
@@ -35,10 +36,13 @@ public class textbox : MonoBehaviour {
 	}
 	void OnDestroy() {
 		conclude = true;
-		mManager.removeTextbox (gameObject);
-		if (targetedObj.GetComponent<Character> ()) {
-			targetedObj.GetComponent<Character> ().onTBComplete ();
+		if (masterSequence != null) {
+			masterSequence.parseNextElement ();
 		}
+		mManager.removeTextbox (gameObject);
+		/*if (targetedObj.GetComponent<Character> ()) {
+			targetedObj.GetComponent<Character> ().onTBComplete ();
+		}*/
 	}
 	public void initColor() {
 		GetComponentInChildren<Image> ().color = tC;
@@ -68,24 +72,81 @@ public class textbox : MonoBehaviour {
 						lastCharacter++;
 						char nextChar = fullText.ToCharArray () [lastCharacter - 1];
 						if (nextChar == '`') {
-							string num = "";
+						//	Debug.Log ("Start special section");
+							string actStr = "";
 							lastCharacter++;
 							nextChar = fullText.ToCharArray () [lastCharacter - 1];
-							bool textSpeed = false;
-							if (nextChar == 's') {
+							//Debug.Log (nextChar);
+							string action = "pause";
+							float res;
+							string test = "";
+							test += nextChar;
+							if (float.TryParse (test,out res)) {
+							} else {
+								//Debug.Log (nextChar);
+								if (nextChar == ']') {
+									action = "faceTowards";
+								} else if (nextChar == '[') {
+									//Debug.Log ("Correct Char");
+									action = "faceAway";
+								} else if (nextChar == '>') {
+									action = "walkTowards";
+								} else if (nextChar == '<') {
+									action = "walkAway";
+								} else if (nextChar == '$'){
+									action = "textSpeed";
+								} else {
+									lastCharacter--;
+									action = "animation";
+								}
 								lastCharacter++;
 								nextChar = fullText.ToCharArray () [lastCharacter - 1];
-								textSpeed = true;
 							}
+							bool numFound = false;
+							string num = "";
+							string targetChar = null;
 							while (nextChar != '`') {
-								num += nextChar;
-								lastCharacter++;
-								nextChar = fullText.ToCharArray () [lastCharacter - 1];
+								if (nextChar == ':') {
+									Debug.Log ("targeting: " + actStr);
+									targetChar = actStr;
+									actStr = "";
+									lastCharacter++;
+									nextChar = fullText.ToCharArray () [lastCharacter - 1];
+								}
+								else if ((action == "walkTowards" || action == "walkAway") && nextChar == '-') {
+									numFound = true;
+								} else {
+									if (numFound == true) {
+										num += nextChar;
+									} else {
+										actStr += nextChar;
+									}
+									lastCharacter++;
+									nextChar = fullText.ToCharArray () [lastCharacter - 1];
+								}
+
 							}
-							if (textSpeed) {
-								timeBetweenChar = float.Parse (num);
+							if (action == "walkTowards") {
+								if (num.Length < 1) {
+									masterSequence.walkToChar (targetChar, actStr, 1f);
+								} else {
+									masterSequence.walkToChar (targetChar, actStr, float.Parse(num));
+								}
+							} else if (action == "walkAway") {
+							} else if (action == "faceTowards") {
+								//Debug.Log ("Facing towards");
+								masterSequence.turnTowards (targetChar, actStr, true);
+							} else if (action == "faceAway") {
+								//Debug.Log ("facing away");
+								masterSequence.turnTowards (targetChar, actStr, false);
+							} else if (action == "animation") {
+								if (masterSequence != null) {
+									masterSequence.setAnimation (targetChar, actStr);
+								}
+							} else if (action == "textSpeed") {
+								timeBetweenChar = float.Parse (actStr);
 							} else { 
-								pauseTime = float.Parse (num);
+								pauseTime = float.Parse (actStr);
 							}
 						} else {
 							currentText += nextChar;

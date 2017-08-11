@@ -22,6 +22,7 @@ public class Relationship {
 	public Vector3 lastPosition;
 	public string lastRoom;
 	public string knownFaction;
+	public bool canSee;
 
 	Personality pers;
 	/*

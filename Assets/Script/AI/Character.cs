@@ -18,6 +18,8 @@ public class Character : Interactable {
 	public bool facingLeft = false;
 	public float health = 100.0f;
 	public float healthPerc = 1.0f;
+	public RuntimeAnimatorController animDefault;
+	public RuntimeAnimatorController animCutscene;
 	float sinceLastScan;
 	float scanInterval = 0.5f;
 	float postLineVisibleTime = 3.0f;
@@ -45,7 +47,7 @@ public class Character : Interactable {
 	public Personality pers;
 
 	public void setAutonomy(bool active) {
-		Debug.Log ("Setting autonomy " + gameObject + " bool " + active);
+//		Debug.Log ("Setting autonomy " + gameObject + " bool " + active);
 		autonomy = active;
 		if (GetComponent<NPC> ()) {
 			GetComponent<NPC> ().setAutonomy(active);
@@ -118,6 +120,9 @@ public class Character : Interactable {
 		}
 	}
 	public virtual void initiateDialogueRequest(Character targetChar) {
+		Debug.Log ("dialogue Request initiated");
+		InteractEvent se = new InteractEvent ();
+		respondToEvent (se);
 		//DialogueElement dialogOpt = chooseDialogueOption (getDialogueOptions(targetChar,null));
 		//targetChar.processDialogueRequest (this, dialogOpt);
 	}
@@ -169,6 +174,7 @@ public class Character : Interactable {
 	//Enemy detection
 	void scanForEnemies() {
 		Character[] allChars = FindObjectsOfType<Character> ();
+		float lts = Time.realtimeSinceStartup;
 		foreach (Character c in allChars) {
 			if (c != this  && c.transform.position.x < transform.position.x && movt.facingLeft || 
 				c.transform.position.x > transform.position.x && !movt.facingLeft) {
@@ -187,10 +193,11 @@ public class Character : Interactable {
 					if ( diff < 1.0f) {
 						if (!charInfo.ContainsKey (c)) {
 							Relationship cin = new Relationship ();
-							cin.lastTimeSeen = Time.realtimeSinceStartup;
+							cin.lastTimeSeen = lts;
 							charInfo.Add (c, cin);
 						} else {
-							charInfo [c].lastTimeSeen = Time.realtimeSinceStartup;
+							charInfo [c].lastTimeSeen = lts;
+							charInfo [c].canSee = true;
 						}
 						if (!visibleCharacters.Contains (c)) {
 							onSight (c);
@@ -206,10 +213,14 @@ public class Character : Interactable {
 				Character c = visibleCharacters [i];
 				if (c == null || c.gameObject == null) {
 					visibleCharacters.RemoveAt (i);
-				} else if (Time.realtimeSinceStartup - charInfo [c].lastTimeSeen > postLineVisibleTime) {
+				} else if (lts - charInfo [c].lastTimeSeen > postLineVisibleTime) {
 					c.removeObserver (this);
-					outOfSight (c);
+					outOfSight (c, true);
 					visibleCharacters.RemoveAt (i);
+				} else if (Math.Abs(lts - charInfo [c].lastTimeSeen) > 0.05f 
+						&& charInfo [c].canSee == true){
+					charInfo [c].canSee = false;
+					outOfSight (c, false);
 				}
 			}
 		}
@@ -220,13 +231,22 @@ public class Character : Interactable {
 		SightEvent se = new SightEvent ();
 		respondToEvent (se);
 	}
-	public virtual void outOfSight(Character otherChar) {
-		SightEvent se = new SightEvent ();
-		respondToEvent (se);
+	public virtual void outOfSight(Character otherChar,bool full) {
+		if (full) {
+		} else {
+			SightEvent se = new SightEvent ();
+			se.onSight = false;
+			respondToEvent (se);
+		}
+	}
+	public virtual void setTargetPoint(Vector3 targetPoint, float proximity) {
+		GetComponent<Player> ().setTargetPoint (targetPoint, proximity);
 	}
 	public Relationship getCharInfo(Character c) {
-		Debug.Log (name + " Getting character: " + c.name);
-		if (charInfo.ContainsKey (c)) {
+		if (c == null) {
+			Debug.Log ("Why is the character null?");
+			return null;
+		} else if (charInfo.ContainsKey (c)) {
 			return charInfo [c];
 		} else {
 			return evaluateNewChar (c);

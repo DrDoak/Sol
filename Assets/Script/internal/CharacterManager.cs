@@ -21,13 +21,12 @@ public class CharacterManager : MonoBehaviour {
 	public void animateChar(string name, string animation){
 	}
 	public void setDialogueSequence(string name, DialogueSequence ds) {
-		if (registeredChars.ContainsKey(name)) {
-			//Debug.Log ("found the key for character: " + name);
+		Character c = findChar (name);
+		if (c != null) {
 			registeredChars [name].setDialogueSequence (ds);
 		}
 	}
 	public Character findChar(string targetName) {
-		Debug.Log (registeredChars);
 		foreach (string k in registeredChars.Keys) {
 			if (registeredChars[k].name == targetName) {
 				return registeredChars[k];

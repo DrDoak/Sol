@@ -36,6 +36,7 @@ public class Movement : MonoBehaviour {
 	public float dropThruTime = 0.0f;
 	Vector2 spawnPos;
 	bool resetPos = false;
+	Animator anim;
 
 	void Start() {
 		bCollider = GetComponent<BoxCollider2D> ();
@@ -44,6 +45,7 @@ public class Movement : MonoBehaviour {
 		canMove = true;
 		setFacingLeft (facingLeft);
 		doSpawnStuff ();
+		anim = GetComponent<Animator> ();
 	}
 	void doSpawnStuff() {
 		if (resetPos) {
@@ -72,6 +74,7 @@ public class Movement : MonoBehaviour {
 	}
 
 	void Update() {
+		anim.SetBool ("grounded", onGround);
 	}
 
 	void FixedUpdate() {

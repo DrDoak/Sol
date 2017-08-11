@@ -18,7 +18,7 @@ public class GlAttackEnemies : Goal {
 
 	}
 	void evaluateAttack(Proposal p) {
-		p.rating = 1.0f;
+		p.setRating(1.0f);
 	}
 	void initiateAttack(Proposal p) {
 		mChar.offense.setTarget (p.mEvent.targetChar);

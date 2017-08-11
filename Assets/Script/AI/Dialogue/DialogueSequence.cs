@@ -8,30 +8,27 @@ public class DialogueSequence  {
 	textbox currentTB;
 	DialogBox currentDB;
 	public Character speaker;
+	public bool finished = false;
 	bool awaitingResponse = false;
 	int currentElement = 0;
 	string unparsed;
 	TextboxManager tm;
 	DialogBox.optionResponse responseFunction;
+	List<Character> modifiedAnims;
+
 	// Use this for initialization
 	public DialogueSequence () {
 		tm = MonoBehaviour.FindObjectOfType<TextboxManager> ();
+		modifiedAnims = new List<Character> ();
 		elements = new List<DialogueElement> ();
 		responseFunction = respondToOption;
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		if (!awaitingResponse) {
-			if (currentTB == null) {
-				Debug.Log ("tb destroyed moving to next element");
-				parseNextElement ();
-			}
-		}
-	}
 
+	public void startSequence() {
+		parseNextElement ();
+	}
 	public void parseNextElement() {
-		Debug.Log ("Parsing next element");
+//		Debug.Log ("Parsing next element");
 		if (currentElement >= elements.Count) {
 			endDialogue ();
 		} else {
@@ -43,19 +40,92 @@ public class DialogueSequence  {
 			} else {
 				awaitingResponse = false;
 				currentTB = tm.addTextbox(ne.text,speaker.gameObject,true);
+				currentTB.masterSequence = this;
 			}
+			setAnimation (ne.animation);
 			currentElement += 1;
 		}
 	}
-	public void parseSequence(string s) {
+
+	//-----------Setting animation -------------
+	public void setAnimation(string animateChar, string animation) {
+		if (animateChar == null) {
+			setAnimation (animation);
+		} else {
+			setAnimation (GameObject.FindObjectOfType<CharacterManager> ().findChar (animateChar), animation);
+		}
 	}
+	public void setAnimation(string animation) {
+		setAnimation (speaker, animation);
+	}
+	public void setAnimation(Character c, string animation) {
+		if (animation != null && c.animCutscene != null) {
+			Debug.Log ("setting animation for " + c.name + " to " + animation);
+			if (!modifiedAnims.Contains(c)) {
+				c.GetComponent<Animator> ().runtimeAnimatorController = c.animCutscene;
+				modifiedAnims.Add (c);
+			}
+			if (animation == "none") {
+				c.GetComponent<Animator> ().runtimeAnimatorController = c.animDefault;
+				modifiedAnims.Remove (c);
+			} else {
+				c.GetComponent<Animator> ().Play (animation);
+			}
+		} 
+	}
+	//-------------------------------------------
+	//public void walkToPoint(Vector2 point, float prox) {}
+	public void walkToChar(string animateChar, string name, float prox) {
+		if (animateChar == null) {
+			walkToChar (speaker,name,prox);
+		} else {
+			walkToChar (GameObject.FindObjectOfType<CharacterManager> ().findChar (animateChar), name,prox);
+		}
+	}
+	public void walkToChar(Character c, string name, float prox) {
+		Character talkTarget = GameObject.FindObjectOfType<CharacterManager> ().findChar (name);
+		if (talkTarget != null) {
+			c.setTargetPoint (talkTarget.transform.position, prox);
+		}
+	}
+
+	//-----------Turning towards-------------
+	public void turnTowards(string turningPerson,string name, bool towards) {
+		if (turningPerson == null) {
+			turnTowards (name, towards);
+		} else {
+			turnTowards (GameObject.FindObjectOfType<CharacterManager> ().findChar (name), name, towards);
+		}
+	}
+	public void turnTowards(string name, bool towards) {
+		turnTowards (speaker, name, towards);
+	}
+	public void turnTowards(Character c, string name, bool towards) {
+		Character talkTarget = GameObject.FindObjectOfType<CharacterManager> ().findChar (name);
+		Debug.Log ("TUrning: " + c.name + " to " + name + " with: " + towards);
+		if (talkTarget != null) {
+			if (talkTarget.transform.position.x > c.transform.position.x) {
+				c.GetComponent<Movement> ().setFacingLeft (!towards);
+			} else {
+				c.GetComponent<Movement> ().setFacingLeft (towards);
+			}
+		}
+	}
+	//---------------------------------------
+
+	public void parseSequence(string s) {}
 	public void addTextbox(string s) {
 		DialogueElement ne = new DialogueElement ();
 		ne.text = s;
 		elements.Add (ne);
 	}
-	public void addDialogueOptions(List<string> options) {
+	public void addTextbox(string s,string animation) {
+		DialogueElement ne = new DialogueElement ();
+		ne.text = s;
+		ne.animation = animation;
+		elements.Add (ne);
 	}
+	public void addDialogueOptions(List<string> options) {}
 
 	public void goToElement(int i) {
 		currentElement = i;
@@ -73,9 +143,12 @@ public class DialogueSequence  {
 	}
 
 	public void endDialogue() {
+		foreach(Character c in modifiedAnims){
+			c.GetComponent<Animator> ().runtimeAnimatorController = c.animDefault;
+		}
+		finished = true;
 		Debug.Log ("Ending dialogue");
 	}
-	void runEvent() {
-		
-	}
+
+	void runEvent() {}
 }

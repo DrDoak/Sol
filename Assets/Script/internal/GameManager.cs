@@ -13,11 +13,13 @@ public class GameManager : MonoBehaviour {
 	GameObject curPlayer;
 	CameraFollow cf;
 	bool foundPlayer;
+	public bool debug = false;
 
 	public GameObject audio;
 	public float introTime;
 
 	public SaveObjManager mSaves;
+	public StatusMenuManager smm;
 	string curRoomName;
 	bool toInit = false;
 	List<string> registeredPermItems;
@@ -36,6 +38,7 @@ public class GameManager : MonoBehaviour {
 		SceneManager.sceneLoaded += initRoom;
 	}
 	void Start() {
+		smm = GetComponent<StatusMenuManager> ();
 		//initRoom (null,null);
 	}
 
@@ -105,13 +108,25 @@ public class GameManager : MonoBehaviour {
 		
 	// Update is called once per frame
 	void Update () {
-		if (Input.GetKeyDown(KeyCode.Escape)) {
+		/*if (Input.GetKeyDown(KeyCode.Escape)) {
 			Debug.Log (SceneManager.GetActiveScene ().name);
 			//SceneManager.LoadScene ("MainMenu", LoadSceneMode.Single);
+		}*/
+		if (Input.GetButtonDown("Debug")) {
+			setDebug (!debug);
 		}
 		foreach (Cutscene c in currentCutscenes) {
 			c.cutsceneUpdate (Time.deltaTime);
 		}
+	}
+
+	public void setDebug(bool debugActive) {
+		Debug.Log ("Switching debug mode to: " +debug);
+		debug = debugActive;
+		smm.setDebug (debug);
+	}
+	public void startMenu() {
+		smm.startMenu ();
 	}
 
 	public void moveItem(GameObject gm,string newRoom, Vector3 newPos) {

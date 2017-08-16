@@ -112,6 +112,9 @@ public class Player : MonoBehaviour {
 			}
 			moveToPoint (targetPoint);
 		}else if (movement.canMove && autonomy) {
+			if (Input.GetButtonDown("Menu")) {
+				Debug.Log ("opening up menu");
+			}
 			inputY = Input.GetAxis ("Vertical");
 
 			/*if (Input.GetKeyDown (downKey)) {

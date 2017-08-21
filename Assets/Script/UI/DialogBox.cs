@@ -24,6 +24,7 @@ public class DialogBox: MonoBehaviour {
 	int currentSelection;
 	public int maxSelections;
 	bool optionsDisplayed = false;
+	bool toSetColor = false;
 	List<GameObject> options;
 	public GameObject optionPrefab;
 	Color textColor;
@@ -44,12 +45,19 @@ public class DialogBox: MonoBehaviour {
 		maxSelections = 0;
 		lastY = 0f;
 		initOptions ();
+		mManager = FindObjectOfType<TextboxManager> ();
+		if (toSetColor) {
+			mSetColor (textColor);
+		}
 	}
 	void OnDestroy() {
 		mManager.removeTextbox (gameObject);
 	}
-
 	public void setColor(Color tC) {
+		toSetColor = true;
+		textColor = tC;
+	}
+	void mSetColor(Color tC) {
 		GetComponentInChildren<Image> ().color = tC;
 		textColor = new Color(1.0f - tC.r,1.0f - tC.g, 1.0f - tC.b,tC.a + 0.5f);
 		GetComponentInChildren<Text> ().color = textColor;
@@ -150,8 +158,8 @@ public class DialogBox: MonoBehaviour {
 			RectTransform rt = newTextOption.GetComponent<RectTransform> ();
 			rt.sizeDelta = sizeDelta;
 			Vector3 pos = mText.rectTransform.position;
-			pos.x += 10;
-			pos.y -=  10 + (maxSelections * sizeDelta.y);
+			pos.x -= 180;
+			pos.y -=  50 + (maxSelections * sizeDelta.y);
 			rt.position = pos;
 			newTextOption.GetComponent<Text> ().text = s;
 			newTextOption.GetComponent<Text> ().color = textColor;

@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour {
 	bool foundPlayer;
 	public bool debug = false;
 
-	public GameObject audio;
+	new public GameObject audio;
 	public float introTime;
 
 	public SaveObjManager mSaves;
@@ -125,8 +125,8 @@ public class GameManager : MonoBehaviour {
 		debug = debugActive;
 		smm.setDebug (debug);
 	}
-	public void startMenu() {
-		smm.startMenu ();
+	public void toggleMenu() {
+		smm.toggleMenu ();
 	}
 
 	public void moveItem(GameObject gm,string newRoom, Vector3 newPos) {

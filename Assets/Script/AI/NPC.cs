@@ -4,6 +4,7 @@ using UnityEngine;
 
 [RequireComponent (typeof (OffenseAI))]
 [RequireComponent (typeof (NPCMovement))]
+[RequireComponent (typeof (DialogueParser))]
 public class NPC : Character {
 
 	public List<string> goalNames;
@@ -25,16 +26,18 @@ public class NPC : Character {
 		addGoal (g);
 		Goal g2 = (Goal)(new GlObserve ());
 		addGoal(g2);
+		Goal g3 = (Goal)(new GlEtiquette ());
+		addGoal(g3);
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		base.updateScan ();
+		base.mUpdate ();
 		if (autonomy && newProposals.Count > 0) {
 			executeValidProposals ();
 		}
 	}
-	public void setAutonomy(bool au) {
+	public override void setAutonomy(bool au) {
 		autonomy = au;
 		if (au) {
 		} else {
@@ -122,27 +125,25 @@ public class NPC : Character {
 	public void onHit(Character otherChar) {
 	}
 	public override void respondToEvent(Event e) {
-//		Debug.Log ("Responding to Event: " + e.eventType);
+	//	Debug.Log ("Responding to Event: " + e.eventType);
 		foreach (Goal g in currentGoals) {
 			g.respondToEvent (e);
 		}
 	}
 	//Dialogue Request:
-	public void setDialogueSequence(DialogueSequence ds, bool oneTime) {
+	/*public void setDialogueUnit(DialogueUnit ds, bool oneTime) {
 		
-	}
-	public override void processDialogueRequest(Character c,DialogueSequence d) {
+	}*/
+	public override void processDialogueRequest(Character c,DialogueUnit d) {
 		if (!GetComponent<OffenseAI> () || GetComponent<OffenseAI> ().currentTarget != c) {
-			c.acceptDialogue (this,d);
+			//c.acceptDialogue (this,d);
 		}
 	}
-	public override void acceptDialogue(Character c,DialogueSequence d) {
-
-	}
+	public override void acceptDialogue(Character c,DialogueUnit d) {	}
 	public override void setTargetPoint(Vector3 targetPoint, float proximity) {
 		GetComponent<NPCMovement> ().setTargetPoint (targetPoint, proximity);
 	}
-	public override DialogueSequence chooseDialogueOption(List<DialogueSequence> dList) {
+	public override DialogueSubunit chooseDialogueOption(List<DialogueSubunit> dList) {
 		if (dList.Count > 0) {
 			return dList [0];
 		} else {

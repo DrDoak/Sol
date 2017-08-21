@@ -11,6 +11,10 @@ public class Proposal {
 	public proposedMethod evalMethod;
 	float rating = 0.0f;
 	public bool movement = false;
+
+	public Proposal() {
+		evalMethod = genericEvaluate;
+	}
 	// Use this for initialization
 	public void setRating(float f) {
 		rating = f;
@@ -26,5 +30,6 @@ public class Proposal {
 	protected void resolve() {
 		mNPC.resolveProposal (this);
 	}
+	void genericEvaluate(Proposal p) {}
 
 }

@@ -9,10 +9,10 @@ public class GlObserve : Goal{
 	public GlObserve() {
 		turnProp = new Proposal ();
 		turnProp.mMethod = turn;
-		turnProp.evalMethod = evaluateTurn;
+		//turnProp.evalMethod = evaluateTurn;
 	}
 
-	void evaluateTurn(Proposal p) {}
+	//void evaluateTurn(Proposal p) {}
 	void turn(Proposal p) {
 		if (p.mEvent.targetChar.transform.position.x > mChar.transform.position.x) {
 			mChar.GetComponent<Movement> ().setFacingLeft (false);

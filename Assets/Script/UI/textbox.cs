@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class textbox : MonoBehaviour {
 
 	public TextboxManager mManager;
-	public DialogueSequence masterSequence;
+	public DialogueUnit masterSequence;
 	GameObject targetedObj;
 	LineRenderer line;
 	bool typing;

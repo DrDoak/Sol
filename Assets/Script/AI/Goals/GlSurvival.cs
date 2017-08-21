@@ -88,7 +88,8 @@ public class GlSurvival: Goal {
 		// natural human nature to avoid fighting
 		favorAggressor += (0.2f - p.temperament * 0.2f);
 
-		float dist = Vector3.Distance (e.targetChar.transform.position, mChar.transform.position);
+		//Distance currently ungauged maybe used later?
+		//float dist = Vector3.Distance (e.targetChar.transform.position, mChar.transform.position);
 
 		mChar.addProposal (initAttackProp, e,-favorAggressor);
 	}

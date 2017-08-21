@@ -7,15 +7,18 @@ public class StatusMenuManager : MonoBehaviour {
 	bool debug = false;
 	GameObject menuPrefab;
 	Dictionary<string,bool> activeTabs;
+	bool menuOpen = false;
+	public StatusTab currentTab;
 	// Use this for initialization
 	void Start () {
 		gm = FindObjectOfType<GameManager> ();
-
+		menuPrefab = GameObject.Find ("MenuTabs");
+		menuPrefab.SetActive (false);
+		currentTab = GameObject.Find ("RelationsTab").GetComponent<StatusTab> ();
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		
 	}
 	public void setDebug(bool debugActive) {
 		Debug.Log ("Switching debug mode to: " +debug);
@@ -29,7 +32,13 @@ public class StatusMenuManager : MonoBehaviour {
 		return activeTabs [key];
 	}
 
-	public void startMenu() {
-		Debug.Log ("starting menu display");
+	public void toggleMenu() {
+		Debug.Log ("toggle menu display");
+		Debug.Log (menuPrefab);
+		menuPrefab.SetActive (!menuOpen);
+		if (currentTab != null) {
+			currentTab.OnPointerClick ();
+		}
+		menuOpen = !menuOpen;
 	}
 }

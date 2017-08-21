@@ -26,7 +26,9 @@ public class Goal {
 			}
 		} else if (e.eventType == "interact") {
 			Relationship ci = mChar.getCharInfo (e.targetChar);
-			if (e.targetChar.name == mChar.name) { 
+			InteractEvent ie = (InteractEvent)e;
+		//	Debug.Log ("I am: " + mChar + " he is: " + ie.listenerChar);
+			if (ie.isCharInteraction && ie.listenerChar == mChar) { 
 				interactEvent (e, ci,mChar.pers);
 			} else {
 				sawInteractEvent (e, ci,mChar.pers);

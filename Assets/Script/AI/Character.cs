@@ -7,38 +7,32 @@ using UnityEngine;
 [RequireComponent (typeof (Movement))]
 [RequireComponent (typeof (Fighter))]
 [RequireComponent (typeof (Attackable))]
+[RequireComponent (typeof (DialogueParser))]
 public class Character : Interactable {
-	public CharData data = new CharData();
-
-	public bool aggression = true;
-	public string name = "default";
+	//Basic references
+	new public string name = "default";
 	public float detectionRange = 15.0f;
-	public float absoluteDetection = 1.0f;
 	public string faction = "noFaction";
 	public bool facingLeft = false;
 	public float health = 100.0f;
 	public float healthPerc = 1.0f;
-	public RuntimeAnimatorController animDefault;
-	public RuntimeAnimatorController animCutscene;
-	float sinceLastScan;
-	float scanInterval = 0.5f;
-	float postLineVisibleTime = 3.0f;
-	TextboxManager tm;
 	Movement movt;
-	List<Character> visibleCharacters = new List<Character>();
-	List<Character> observers = new List<Character>();
-	Dictionary<Character,Relationship> charInfo = new Dictionary<Character,Relationship> ();
-	bool awaitingDialogue = false;
-	bool choosingDialogue = false;
-	DialogueSequence presetDS;
-	bool isPresetDS;
-	GameObject dBox;
+	DialogueParser parser;
+
+	//Saving
 	public bool recreated = false;
 	bool registryChecked = false;
 
 	bool autonomy = false;
 
-	float interactRange = 0.9f;
+	float interactRange = 2.0f;
+	//Dialogue 
+	DialogueUnit presetDS;
+	bool isPresetDS;
+	bool choosingDialogue = false;
+	TextboxManager tm;
+	public RuntimeAnimatorController animDefault;
+	public RuntimeAnimatorController animCutscene;
 
 	//Skills:
 	public float perception = 0.0f;
@@ -46,7 +40,18 @@ public class Character : Interactable {
 	public float logic = 0.0f;
 	public Personality pers;
 
-	public void setAutonomy(bool active) {
+	//Memory:
+	public CharData data = new CharData();
+	Dictionary<string,Fact> knowledge = new Dictionary<string,Fact>();
+	List<Character> visibleCharacters = new List<Character>();
+	List<Character> observers = new List<Character>();
+	float sinceLastScan;
+	float scanInterval = 0.5f;
+	float postLineVisibleTime = 3.0f;
+	Dictionary<Character,Relationship> charInfo = new Dictionary<Character,Relationship> ();
+
+
+	public virtual void setAutonomy(bool active) {
 //		Debug.Log ("Setting autonomy " + gameObject + " bool " + active);
 		autonomy = active;
 		if (GetComponent<NPC> ()) {
@@ -63,6 +68,8 @@ public class Character : Interactable {
 //		Debug.Log ("init from character");
 		movt = GetComponent<Movement> ();
 		tm = FindObjectOfType<TextboxManager> ();
+
+		parser = GetComponent<DialogueParser> ();
 		sinceLastScan = UnityEngine.Random.Range (0.0f, scanInterval);
 		//charInfo = new Dictionary<Character,CharacterInfo> ();
 		//visibleCharacters 
@@ -86,30 +93,30 @@ public class Character : Interactable {
 		if (!registryChecked) {
 			registryCheck ();
 		}
-		updateScan ();
-		if (choosingDialogue) {
-		}
+		mUpdate ();
 	}
 	//Dialogue and interaction
-	public override void onInteract(Character interactor) {
-		if (isPresetDS) {
-			presetDS.initiateDialogue ();
-		} else {
-			interactor.initiateDialogueRequest (this);
-		}
-	}
+	public override void onInteract(Character interactor) { }
 	public void attemptInteraction(Interactable i) {
 		float cDist = Vector3.Distance (i.transform.position, transform.position);
+		//Debug.Log ("actual Dist: " + cDist + " :quota: " + interactRange + " true; " + (cDist < interactRange));
 		if (cDist < interactRange) {
 			Debug.Log ("Attempting Interaction");
 			InteractEvent ie = new InteractEvent ();
+			ie.targetChar = this;
+			if (i.GetComponent<Character> ()) {
+				ie.isCharInteraction = true;
+				ie.listenerChar = i.GetComponent<Character> ();
+			} else {
+				ie.targetedObj = i;
+			}
 			broadcastToObservers (ie);
 			i.onInteract (this);
 		}
 	}
 
 	//Dialogue conditions
-	public void setDialogueSequence(DialogueSequence ds) {
+	public void setDialogueUnit(DialogueUnit ds) {
 		isPresetDS = true;
 		ds.speaker = this;
 		presetDS = ds;
@@ -123,28 +130,44 @@ public class Character : Interactable {
 		Debug.Log ("dialogue Request initiated");
 		InteractEvent se = new InteractEvent ();
 		respondToEvent (se);
-		//DialogueElement dialogOpt = chooseDialogueOption (getDialogueOptions(targetChar,null));
-		//targetChar.processDialogueRequest (this, dialogOpt);
 	}
-	public virtual List<DialogueElement> getDialogueOptions(Character otherChar, DialogueElement prevDialogue) {
-		List<DialogueElement> dList = new List<DialogueElement> ();
-		return dList;
+	public virtual List<string> getDialogueOptions(Character otherChar) {
+		List<string> options = new List<string> (3);
+		options.Add ("Gossip");
+		options.Add ("Ask About");
+		options.Add ("Leave");
+		options.Add ("Something else");
+		return options;
 	}
-	public virtual DialogueSequence chooseDialogueOption(List<DialogueSequence> dList) {
+	public virtual DialogBox.optionResponse getDialogueFunction(Character otherChar) {
+		DialogBox.optionResponse e = responseFunc;
+		return e;
+	}
+	void responseFunc(int i) {
+		if (i == 0) {
+			Debug.Log ("Gossip gossip gossip");
+		} else if (i == 1) {
+			Debug.Log ("What? is there something you want to know?");
+		} else {
+			Debug.Log ("Nothing worth talking about");
+		}
+	}
+	public virtual DialogueSubunit chooseDialogueOption(List<DialogueSubunit> dList) {
 		choosingDialogue = true;
 		return null;
 	}
-	public virtual void processDialogueRequest(Character c,DialogueSequence d) {}
-	public virtual void acceptDialogue(Character c,DialogueSequence d) {}
+	public virtual void processDialogueRequest(Character c,DialogueUnit d) {}
+	public virtual void acceptDialogue(Character c,DialogueUnit d) {}
 
 	public void playerInteraction() {
 		Interactable[] allIter = FindObjectsOfType<Interactable> ();
 		float maxPriority = 0f;
 		Interactable interObj = null;
 		foreach (Interactable c in allIter) {
-			if (c != this  && c.transform.position.x < transform.position.x && movt.facingLeft || 
-				c.transform.position.x > transform.position.x && !movt.facingLeft) {
+			if (c != this  && (c.transform.position.x < transform.position.x && movt.facingLeft || 
+				c.transform.position.x > transform.position.x && !movt.facingLeft)) {
 				float cDist = Vector3.Distance (c.transform.position, transform.position);
+				//Debug.Log ("actual Dist: " + cDist + " :quota: " + interactRange + " true: " + (cDist < interactRange));
 				if (cDist < interactRange) {
 					float testPriority = c.interactionPriority;
 					if ((c.transform.position.x < transform.position.x && movt.facingLeft) ||
@@ -159,11 +182,12 @@ public class Character : Interactable {
 				}
 			}
 		}
+		//Debug.Log ("priority: " + maxPriority);
 		if (maxPriority > 0f) {
 			attemptInteraction (interObj);
 		}
 	}
-	protected void updateScan() {
+	protected void mUpdate() {
 		if (sinceLastScan > scanInterval) {
 			scanForEnemies ();
 		}
@@ -279,8 +303,15 @@ public class Character : Interactable {
 			c.removeObserver (this);	
 		}
 	}
-	protected void say(string text) {
-		tm.addTextbox (text, gameObject, true);
+//Speech
+	public void say(string text) {
+		say (text, "none");
+	}
+	public void say(string text,string talkTo) {
+		parser.say(text,talkTo);
+	}
+	public void endDialogue() {
+		parser.endDialogue ();
 	}
 //-------------Saving:--------------------//
 	public void StoreData() {
@@ -323,6 +354,10 @@ public class Character : Interactable {
 		SaveObjManager.OnBeforeSave -= StoreData;
 		SaveObjManager.OnBeforeSave -= ApplyData;
 	}*/
+//-----------Knowledge------------------
+	public void addFact(Fact k) {
+		knowledge.Add (k.factID, k);
+	}
 }
 
 

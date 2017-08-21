@@ -32,7 +32,10 @@ public class TextboxManager : MonoBehaviour {
 		GameObject newTextbox = Instantiate (textboxPrefab,newPos,Quaternion.identity);
 		textbox tb = newTextbox.GetComponent<textbox> ();
 		if (!type) {
+			Debug.Log (text);
+			Debug.Log (newTextbox.GetComponent<disappearing>());
 			newTextbox.GetComponent<disappearing> ().duration = textSpeed * text.Length + timeAfter;
+			newTextbox.GetComponent<disappearing> ().toDisappear = true;
 		}
 
 		tb.setTypeMode (typeText);			
@@ -76,6 +79,7 @@ public class TextboxManager : MonoBehaviour {
 		tb.timeBetweenChar = 0.02f;
 		tb.mManager = this;
 		RectTransform[] transforms = newTextbox.GetComponentsInChildren<RectTransform> ();
+
 		int maxString = text.Length;
 		foreach (string s in options) {
 			maxString = Mathf.Max (maxString, s.Length);
@@ -98,7 +102,11 @@ public class TextboxManager : MonoBehaviour {
 		LineRenderer line = newTextbox.GetComponent<LineRenderer> ();
 		line.SetPosition (0, new Vector3 (newPos.x, newPos.y, 0f));
 		textboxes.Add (newTextbox);
-		tb.setColor (TextboxColor);
+		if (TextboxColor != null) {
+			Debug.Log (tb);
+			Debug.Log (TextboxColor);
+			tb.setColor (TextboxColor);
+		}
 		return tb;
 	}
 

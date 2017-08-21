@@ -113,7 +113,7 @@ public class Player : MonoBehaviour {
 			moveToPoint (targetPoint);
 		}else if (movement.canMove && autonomy) {
 			if (Input.GetButtonDown("Menu")) {
-				Debug.Log ("opening up menu");
+				gameManager.toggleMenu ();
 			}
 			inputY = Input.GetAxis ("Vertical");
 
@@ -174,7 +174,6 @@ public class Player : MonoBehaviour {
 				}
 			}
 			if (Input.GetButtonDown("Interact")) {
-				Debug.Log ("Attempting interaction from player");
 				GetComponent<Character> ().playerInteraction ();
 			}
 

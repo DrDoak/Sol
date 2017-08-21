@@ -6,6 +6,7 @@ using UnityEngine;
 public class Cutscene : MonoBehaviour {
 	GameManager gm;
 	CharacterManager cm;
+	public List<string> lockedCharacterNames;
 
 	List<CutscenePiece> eventList = new List<CutscenePiece>();
 	List<Character> lockedCharacters;
@@ -29,6 +30,9 @@ public class Cutscene : MonoBehaviour {
 		cm = GameObject.FindObjectOfType<CharacterManager> ();
 		if (instantStart) {
 			toStart = true;
+		}
+		foreach (string s in lockedCharacterNames) {
+			lockCharacter (s);
 		}
 	}
 	public virtual void cutsceneUpdate(float dt) {

@@ -203,6 +203,8 @@ public class Fighter : MonoBehaviour {
 			startingNewAttack = true;
 			if (GetComponent<Character> ()) {
 				AttackEvent e = new AttackEvent ();
+				e.targetChar = GetComponent<Character> ();
+				e.attackInfo = currentAttack;
 				GetComponent<Character> ().broadcastToObservers (e);
 			}
 			return true;

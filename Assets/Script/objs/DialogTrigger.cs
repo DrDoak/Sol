@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class DialogTrigger : TextboxTrigger {
 	public List<string> options;
+	List<DialogueOption> mOpts;
 
 	// Use this for initialization
 	void Start () {
@@ -15,6 +16,7 @@ public class DialogTrigger : TextboxTrigger {
 		base.mUpdate ();
 	}
 	protected override void triggerText() {
-		tm.addDialogueOptions (displayText, gameObject, options);
+		Debug.Log ("Why are you using this test function???");
+		//tm.addDialogueOptions (displayText, gameObject, options);
 	}
 }

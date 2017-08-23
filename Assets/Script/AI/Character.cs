@@ -131,27 +131,27 @@ public class Character : Interactable {
 		InteractEvent se = new InteractEvent ();
 		respondToEvent (se);
 	}
-	public virtual List<string> getDialogueOptions(Character otherChar) {
-		List<string> options = new List<string> (3);
-		options.Add ("Gossip");
-		options.Add ("Ask About");
-		options.Add ("Leave");
-		options.Add ("Something else");
+	public virtual List<DialogueOption> getDialogueOptions(Character otherChar) {
+		List<DialogueOption> options = new List<DialogueOption> (3);
+		DialogueOption gossip = new DialogueOption ();
+		gossip.text = "Gossip";
+		gossip.responseFunction = startGossip;
+		options.Add (gossip);
+		DialogueOption askAbout = new DialogueOption ();
+		askAbout.text = "Ask About...";
+		askAbout.responseFunction = startAsk;
+		options.Add (askAbout);
+		DialogueOption leave = new DialogueOption ();
+		leave.text = "Leave";
+		leave.responseFunction = startGossip;
+		//leave.setToReturn();
+		options.Add (leave);
+
 		return options;
 	}
-	public virtual DialogBox.optionResponse getDialogueFunction(Character otherChar) {
-		DialogBox.optionResponse e = responseFunc;
-		return e;
-	}
-	void responseFunc(int i) {
-		if (i == 0) {
-			Debug.Log ("Gossip gossip gossip");
-		} else if (i == 1) {
-			Debug.Log ("What? is there something you want to know?");
-		} else {
-			Debug.Log ("Nothing worth talking about");
-		}
-	}
+	void startGossip(DialogueOption d) {}
+
+	void startAsk(DialogueOption d) {}
 	public virtual DialogueSubunit chooseDialogueOption(List<DialogueSubunit> dList) {
 		choosingDialogue = true;
 		return null;

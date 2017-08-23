@@ -12,6 +12,8 @@ public class CharacterManager : MonoBehaviour {
 	void Awake () {
 		registeredChars = new Dictionary<string,Character> ();
 		fullDatabase = new Dictionary<string,DatabaseEntry> ();
+		FactCSVImporter newCSV = new FactCSVImporter ();
+		newCSV.readFile ("Assets/KB/knowledge.csv");
 	}
 	
 	// Update is called once per frame

@@ -13,8 +13,8 @@ public class DialogueUnit  {
 	int currentElement = 0;
 	string unparsed;
 	TextboxManager tm;
-	DialogBox.optionResponse responseFunction;
 	List<Character> modifiedAnims;
+	DialogueSubunit lastOptionsBox;
 
 	// Use this for initialization
 	public DialogueUnit () {
@@ -23,7 +23,6 @@ public class DialogueUnit  {
 		Debug.Log (tm);
 		modifiedAnims = new List<Character> ();
 		elements = new List<DialogueSubunit> ();
-		responseFunction = respondToOption;
 	}
 
 	public void startSequence() {
@@ -36,7 +35,7 @@ public class DialogueUnit  {
 			DialogueSubunit ne = elements [currentElement];
 			if (ne.isOption) {
 				awaitingResponse = true;
-				currentDB = tm.addDialogueOptions (ne.text,speaker.gameObject,ne.options,responseFunction);
+				currentDB = tm.addDialogueOptions (ne.text,speaker.gameObject,ne.options);
 			} else {
 				awaitingResponse = false;
 				currentTB = tm.addTextbox(ne.text,speaker.gameObject,true);
@@ -125,33 +124,29 @@ public class DialogueUnit  {
 		ne.animation = animation;
 		elements.Add (ne);
 	}
-	public void addDialogueOptions(List<string> options) {
-		addDialogueOptions (options, null, "What will you say?");
+	public void addDialogueOptions(List<DialogueOption> options) {
+		addDialogueOptions (options, "What do you say?");
 	}
-	public void addDialogueOptions(List<string> options,DialogBox.optionResponse func) {
-		addDialogueOptions (options, func, "What will you say?");
+	public void addOption(DialogueOption option) {
+		if (lastOptionsBox == null) {
+			List<DialogueOption> ops = new List<DialogueOption> ();
+			addDialogueOptions (ops);
+		} else {
+			lastOptionsBox.options.Add (option);
+		}
 	}
-	public void addDialogueOptions(List<string> options,DialogBox.optionResponse func,string prompt) {
+	public void addDialogueOptions(List<DialogueOption> options,string mainPrompt) {
 		DialogueSubunit ne = new DialogueSubunit ();
 		ne.options = options;
 		ne.isOption = true;
-		ne.text = prompt;
-		if (func != null) {
-			setOptionResponse (func);
-		}
+		ne.text = mainPrompt;
+		lastOptionsBox = ne;
 		elements.Add (ne);
 	}
 
 	public void goToElement(int i) {
 		currentElement = i;
 	}
-	public void respondToOption(int i) {
-		Debug.Log ("Got response " + i + " but no response function set!!!");
-	}
-	public void setOptionResponse(DialogBox.optionResponse or) {
-		responseFunction = or;
-	}
-
 	public void initiateDialogue() {
 		currentElement = 0;
 		parseNextElement ();

@@ -59,7 +59,6 @@ public class Player : MonoBehaviour {
 	public Player followObj;
 
 	internal void Start()  {
-		//Object.DontDestroyOnLoad (this);
 		anim = GetComponent<Animator> ();
 		movement = GetComponent<Movement> ();
 		attackable = GetComponent<Attackable> ();

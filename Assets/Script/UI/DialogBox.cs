@@ -4,9 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class DialogBox: MonoBehaviour {
-
-	public delegate void optionResponse(int r);
-	public optionResponse responseFunction;
 	public TextboxManager mManager;
 	GameObject targetedObj;
 	LineRenderer line;
@@ -28,7 +25,7 @@ public class DialogBox: MonoBehaviour {
 	List<GameObject> options;
 	public GameObject optionPrefab;
 	Color textColor;
-	List<string> strList;
+	List<DialogueOption> optList;
 	float lastY;
 
 	// Use this for initialization
@@ -111,7 +108,7 @@ public class DialogBox: MonoBehaviour {
 				}
 			} else {
 				if (Input.GetButtonDown ("Submit")) {
-					selectOption (currentSelection);
+					selectOption (optList[currentSelection]);
 				}
 				float inputY = Input.GetAxis ("Vertical");
 
@@ -147,13 +144,13 @@ public class DialogBox: MonoBehaviour {
 	void displayOptions() {
 		optionsDisplayed = true;
 	}
-	public void setOptions(List<string> opt) {
-		strList = opt;
+	public void setOptions(List<DialogueOption> opt) {
+		optList = opt;
 		maxSelections = opt.Count;
 	}
 	void initOptions() {
 		Vector2 sizeDelta = mText.GetComponent<RectTransform> ().sizeDelta;
-		foreach (string s in strList) {
+		foreach (DialogueOption o in optList) {
 			GameObject newTextOption = Instantiate (optionPrefab);
 			RectTransform rt = newTextOption.GetComponent<RectTransform> ();
 			rt.sizeDelta = sizeDelta;
@@ -161,16 +158,16 @@ public class DialogBox: MonoBehaviour {
 			pos.x -= 180;
 			pos.y -=  50 + (maxSelections * sizeDelta.y);
 			rt.position = pos;
-			newTextOption.GetComponent<Text> ().text = s;
+			newTextOption.GetComponent<Text> ().text = o.text;
 			newTextOption.GetComponent<Text> ().color = textColor;
 			newTextOption.GetComponent<Text>().transform.SetParent(GetComponent<Canvas>().transform,false);
 			maxSelections = maxSelections + 1;
 			options.Add (newTextOption);
 		}
 	}
-	public void selectOption(int option) {
-		option = Mathf.Max (0, Mathf.Min (maxSelections, option));
-		responseFunction (option);
+	public void selectOption(DialogueOption option) {
+		//option = Mathf.Max (0, Mathf.Min (maxSelections, option));
+		option.responseFunction(option);
 		Destroy (gameObject);
 	}
 

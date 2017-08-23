@@ -21,10 +21,8 @@ public class GlEtiquette : Goal {
 		Debug.Log ("starting dialogue");
 		DialogueUnit ds = new DialogueUnit ();
 		ds.speaker = p.mEvent.targetChar;
-		ds.addDialogueOptions (mChar.getDialogueOptions (p.mEvent.targetChar),mChar.getDialogueFunction(p.mEvent.targetChar));
+		ds.addDialogueOptions (mChar.getDialogueOptions (p.mEvent.targetChar));
 		p.mEvent.targetChar.processDialogueRequest (mChar,ds);
 		ds.startSequence ();
-		//DialogueSubunit dialogOpt = mChar.chooseDialogueOption (mChar.getDialogueOptions(p.mEvent.targetChar,null));
-		//p.mEvent.targetChar.processDialogueRequest (mChar, dialogOpt);
 	}
 }

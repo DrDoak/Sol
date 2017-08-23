@@ -62,13 +62,8 @@ public class TextboxManager : MonoBehaviour {
 		tb.setColor (TextboxColor);
 		return tb;
 	}
-	public DialogBox addDialogueOptions(string text,GameObject targetObj,List<string> options,DialogBox.optionResponse respFunc) {
-		DialogBox db = addDialogueOptions(text,targetObj,options);
-		db.responseFunction = respFunc;
-		return db;
-	}
-
-	public DialogBox addDialogueOptions(string text,GameObject targetObj,List<string> options) {
+  
+	public DialogBox addDialogueOptions(string text,GameObject targetObj,List<DialogueOption> options) {
 		Vector2 newPos = findPosition (targetObj.transform.position);
 		GameObject newTextbox = Instantiate (dialogueBoxPrefab,newPos,Quaternion.identity);
 		DialogBox tb = newTextbox.GetComponent<DialogBox> ();
@@ -81,8 +76,8 @@ public class TextboxManager : MonoBehaviour {
 		RectTransform[] transforms = newTextbox.GetComponentsInChildren<RectTransform> ();
 
 		int maxString = text.Length;
-		foreach (string s in options) {
-			maxString = Mathf.Max (maxString, s.Length);
+		foreach (DialogueOption d in options) {
+			maxString = Mathf.Max (maxString, d.text.Length);
 		}
 		Vector2 v = new Vector2 ();
 		if (maxString > 50) {

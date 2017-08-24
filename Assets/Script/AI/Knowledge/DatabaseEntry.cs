@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class DatabaseEntry {
-	public string factID;
+	public KNSubject subject;
+	public KNVerb verb;
 	public string category;
 	public List<string> factGroups;
 	public string info;

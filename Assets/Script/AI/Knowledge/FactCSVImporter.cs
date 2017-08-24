@@ -18,33 +18,32 @@ public class FactCSVImporter
 		List<DatabaseEntry> database = createDatabase(csvData);
 		return database;
 	}
-	public List<DatabaseEntry> createDatabase(string csvText) {
+	public List<Dictionary<string,string>> parseBase(string csvText) {
 		string[] lines = csvText.Split("\n"[0]); 
 
-		// finds the max width of row
 		int width = 0; 
 		for (int i = 0; i < lines.Length; i++)
 		{
 			string[] row = regexSplit( lines[i] ); 
 			width = Mathf.Max(width, row.Length); 
 		}
-
+		Dictionary<int,string> header = new Dictionary<string,header>();
+		string[] headerRow = regexSplit();
+		for (int x = 0; x < headerRow.Length; x++ ) {
+			header.Add(x,headerRow[x]);	
+		}
+		
 		// creates new 2D string grid to output to
 		string[,] outputGrid = new string[width + 1, lines.Length + 1]; 
-		List<DatabaseEntry> entList = new List<DatabaseEntry> ();
+		List<Dictionary<string,string>> entList = new List<Dictionary<string,string>()> ();
 		for (int y = 1; y < lines.Length; y++)
 		{
 			string[] row = regexSplit( lines[y] ); 
-			DatabaseEntry newDB = new DatabaseEntry ();
-			newDB.factID = row [0] + "--" + row [1];
-			newDB.category = row [0];
-			newDB.info = row [2];
-			newDB.factGroups = new List<string>();
-			for (int x = 3; x < row.Length; x++) 
-			{
-				newDB.factGroups.Add(row[x]);
+			Dictionary<string,string> entry = new Dictionary<string,string>();
+			for (int x = 0; x < row.Length; x++) {
+				entry.Add(headerRow[x],row[x]);
 			}
-			entList.Add (newDB);
+			entList.Add (entry);
 		}
 		return entList; 
 	}

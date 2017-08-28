@@ -23,7 +23,7 @@ public class Character : Interactable {
 	public bool recreated = false;
 	bool registryChecked = false;
 
-	bool autonomy = false;
+	protected bool autonomy = false;
 
 	float interactRange = 2.0f;
 	//Dialogue 
@@ -193,6 +193,7 @@ public class Character : Interactable {
 		}
 		sinceLastScan += Time.deltaTime;
 	}
+
 	public virtual void respondToEvent(Event e) {}
 
 	//Enemy detection
@@ -356,7 +357,10 @@ public class Character : Interactable {
 	}*/
 //-----------Knowledge------------------
 	public void addFact(Fact k) {
-		knowledge.Add (k.factID, k);
+		knowledge.Add (k.info, k);
+	}
+	public Dictionary<string,Fact> getKnowledge() {
+		return knowledge;
 	}
 }
 

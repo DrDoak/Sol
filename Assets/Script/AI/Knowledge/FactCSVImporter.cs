@@ -3,22 +3,22 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq; 
 
-public class FactCSVImporter 
+public static class FactCSVImporter 
 {
-	public string csvData; 
-	public void readFile(string path)
+	static string csvData; 
+	static public void readFile(string path)
 	{
 		csvData = System.IO.File.ReadAllText (path);
 		string[,] grid = exportFactDatabase(csvData);
 		printDatabase(grid); 
 		Debug.Log("size X: " + (1+ grid.GetUpperBound(0)) + " Y: " + (1 + grid.GetUpperBound(1))); 
 	}
-	public List<DatabaseEntry> importFile(string path) {
+	static public List<Dictionary<string,string>> importFile(string path) {
 		csvData = System.IO.File.ReadAllText (path);
-		List<DatabaseEntry> database = createDatabase(csvData);
+		List<Dictionary<string,string>> database = parseBase(csvData);
 		return database;
 	}
-	public List<Dictionary<string,string>> parseBase(string csvText) {
+	static public List<Dictionary<string,string>> parseBase(string csvText) {
 		string[] lines = csvText.Split("\n"[0]); 
 
 		int width = 0; 
@@ -27,15 +27,15 @@ public class FactCSVImporter
 			string[] row = regexSplit( lines[i] ); 
 			width = Mathf.Max(width, row.Length); 
 		}
-		Dictionary<int,string> header = new Dictionary<string,header>();
-		string[] headerRow = regexSplit();
+		Dictionary<int,string> header = new Dictionary<int,string>();
+		string[] headerRow = regexSplit(lines[0]);
 		for (int x = 0; x < headerRow.Length; x++ ) {
 			header.Add(x,headerRow[x]);	
 		}
 		
 		// creates new 2D string grid to output to
 		string[,] outputGrid = new string[width + 1, lines.Length + 1]; 
-		List<Dictionary<string,string>> entList = new List<Dictionary<string,string>()> ();
+		List<Dictionary<string,string>> entList = new List<Dictionary<string,string>> ();
 		for (int y = 1; y < lines.Length; y++)
 		{
 			string[] row = regexSplit( lines[y] ); 

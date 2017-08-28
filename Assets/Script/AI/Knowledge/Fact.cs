@@ -7,4 +7,11 @@ public class Fact : DatabaseEntry {
 	public string info;
 	float assuration;
 	float support;
+	public List<KNSubject> subjects;
+	public KNVerb verb;
+	public List<KNSubject> directObjects;
+	public Fact() {
+		subjects = new List<KNSubject> ();
+		directObjects = new List<KNSubject> ();
+	}
 }

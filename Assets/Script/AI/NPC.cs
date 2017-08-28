@@ -9,12 +9,12 @@ public class NPC : Character {
 
 	public List<string> goalNames;
 	List<Goal> currentGoals;
+	int lastNumGoals = 0;
 	// Use this for initialization
 	List<Proposal> newProposals;
 	List<Proposal> currentProposals;
 	List<Proposal> currentActions;
 	public OffenseAI offense;
-	public bool autonomy= true;
 
 	void Start () {
 		base.init ();
@@ -35,6 +35,13 @@ public class NPC : Character {
 		base.mUpdate ();
 		if (autonomy && newProposals.Count > 0) {
 			executeValidProposals ();
+		}
+		updateGoalList ();
+	}
+	void updateGoalList() {
+		int len = goalNames.Count;
+		if (len != lastNumGoals) {
+			lastNumGoals = len;
 		}
 	}
 	public override void setAutonomy(bool au) {

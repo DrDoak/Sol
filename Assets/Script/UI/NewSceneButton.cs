@@ -7,16 +7,8 @@ using UnityEngine.EventSystems;
 public class NewSceneButton : MonoBehaviour, IPointerClickHandler {
 
 	public string sceneName;
-
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+	void Start () {}
+	void Update () {}
 
 	public void OnPointerClick(PointerEventData eventData)
 	{

@@ -32,8 +32,9 @@ public class NPC : Character {
 	
 	// Update is called once per frame
 	void Update () {
-		base.mUpdate ();
+		//Debug.Log ("Aut: " + autonomy + " :count: " + newProposals.Count);
 		if (autonomy && newProposals.Count > 0) {
+			Debug.Log ("Executing Valid proposals");
 			executeValidProposals ();
 		}
 		updateGoalList ();
@@ -45,6 +46,7 @@ public class NPC : Character {
 		}
 	}
 	public override void setAutonomy(bool au) {
+		Debug.Log ("Setting autonomy to : " + au);
 		autonomy = au;
 		if (au) {
 		} else {
@@ -66,6 +68,7 @@ public class NPC : Character {
 	void executeValidProposals() {
 		foreach (Proposal p in newProposals) {
 			p.evalMethod (p);
+			Debug.Log ("Rating is: " + p.getRating ());
 			if (p.getRating() > 0f) {
 				executeProposalEvent (p);
 			}
@@ -109,20 +112,6 @@ public class NPC : Character {
 			g.mChar = null;
 			currentGoals.Remove (g);
 			goalNames.Remove (g.GetType ().ToString ());
-		}
-	}
-	public override void onSight(Character otherChar) {
-		SightEvent se = new SightEvent ();
-		se.targetChar = otherChar;
-		respondToEvent (se);
-	}
-	public override void outOfSight(Character otherChar,bool full) {
-		if (full) {
-		} else {
-			SightEvent se = new SightEvent ();
-			se.targetChar = otherChar;
-			se.onSight = false;
-			respondToEvent (se);
 		}
 	}
 

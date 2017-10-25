@@ -9,6 +9,7 @@ public class TextboxManager : MonoBehaviour {
 	List<GameObject> textboxes;
 	public GameObject textboxPrefab;
 	public GameObject dialogueBoxPrefab;
+	public GameObject listPrefab;
 	Camera cam;
 	bool type;
 	Color TextboxColor;
@@ -62,7 +63,17 @@ public class TextboxManager : MonoBehaviour {
 		tb.setColor (TextboxColor);
 		return tb;
 	}
-  
+	public ListSelection addListOptions(string text, GameObject targetObj, List<DialogueOption> options) {
+		GameObject newList = Instantiate (listPrefab);
+		ListSelection nl = newList.GetComponent<ListSelection> ();
+
+		nl.addOptions (options);
+		nl.transform.SetPositionAndRotation (new Vector3 (0f, 0f), Quaternion.identity);
+		nl.transform.SetParent (FindObjectOfType<GameManager> ().gameObject.transform.Find ("UI"), false);
+
+		return nl;
+	}
+
 	public DialogBox addDialogueOptions(string text,GameObject targetObj,List<DialogueOption> options) {
 		Vector2 newPos = findPosition (targetObj.transform.position);
 		GameObject newTextbox = Instantiate (dialogueBoxPrefab,newPos,Quaternion.identity);
@@ -98,8 +109,6 @@ public class TextboxManager : MonoBehaviour {
 		line.SetPosition (0, new Vector3 (newPos.x, newPos.y, 0f));
 		textboxes.Add (newTextbox);
 		if (TextboxColor != null) {
-			Debug.Log (tb);
-			Debug.Log (TextboxColor);
 			tb.setColor (TextboxColor);
 		}
 		return tb;

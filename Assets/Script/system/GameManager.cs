@@ -149,25 +149,25 @@ public class GameManager : MonoBehaviour {
 	public bool checkRegistered(GameObject go) {
 		string id = go.name + "-" + SceneManager.GetActiveScene ().name + go.transform.position.ToString ();
 		Character c = go.GetComponent<Character> ();
-		Debug.Log ("incoming ID: " + c.data.regID);
+		//Debug.Log ("incoming ID: " + c.data.regID);
 		if (c.data.regID != "Not Assigned") {
 			id = c.data.regID;
 		}
-		Debug.Log ("check registered: " + id);
+		//Debug.Log ("check registered: " + id);
 		if (registeredPermItems.Contains(id) ){
 			if (c.recreated) {
-				Debug.Log ("Recreated entity.");
+				//Debug.Log ("Recreated entity.");
 				c.recreated = false;
 				return false;
 			} else {
-				Debug.Log ("already registered, removing");
+				//Debug.Log ("already registered, removing");
 				return true;
 			}
 		}
-		Debug.Log ("new entity. Adding to registry");
+		//Debug.Log ("new entity. Adding to registry");
 		registeredPermItems.Add(id);
 		c.data.regID = id;
-		Debug.Log ("saved ID is: " + c.data.regID);
+		//Debug.Log ("saved ID is: " + c.data.regID);
 		return false;
 	}
 	public void addCutscene(Cutscene c) {

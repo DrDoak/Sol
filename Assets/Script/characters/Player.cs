@@ -159,10 +159,11 @@ public class Player : MonoBehaviour {
 				}
 			}
 			if (Input.GetButtonDown("Super")) {
-				if (attackable.energy >= 100.0f){
+				/*if (attackable.energy >= 100.0f){
 					gameObject.GetComponent<Fighter> ().tryAttack ("super");
 					AudioSource.PlayClipAtPoint (MultiSlash, gameObject.transform.position);
-				}
+				}*/
+				FindObjectOfType<KNManager> ().createList (GetComponent<Character> ());
 			}
 			if (Input.GetButtonDown("Special")) {
 				if (inputY < -0.9f ) {

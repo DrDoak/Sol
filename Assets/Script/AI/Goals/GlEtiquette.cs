@@ -10,19 +10,22 @@ public class GlEtiquette : Goal {
 	}
 
 	public override void interactEvent(Event e,Relationship ci,Personality p) {
+		Debug.Log ("Interact event!!!! from GLEtiquette");
 		if (!ci.openHostile) {
 			float favor = (ci.favorability * ci.relevance);
 			favor *= (p.opennessAllegiance * 2.0f);
 			favor += p.agreeableness + 0.05f;
+			Debug.Log ("OpenAllegience: " + p.opennessAllegiance + " Favor rating: " + favor);
 			mChar.addProposal (answerProp,e, favor);
-		} 
+		}
 	}
 	void startDialogue(Proposal p) {
-		Debug.Log ("starting dialogue");
-		DialogueUnit ds = new DialogueUnit ();
-		ds.speaker = p.mEvent.targetChar;
-		ds.addDialogueOptions (mChar.getDialogueOptions (p.mEvent.targetChar));
-		p.mEvent.targetChar.processDialogueRequest (mChar,ds);
-		ds.startSequence ();
+		Debug.Log ("Starting a dialogue");
+		DialogueUnit du = new DialogueUnit ();
+		du.speaker = p.mEvent.targetChar;
+		du.listener = mChar;
+		du.addDialogueOptions (mChar.getDialogueOptions (p.mEvent.targetChar));
+		p.mEvent.targetChar.processDialogueRequest (mChar,du);
+		du.startSequence ();
 	}
 }

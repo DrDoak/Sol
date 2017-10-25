@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HitConfirmEvent : Event {
-	public HitConfirmEvent() {
+public class EVHitConfirm : Event {
+	public EVHitConfirm() {
 		eventType = "hit";
 	}
 }

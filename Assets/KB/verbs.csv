@@ -1,0 +1,8 @@
+name,actors,receivers
+is,Character,Group;Characterization
+attacked,Character,Character
+likes,Character,Character;Group;Characterization;Place
+dislikes,Character,Character;Group;Characterization;Place
+testVerb,Character,Character;Group;Characterization;Place
+testVerb2,Character,Character;Group;Characterization;Place
+testVerb3,Character,Character;Group;Characterization;Place

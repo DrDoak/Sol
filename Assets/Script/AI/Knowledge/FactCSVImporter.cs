@@ -38,12 +38,14 @@ public static class FactCSVImporter
 		List<Dictionary<string,string>> entList = new List<Dictionary<string,string>> ();
 		for (int y = 1; y < lines.Length; y++)
 		{
-			string[] row = regexSplit( lines[y] ); 
-			Dictionary<string,string> entry = new Dictionary<string,string>();
-			for (int x = 0; x < row.Length; x++) {
-				entry.Add(headerRow[x],row[x]);
+			if (lines [y].Length > 1) {
+				string[] row = regexSplit (lines [y]); 
+				Dictionary<string,string> entry = new Dictionary<string,string> ();
+				for (int x = 0; x < row.Length; x++) {
+					entry.Add (headerRow [x], row [x]);
+				}
+				entList.Add (entry);
 			}
-			entList.Add (entry);
 		}
 		return entList; 
 	}
@@ -73,6 +75,23 @@ public static class FactCSVImporter
 		}
 
 		return outputGrid; 
+	}
+
+	static public List<string> splitStringRow(string row) {
+		string lastWord = "";
+		List<string> strList = new List<string> ();
+		foreach (char lastC in row) {
+			if (lastC == ';') {
+				strList.Add (lastWord);
+				lastWord = "";
+			} else if (lastC != ' ') {
+				lastWord += lastC;
+			}
+		}
+		if (lastWord.Count() > 0) {
+			strList.Add (lastWord);
+		}
+		return strList;
 	}
 
 	static public void printDatabase(string[,] grid)

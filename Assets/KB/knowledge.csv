@@ -1,4 +1,4 @@
-﻿FactCategory,FactID,desc,ReleventGroups
-common,abc,qwerty yuiop,common
-common,eds,aasdfg hjkl;,common
-Richoria,foundingDat,Richoria was founded in the late 1500s,Richorians
+knowledgeGroups,subjects,verb,directObjects,info,category
+common,Sol,testVerb,someObject,this is my info,history
+common,Richoria,testVerb2,someOtherObject,another info,history
+Richorian,Anelie,testVerb3,object3,yet another info piece,history

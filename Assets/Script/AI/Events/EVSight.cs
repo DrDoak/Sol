@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SightEvent : Event {
+public class EVSight : Event {
 	public bool onSight = true;
-	public SightEvent() {
+	public Observable observable;
+	public EVSight() {
 		eventType = "sight";
 	}
 }

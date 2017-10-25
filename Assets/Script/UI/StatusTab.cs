@@ -11,21 +11,18 @@ public class StatusTab : MonoBehaviour{
 	void Start () {
 		smm = FindObjectOfType<StatusMenuManager> ();
 		panelPrefab = gameObject.transform.Find ("pane").gameObject;
-		Debug.Log ("tab start " + panelPrefab);
+		//Debug.Log ("tab start " + panelPrefab);
 	}
 	void Update () {}
 	//-----------------------------
-	public void OnPointerClick()
-	{
+	public void OnPointerClick() {
 		smm.currentTab.close ();
 		//Debug.Log ("on pointer click");
 		panelPrefab.SetActive (true);
 		smm.currentTab = this;
 	}
 
-	public void close() 
-	{
-		
+	public void close() {
 		panelPrefab.SetActive (false);
 	}
 }

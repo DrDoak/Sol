@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Relationship {
+	public Character parentChar;
 	//Relative ability:
 	public float relativeCombat = 0.0f;
 	public float relativeLogic = 0.0f;
@@ -43,5 +44,9 @@ public class Relationship {
 	public float happiness = 0.0f;
 	public float emotion = 0.0f;
 */
+	public float evaluateTrustWorthySource() {
+		float trustVal = 0.0f;
+		return trustVal;
+	}
 
 }

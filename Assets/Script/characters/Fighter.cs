@@ -154,8 +154,8 @@ public class Fighter : MonoBehaviour {
 				GetComponent<Player> ().onHitConfirm(otherObj);
 			}
 			if (GetComponent<Character> ()) {
-				HitConfirmEvent e = new HitConfirmEvent ();
-				GetComponent<Character> ().broadcastToObservers (e);
+				EVHitConfirm e = new EVHitConfirm ();
+				GetComponent<Observable> ().broadcastToObservers (e);
 			}
 		}
 	}
@@ -202,10 +202,10 @@ public class Fighter : MonoBehaviour {
 			currentAttack.timeSinceStart = 0.0f;
 			startingNewAttack = true;
 			if (GetComponent<Character> ()) {
-				AttackEvent e = new AttackEvent ();
+				EVAttack e = new EVAttack ();
 				e.targetChar = GetComponent<Character> ();
 				e.attackInfo = currentAttack;
-				GetComponent<Character> ().broadcastToObservers (e);
+				GetComponent<Observable> ().broadcastToObservers (e);
 			}
 			return true;
 		}

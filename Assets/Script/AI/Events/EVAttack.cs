@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AttackEvent : Event {
+public class EVAttack : Event {
 	public AttackInfo attackInfo;
-	public AttackEvent() {
+	public EVAttack() {
 		eventType = "attack";
 	}
 }

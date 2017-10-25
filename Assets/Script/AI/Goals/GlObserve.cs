@@ -22,7 +22,7 @@ public class GlObserve : Goal{
 	}
 
 	public override void sightEvent(Event e,Relationship r,Personality p) {
-		SightEvent se = (SightEvent)e;
+		EVSight se = (EVSight)e;
 		if (!se.onSight) {
 			if (r.openHostile) {
 				mChar.addProposal (turnProp, e, 1f);

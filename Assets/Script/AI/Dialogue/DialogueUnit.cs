@@ -7,7 +7,9 @@ public class DialogueUnit  {
 	List<DialogueSubunit> elements;
 	textbox currentTB;
 	DialogBox currentDB;
+	ListSelection currentList;
 	public Character speaker;
+	public Character listener;
 	public bool finished = false;
 	bool awaitingResponse = false;
 	int currentElement = 0;
@@ -35,7 +37,8 @@ public class DialogueUnit  {
 			DialogueSubunit ne = elements [currentElement];
 			if (ne.isOption) {
 				awaitingResponse = true;
-				currentDB = tm.addDialogueOptions (ne.text,speaker.gameObject,ne.options);
+				//currentDB = tm.addDialogueOptions (ne.text,speaker.gameObject,ne.options);
+				currentList = tm.addListOptions(ne.text,speaker.gameObject,ne.options);
 			} else {
 				awaitingResponse = false;
 				currentTB = tm.addTextbox(ne.text,speaker.gameObject,true);
@@ -136,6 +139,10 @@ public class DialogueUnit  {
 		}
 	}
 	public void addDialogueOptions(List<DialogueOption> options,string mainPrompt) {
+		foreach (DialogueOption dop in options) {
+			dop.speaker = speaker;
+			dop.listener = listener;
+		}
 		DialogueSubunit ne = new DialogueSubunit ();
 		ne.options = options;
 		ne.isOption = true;

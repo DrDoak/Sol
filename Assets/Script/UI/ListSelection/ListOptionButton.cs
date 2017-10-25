@@ -6,12 +6,16 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class ListOptionButton : MonoBehaviour, IPointerClickHandler {
+	public DialogueOption mDialogOption;
+
 	void Start () {}
 	void Update () {}
 	public void OnPointerClick(PointerEventData eventData)
 	{
+		//Debug.Log ("pointer click in list option");
 		float index = (gameObject.transform.position.x + 15f) / 30.0f;
 		int i = Mathf.RoundToInt (index);
-		FindObjectOfType<KnowledgeList> ().itemSelected (GetComponent<Text>().text);
+		//FindObjectOfType<ListSelection> ().itemSelected (GetComponent<Text>().text);
+		mDialogOption.responseFunction(mDialogOption);
 	}
 }

@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class KNDatabase {
 	KNManager km;
-	Character c;
+	public Character c;
 	public bool isMaster = false;
 
 	public Dictionary<string,Assertion> knowledge = new Dictionary<string,Assertion>();
@@ -22,11 +22,42 @@ public class KNDatabase {
 	}
 	public void DisplayKnowledgeBase() {
 	}
-	
-	public List<Assertion> getMatches(Assertion f) {
+
+	public List<KNVerb> matchingVerbs(Assertion a) {
+		List<KNVerb> verbs = new List<KNVerb> ();
+		foreach (KNVerb kv in knownVerbs) {
+			bool match = false;
+			if (a.subjects != null) {
+				foreach (KNSubject s in a.subjects) {
+					if (!kv.canAct (s))
+						continue;
+				}
+			}
+			if (a.directObjects != null) {
+				foreach (KNSubject s in a.directObjects) {
+					if (!kv.canReceive (s))
+						continue;
+				}
+			}
+			verbs.Add (kv);
+		}
+		return verbs;
+	}
+	public List<KNSubject> matchingDirectObjects(Assertion a) {
+		List<KNSubject> DOs = new List<KNSubject> ();
+		foreach (KNSubject kv in knownSubjects) {
+			if (a.verb != null) {
+				if (!a.verb.canReceive (kv))
+					continue;
+			}
+			DOs.Add (kv);
+		}
+		return DOs;
+	}
+	public List<Assertion> getMatches(Assertion matchA) {
 		List<Assertion> matches = new List<Assertion> ();
 		foreach (Assertion a in knowledge.Values) {
-			if (a.isMatch (f)) {
+			if (a.isMatch (matchA)) {
 				matches.Add (a);
 			}
 		}
@@ -73,8 +104,10 @@ public class KNDatabase {
 	}
 
 	public void learnFact(Assertion newF) {
+		Debug.Log (c.name + " is learning fact: " + newF.getID());
 		EVFact evf = new EVFact ();
-		foreach (Assertion f in knowledge.Values) {
+		evf.assertion = newF;
+		foreach (Assertion f in knowledge.Values) { 
 			if (f.equals (newF)) {
 				f.lastTimeDiscussed = newF.lastTimeDiscussed;
 				evf.isDuplicate = true;

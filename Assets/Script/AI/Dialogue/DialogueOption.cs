@@ -19,6 +19,8 @@ public class DialogueOption {
 		text = s;
 	}
 	public void closeSequence(DialogueOption dop) {
-		GameObject.Destroy (dop.parentList.gameObject);
+		
+		//
+		dop.parentList.masterSequence.endSequence ();
 	}
 }

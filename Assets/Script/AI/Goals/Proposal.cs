@@ -4,12 +4,11 @@ using UnityEngine;
 
 public class Proposal {
 
-	public delegate void proposedMethod(Proposal p);
 	public NPC mNPC;
 	public Event mEvent;
-	public proposedMethod mMethod;
-	public proposedMethod evalMethod;
-	float rating = 0.0f;
+	public Goal.executionMethod mMethod;
+	public Goal.executionMethod evalMethod;
+	public float rating = 0.0f;
 	public bool movement = false;
 
 	public Proposal() {

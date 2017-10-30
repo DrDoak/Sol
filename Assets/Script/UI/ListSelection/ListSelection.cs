@@ -5,9 +5,11 @@ using UnityEngine.UI;
 
 public class ListSelection : MonoBehaviour {
 	public GameObject kEntry;
+	public DialogueUnit masterSequence;
 	List<DialogueOption> fullEntries;
 	List<string> displayedNames;
 	List<GameObject> entries;
+	int currEntry = 0;
 	InputField inputField;
 	int lastChar = 0;
 	public delegate void optionResponse(DialogueOption thisOption);
@@ -22,12 +24,40 @@ public class ListSelection : MonoBehaviour {
 		if (inputField.text.Length != lastChar) {
 			searchList (inputField.text);
 		}
+		//float inputY = Input.GetAxis ("Vertical");
+		//if (Mathf.Abs (inputY) > 0.4f)
+		//	changeOption (inputY);
+		/*if (Input.GetButtonDown("Submit")) {
+			selectHighlightedOption ();
+		}*/
 	}
+	void changeOption(float dir) {
+		if (dir > 0) {
+			currEntry += 1;
+		} else if (dir < 0) {
+			currEntry -= 1;
+		}
+		if (currEntry >= entries.Count) {
+			currEntry = 0;
+		} else if (currEntry < 0) {
+			currEntry = entries.Count - 1;
+		}
+		//Debug.Log ("entry: " + currEntry + " : " + displayedNames [currEntry]);
+	}
+
+	void selectHighlightedOption() {
+		if (entries.Count > 0) {
+			Debug.Log ("entry: " + currEntry + " : " + displayedNames [currEntry]);
+			entries [currEntry].GetComponent<ListOptionButton> ().onSelect ();
+		}
+	}
+
 	void searchList(string key) {
+		string qKey = key.ToLower ();
 		foreach (DialogueOption dOpt in fullEntries) {
-			string s = dOpt.text;
-			string subs = s.Substring (0, Mathf.Min (key.Length, s.Length));
-			if (key.Length == 0 || subs.Equals(key)) {
+			string s = dOpt.text.ToLower();
+			string subs = s.Substring (0, Mathf.Min (qKey.Length, s.Length));
+			if (qKey.Length == 0 || subs.Equals(qKey)) {
 				addOption (dOpt);
 			} else {
 				removeOption (dOpt);
@@ -69,5 +99,6 @@ public class ListSelection : MonoBehaviour {
 			}
 			entries = preserveList;
 		}
+		changeOption (0f);
 	}
 }

@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-public class ResponsePiece {
+public class RPPiece {
 	string text;
 }

@@ -12,7 +12,9 @@ public class ListOptionButton : MonoBehaviour, IPointerClickHandler {
 	void Update () {}
 	public void OnPointerClick(PointerEventData eventData)
 	{
-		//Debug.Log ("pointer click in list option");
+		//onSelect ();
+	}
+	public void onSelect() {
 		float index = (gameObject.transform.position.x + 15f) / 30.0f;
 		int i = Mathf.RoundToInt (index);
 		//FindObjectOfType<ListSelection> ().itemSelected (GetComponent<Text>().text);

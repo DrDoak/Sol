@@ -9,35 +9,34 @@ public class GlSurvival: Goal {
 	public GlSurvival() {
 		initAttackProp = new Proposal ();
 		initAttackProp.mMethod = initiateAttack;
-		initAttackProp.evalMethod = evaluateAttack;
+		//initAttackProp.evalMethod = evaluateAttack;
 		fleeProp = new Proposal ();
 		fleeProp.mMethod = initiateFlee;
-		fleeProp.evalMethod = evaluateFlee;
+		//fleeProp.evalMethod = evaluateFlee;
 		negotiateProp = new Proposal ();
 		negotiateProp.mMethod = initiateNegotiate;
-		negotiateProp.evalMethod = evaluateNegotiate;
+		//negotiateProp.evalMethod = evaluateNegotiate;
+
+		registerEvent ("sight", sightEvent);
+		registerEvent ("attack", sawAttackEvent);
 	}
 
-	void evaluateAttack(Proposal p) {
-	}
+	/*void evaluateAttack(Proposal p) {
+	}*/
 	void initiateAttack(Proposal p) {
 		mChar.offense.setTarget (p.mEvent.targetChar);
 	}
-	void evaluateFlee(Proposal p) {
-	//	p.rating = 1.0f;
-	}
+
 	void initiateFlee(Proposal p) {
 		mChar.offense.setTarget (p.mEvent.targetChar);
 	}
-	void evaluateNegotiate(Proposal p) {
-	//	p.rating = 1.0f;
-	}
+
 	void initiateNegotiate(Proposal p) {
 		mChar.offense.setTarget (p.mEvent.targetChar);
 	}
 
 
-	public override void sightEvent(Event e,Relationship r,Personality p) {
+	public float sightEvent(Event e,Relationship r,Personality p) {
 		if (r.openHostile) {
 			fightFlight (r, p,e);
 		} else {
@@ -55,6 +54,7 @@ public class GlSurvival: Goal {
 			favor += (0.4f - p.temperament * 0.2f);
 			mChar.addProposal (initAttackProp,e, -favor);
 		}
+		return 0f;
 	}
 	void fightFlight(Relationship r, Personality p,Event e) {
 		r.openHostile = true;
@@ -76,7 +76,7 @@ public class GlSurvival: Goal {
 		mChar.addProposal (initAttackProp,e,combatR);
 		mChar.addProposal (fleeProp, e, -combatR);
 	}
-	public override void sawAttackEvent(Event e,Relationship r,Personality p)  {
+	public float sawAttackEvent(Event e,Relationship r,Personality p)  {
 		//Initial impression of this guy
 		float favorAggressor = r.favorability * r.relevance;
 		//What is my tendency to trust my friends/ hate my enemies
@@ -92,8 +92,9 @@ public class GlSurvival: Goal {
 		//float dist = Vector3.Distance (e.targetChar.transform.position, mChar.transform.position);
 
 		mChar.addProposal (initAttackProp, e,-favorAggressor);
+		return 0f;
 	}
-	public override void hitEvent(Event e,Relationship r,Personality p)  {
+	public float hitEvent(Event e,Relationship r,Personality p)  {
 		//Initial impression of this guy
 		float favorAggressor = r.favorability * r.relevance;
 		//What is my tendency to trust my friends/ hate my enemies
@@ -107,8 +108,9 @@ public class GlSurvival: Goal {
 		if (favorAggressor < 0f) {
 			fightFlight (r, p, e);
 		}
+		return 0f;
 	}
-	public override void sawHitEvent(Event e,Relationship r,Personality p) {
+	public float sawHitEvent(Event e,Relationship r,Personality p) {
 		//Initial impression of this guy
 		float favorAggressor = r.favorability * r.relevance;
 		//What is my tendency to trust my friends/ hate my enemies
@@ -131,6 +133,7 @@ public class GlSurvival: Goal {
 		} else {
 			mChar.addProposal (initAttackProp, e,-favorAggressor + favorVictim);
 		}
+		return 0f;
 	}
 	/*
 	public override void interactEvent(Event e,Relationship ci) {

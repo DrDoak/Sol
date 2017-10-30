@@ -3,21 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class GlEtiquette : Goal {
-	Proposal answerProp;
 	public GlEtiquette() {
-		answerProp = new Proposal ();
-		answerProp.mMethod = startDialogue;
+		registerEvent ("interact", interactEvent,startDialogue);
+		registerEvent ("fact", factEvent,answerQuestion);
 	}
 
-	public override void interactEvent(Event e,Relationship ci,Personality p) {
+	public float interactEvent(Event e,Relationship ci,Personality p) {
 		Debug.Log ("Interact event!!!! from GLEtiquette");
 		if (!ci.openHostile) {
 			float favor = (ci.favorability * ci.relevance);
 			favor *= (p.opennessAllegiance * 2.0f);
 			favor += p.agreeableness + 0.05f;
 			Debug.Log ("OpenAllegience: " + p.opennessAllegiance + " Favor rating: " + favor);
-			mChar.addProposal (answerProp,e, favor);
+			return favor;
 		}
+		return 0f;
 	}
 	void startDialogue(Proposal p) {
 		Debug.Log ("Starting a dialogue");
@@ -27,5 +27,19 @@ public class GlEtiquette : Goal {
 		du.addDialogueOptions (mChar.getDialogueOptions (p.mEvent.targetChar));
 		p.mEvent.targetChar.processDialogueRequest (mChar,du);
 		du.startSequence ();
+	}
+
+	public float factEvent(Event e, Relationship ci, Personality p) {
+		Debug.Log ("Fact Event!!! from GLEtiquette");
+		if (!ci.openHostile) {
+			return 1.0f;
+		}
+		return 0f;
+	}
+
+	void answerQuestion(Proposal p) {
+		Debug.Log ("answering question");
+		Assertion a = new Assertion ();
+		mChar.speaker.convey (a);
 	}
 }

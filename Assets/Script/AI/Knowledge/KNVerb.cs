@@ -16,6 +16,8 @@ public class KNVerb {
 		receivor = new List<KNSubject> ();
 	}
 	public bool canAct(KNSubject a) {
+		if (a == null)
+			return true;
 		foreach (KNSubject s in actor) {
 			if (a.match (s)) {
 				return true;
@@ -24,6 +26,8 @@ public class KNVerb {
 		return false;
 	}
 	public bool canReceive(KNSubject receiver) {
+		//if (receiver == null)
+		//	return true;
 		foreach (KNSubject s in receivor) {
 			if (receiver.match (s)) {
 				return true;

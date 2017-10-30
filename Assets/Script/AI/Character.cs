@@ -10,6 +10,7 @@ using UnityEngine;
 [RequireComponent (typeof (DialogueParser))]
 [RequireComponent (typeof (Observer))]
 [RequireComponent (typeof (Observable))]
+[RequireComponent (typeof (RPSpeaker))]
 
 public class Character : Interactable {
 	
@@ -37,6 +38,7 @@ public class Character : Interactable {
 	bool choosingDialogue = false;
 	TextboxManager tm;
 	KNManager km;
+	public RPSpeaker speaker;
 	public RuntimeAnimatorController animDefault;
 	public RuntimeAnimatorController animCutscene;
 
@@ -60,11 +62,15 @@ public class Character : Interactable {
 		tm = FindObjectOfType<TextboxManager> ();
 		km = FindObjectOfType<KNManager> ();
 		parser = GetComponent<DialogueParser> ();
+		speaker = GetComponent<RPSpeaker> ();
+
 		pers = new Personality ();
 		knowledgeBase = new KNDatabase ();
+		knowledgeBase.c = this;
 		if (faction == "noFaction" && GetComponent<Attackable> ()) {
 			faction = GetComponent<Attackable> ().faction;
 		}
+		FindObjectOfType<CharacterManager> ().registerChar (this);
 	}
 
 	public virtual void setAutonomy(bool active) {
@@ -206,7 +212,7 @@ public class Character : Interactable {
 //Character info
 	public Relationship getCharInfo(Character c) {
 		if (c == null) {
-			Debug.Log ("Why is the character null?");
+			//Debug.Log ("Why is the character null?");
 			return null;
 		} else if (charInfo.ContainsKey (c)) {
 			return charInfo [c];

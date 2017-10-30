@@ -7,9 +7,10 @@ public class GlObserve : Goal{
 	public Character targetCh;
 	Proposal turnProp;
 	public GlObserve() {
-		turnProp = new Proposal ();
-		turnProp.mMethod = turn;
+		//turnProp = new Proposal ();
+		//turnProp.mMethod = turn;
 		//turnProp.evalMethod = evaluateTurn;
+		registerEvent("sight",sightEvent,turn);
 	}
 
 	//void evaluateTurn(Proposal p) {}
@@ -21,7 +22,7 @@ public class GlObserve : Goal{
 		}
 	}
 
-	public override void sightEvent(Event e,Relationship r,Personality p) {
+	public float sightEvent(Event e,Relationship r,Personality p) {
 		EVSight se = (EVSight)e;
 		if (!se.onSight) {
 			if (r.openHostile) {
@@ -34,8 +35,10 @@ public class GlObserve : Goal{
 
 				// natural human nature nature to want to see things
 				favor += (0.1f - p.temperament * 0.2f);
-				mChar.addProposal (turnProp, e, favor);
+				//mChar.addProposal (turnProp, e, favor);
+				return favor;
 			}
 		}
+		return 0;
 	}
 }

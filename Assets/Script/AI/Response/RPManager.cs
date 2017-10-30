@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ResponseSystem : MonoBehaviour {
+public class RPManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
@@ -19,6 +19,6 @@ public class ResponseSystem : MonoBehaviour {
 		DialogueUnit du = new DialogueUnit ();
 		return du;
 	}
-	public void createTextbox(Character c, ResponsePiece rp) {
+	public void createTextbox(Character c, RPPiece rp) {
 	}
 }

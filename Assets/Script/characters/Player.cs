@@ -101,7 +101,7 @@ public class Player : MonoBehaviour {
 		if (movement.onGround) {canDoubleJump = true;}
 		inputX = 0.0f;
 		inputY = 0.0f;
-		if (!autonomy && movement.canMove) {
+		if (!autonomy && movement.canMove && targetSet) {
 			if (targetObj) {
 				if (followObj == null) {
 					endTarget ();
@@ -163,7 +163,7 @@ public class Player : MonoBehaviour {
 					gameObject.GetComponent<Fighter> ().tryAttack ("super");
 					AudioSource.PlayClipAtPoint (MultiSlash, gameObject.transform.position);
 				}*/
-				FindObjectOfType<KNManager> ().createList (GetComponent<Character> ());
+				//FindObjectOfType<KNManager> ().createList (GetComponent<Character> ());
 			}
 			if (Input.GetButtonDown("Special")) {
 				if (inputY < -0.9f ) {
@@ -206,9 +206,9 @@ public class Player : MonoBehaviour {
 		velocity.x = Mathf.SmoothDamp (velocity.x, targetVelocityX, ref velocityXSmoothing, (movement.collisions.below)?accelerationTimeGrounded:accelerationTimeAirborne);
 		Vector2 input = new Vector2 (inputX, inputY);
 		movement.Move (velocity, input);
-		if (!attackable.alive) {
+		if (!attackable.alive)
 			Reset ();
-		}
+		
 		//anim.SetBool ("grounded", movement.onGround);
 		anim.SetBool ("tryingToMove", false);
 		if (inputX != 0.0f) {
@@ -246,9 +246,8 @@ public class Player : MonoBehaviour {
 		movement.Move (velocity, input);
 
 		anim.SetBool ("tryingToMove", false);
-		if (inputX != 0.0f) {
+		if (inputX != 0.0f)
 			anim.SetBool ("tryingToMove", true);
-		}
 	}
 	public void setTargetPoint(Vector3 point, float proximity) {
 		setTargetPoint (point, proximity, float.MaxValue);

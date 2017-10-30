@@ -34,7 +34,7 @@ public class NPC : Character {
 	void Update () {
 		//Debug.Log ("Aut: " + autonomy + " :count: " + newProposals.Count);
 		if (autonomy && newProposals.Count > 0) {
-			Debug.Log ("Executing Valid proposals");
+			//Debug.Log ("Executing Valid proposals");
 			executeValidProposals ();
 		}
 		updateGoalList ();
@@ -56,6 +56,7 @@ public class NPC : Character {
 	public void addProposal(Proposal p, Event e) {
 		addProposal (p, e, -100f);
 	}
+
 	public void addProposal(Proposal p, Event e,float rating) {
 		if (!newProposals.Contains (p)) {
 			p.mEvent = e;
@@ -65,10 +66,13 @@ public class NPC : Character {
 			newProposals.Add (p);
 		}
 	}
+
 	void executeValidProposals() {
 		foreach (Proposal p in newProposals) {
-			p.evalMethod (p);
-			Debug.Log ("Rating is: " + p.getRating ());
+			if (p.evalMethod != null) {
+				p.evalMethod (p);
+			}
+			//Debug.Log ("Rating is: " + p.getRating ());
 			if (p.getRating() > 0f) {
 				executeProposalEvent (p);
 			}

@@ -5,6 +5,7 @@ using UnityEngine;
 public class Observer : MonoBehaviour {
 
 	Character c;
+	Movement m;
 	public float detectionRange = 15.0f;
 
 	List<Observable> visibleObjs = new List<Observable>();
@@ -14,9 +15,9 @@ public class Observer : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		m = GetComponent<Movement> ();
 		c = GetComponent<Character> ();
 		sinceLastScan = UnityEngine.Random.Range (0.0f, scanInterval);
-		FindObjectOfType<CharacterManager> ().registerChar (c);
 	}
 
 	void Update() {
@@ -33,8 +34,8 @@ public class Observer : MonoBehaviour {
 		foreach (Observable o in allObs) {
 			Vector3 otherPos = o.transform.position;
 			Vector3 myPos = transform.position;
-			if (o.gameObject != gameObject && otherPos.x < myPos.x && o.movt.facingLeft ||
-			    otherPos.x > myPos.x && !o.movt.facingLeft) {
+			if (o.gameObject != gameObject && otherPos.x < myPos.x && m.facingLeft ||
+			    otherPos.x > myPos.x && !m.facingLeft) {
 				float cDist = Vector3.Distance (otherPos, myPos);
 				if (cDist < detectionRange) {
 					RaycastHit2D[] hits = Physics2D.RaycastAll (myPos, otherPos - myPos, cDist);

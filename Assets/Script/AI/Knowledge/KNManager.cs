@@ -66,112 +66,114 @@ public class KNManager : MonoBehaviour {
 		}
 	}
 
+	public Assertion newAssertion(KNSubject subject, KNVerb verb, KNSubject receiver, KNSubject source,bool isInquiry) {
+		Assertion f = new Assertion ();
+		f.timeLearned = Time.realtimeSinceStartup;
+		f.lastTimeDiscussed = Time.realtimeSinceStartup;
+		f.factSource = source;
+		f.inquiry = isInquiry;
+		if (subject != null)
+			f.subjects.Add (subject);
+		f.verb = verb;
+		if (receiver != null)
+			f.directObjects.Add(receiver);
+		return f;
+	}
 	//----dialogue boxes-----
 
 	public void createDialogueList(Character speaker) {
 		createDialogueList (speaker, null,false);
 	}
 
-	public void createDialogueList(Character speaker,Character listener,bool ask) {
-		GameObject l = GameObject.Instantiate (listGO);
-		ListSelection list = l.GetComponent<ListSelection> ();
-		list.addOptions (getSubjectOptions (speaker, listener, true,ask));
-		l.transform.SetPositionAndRotation (new Vector3 (0f, 0f), Quaternion.identity);
-		l.transform.SetParent (FindObjectOfType<GameManager> ().gameObject.transform.Find ("UI"), false);
+	public void createDialogueList(Character speaker,Character listener,bool isInquiry) {
+		DialogueUnit du = new DialogueUnit ();
+		du.speaker = speaker;
+		du.listener = listener;
+		du.addDialogueOptions (getSubjectOptions (speaker, true, isInquiry));
+		//p.mEvent.targetChar.processDialogueRequest (mChar,du);
+		du.startSequence ();
 	}
 
-	void addWildCard(List<DialogueOption> dos){ 
+	void addWildCard(List<DialogueOption> dos,Assertion a){ 
 		OptionKnowledgeBase o = new OptionKnowledgeBase ();
 		o.text = "Anything?";
+		o.assertion = a;
 		o.responseFunction = finishFact;
 		dos.Add (o);
 	}
 
-	public List<DialogueOption> getSubjectOptions(Character c,Character listener,bool includeWildcard,bool isInquiry) {
+	public List<DialogueOption> getSubjectOptions(Character c,bool includeWildcard,bool isInquiry) {
 		List<DialogueOption> dos = new List<DialogueOption> ();
 		KNDatabase kd = c.knowledgeBase;
 		foreach (KNSubject ks in kd.knownSubjects) {
 			OptionKnowledgeBase o = new OptionKnowledgeBase ();
-			o.speaker = c;
-			o.listener = listener;
 			o.responseFunction = subjectSelected;
 			o.text = ks.subjectName;
-			Assertion f = new Assertion ();
-			f.timeLearned = Time.realtimeSinceStartup;
-			f.lastTimeDiscussed = Time.realtimeSinceStartup;
-			f.factSource = findOrCreateSubject (c.name);
-			f.inquiry = isInquiry;
-			f.subjects.Add (ks);
-			o.assertion = f;
+			o.assertion = newAssertion(ks,null,null,findOrCreateSubject(c.name),isInquiry);
 			dos.Add (o);
 		}
-		if (includeWildcard) { addWildCard (dos); }
+		if (includeWildcard) { addWildCard (dos, null); }
 		return dos;
 	}
-
-	public List<DialogueOption> getPossibleReceivers(Character c,Character listener,Assertion a,bool includeWildcard) {
+	public List<DialogueOption> getVerbOptions (Character c, Assertion a, bool includeWildcard) {
 		List<DialogueOption> dos = new List<DialogueOption> ();
 		KNDatabase kd = c.knowledgeBase;
-		foreach (KNSubject ks in kd.knownSubjects) {
-			if (a.verb.canReceive(ks) ) {
-				OptionKnowledgeBase o = new OptionKnowledgeBase ();
-				o.responseFunction = finishFact;
-				o.speaker = c;
-				o.listener = listener;
-				o.text = ks.subjectName;
-				o.assertion = a;
-				o.assertion.directObjects.Add (ks);
-				dos.Add (o);
-			}
-		}
-		if (includeWildcard) { addWildCard (dos); }
-		return dos;
-	}
-
-	public List<DialogueOption> getVerbOptions (Character c, Character listener, Assertion a, bool includeWildcard) {
-		List<DialogueOption> dos = new List<DialogueOption> ();
-		KNDatabase kd = c.knowledgeBase;
-		foreach (KNVerb kv in kd.knownVerbs) {
+		foreach (KNVerb kv in kd.matchingVerbs(a)) {
 			//Debug.Log ("Found verb: " + kv.verbName + " subName: " + sub.subjectName + " canAct: " + kv.canAct(sub));
-			if (kv.canAct (a.subjects[0])) {
-				OptionKnowledgeBase o = new OptionKnowledgeBase ();
-				o.speaker = c;
-				o.listener = listener;
-				o.responseFunction = verbSelected;
-				o.text = kv.verbName;
-				a.verb = kv;
-				o.assertion = a;
-				dos.Add (o);
-			}
+			OptionKnowledgeBase o = new OptionKnowledgeBase ();
+			o.responseFunction = verbSelected;
+			o.text = kv.verbName;
+			o.assertion = a.copyAssertion();
+			o.assertion.verb = kv;
+			dos.Add (o);
 		}
-		if (includeWildcard) { addWildCard (dos); }
+		if (includeWildcard) { addWildCard (dos, a.copyAssertion()); }
 		return dos;
 	}
+
+	public List<DialogueOption> getPossibleReceivers(Character c, Assertion a, bool includeWildcard) {
+		List<DialogueOption> dos = new List<DialogueOption> ();
+		KNDatabase kd = c.knowledgeBase;
+		foreach (KNSubject ks in kd.matchingDirectObjects(a)) {
+			OptionKnowledgeBase o = new OptionKnowledgeBase ();
+			o.responseFunction = finishFact;
+			o.text = ks.subjectName;
+			o.assertion = a.copyAssertion();
+			o.assertion.directObjects.Add (ks);
+			dos.Add (o);
+		}
+		if (includeWildcard) { addWildCard (dos, a); }
+		return dos;
+	}
+
 	void subjectSelected(DialogueOption o) {
 		OptionKnowledgeBase dob = (OptionKnowledgeBase)o;
+
+		DialogueUnit du = new DialogueUnit ();
+		du.speaker = dob.speaker;
+		du.listener = dob.listener;
+		du.addDialogueOptions (getVerbOptions(dob.speaker,dob.assertion,true));
+		//p.mEvent.targetChar.processDialogueRequest (mChar,du);
 		Destroy (dob.parentList.gameObject);
-		GameObject l = GameObject.Instantiate (listGO);
-		ListSelection list = l.GetComponent<ListSelection> ();
-		list.addOptions (getVerbOptions (dob.speaker,dob.listener,dob.assertion,true));
-		l.transform.SetPositionAndRotation (new Vector3 (0f, 0f), Quaternion.identity);
-		l.transform.SetParent (FindObjectOfType<GameManager> ().gameObject.transform.Find ("UI"), false);
-		if (dob.listener) {}
+		du.startSequence ();
 	}
 	void verbSelected (DialogueOption o) {
-		Debug.Log ("Verb is selected: " + o.text);
+		//Debug.Log ("Verb is selected: " + o.text);
 		OptionKnowledgeBase dob = (OptionKnowledgeBase)o;
+
+		DialogueUnit du = new DialogueUnit ();
+		du.speaker = dob.speaker;
+		du.listener = dob.listener;
+		du.addDialogueOptions (getPossibleReceivers(dob.speaker,dob.assertion,true));
+		//p.mEvent.targetChar.processDialogueRequest (mChar,du);
 		Destroy (dob.parentList.gameObject);
-		GameObject l = GameObject.Instantiate (listGO);
-		ListSelection list = l.GetComponent<ListSelection> ();
-		list.addOptions (getPossibleReceivers (dob.speaker,dob.listener,dob.assertion,true));
-		l.transform.SetPositionAndRotation (new Vector3 (0f, 0f), Quaternion.identity);
-		l.transform.SetParent (FindObjectOfType<GameManager> ().gameObject.transform.Find ("UI"), false);
-		if (dob.listener) {}
+		du.startSequence ();
 	}
 	void finishFact(DialogueOption o) {
 		OptionKnowledgeBase dob = (OptionKnowledgeBase)o;
 		Destroy (dob.parentList.gameObject);
-		if (dob.listener) { dob.listener.knowledgeBase.learnFact (dob.assertion); }
+		if (dob.assertion != null && dob.listener)
+			dob.listener.knowledgeBase.learnFact (dob.assertion);
 	}
 
 	/*public void parseDatabase(string factID) {

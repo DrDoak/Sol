@@ -22,7 +22,6 @@ public class DialogueUnit  {
 	public DialogueUnit () {
 		//Debug.Log ("starting a ds!");
 		tm = GameObject.FindObjectOfType<TextboxManager> ();
-		Debug.Log (tm);
 		modifiedAnims = new List<Character> ();
 		elements = new List<DialogueSubunit> ();
 	}
@@ -32,13 +31,20 @@ public class DialogueUnit  {
 	}
 	public void parseNextElement() {
 		if (currentElement >= elements.Count) {
-			endDialogue ();
+			endSequence ();
 		} else {
+			if (currentList) 
+				GameObject.Destroy (currentList.gameObject);
+			if (currentTB)
+				GameObject.Destroy (currentTB.gameObject);
 			DialogueSubunit ne = elements [currentElement];
 			if (ne.isOption) {
 				awaitingResponse = true;
+				if (speaker != null)
+					speaker.setAutonomy (false);
 				//currentDB = tm.addDialogueOptions (ne.text,speaker.gameObject,ne.options);
 				currentList = tm.addListOptions(ne.text,speaker.gameObject,ne.options);
+				currentList.masterSequence = this;
 			} else {
 				awaitingResponse = false;
 				currentTB = tm.addTextbox(ne.text,speaker.gameObject,true);
@@ -159,10 +165,16 @@ public class DialogueUnit  {
 		parseNextElement ();
 	}
 
-	public void endDialogue() {
+	public void endSequence() {
+		if (awaitingResponse && speaker != null)
+			speaker.setAutonomy (true);
 		foreach(Character c in modifiedAnims){
 			c.GetComponent<Animator> ().runtimeAnimatorController = c.animDefault;
 		}
+		if (currentList) 
+			GameObject.Destroy (currentList.gameObject);
+		if (currentTB)
+			GameObject.Destroy (currentTB.gameObject);
 		finished = true;
 		//Debug.Log ("Ending dialogue");
 	}

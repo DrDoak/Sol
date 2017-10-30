@@ -51,7 +51,24 @@ public class Assertion {
 	}
 
 	public string getID() {
-		return subjects [0].subjectName + "-" + verb.verbName + "-" + directObjects [0].subjectName;
+		string idStr = "";
+		if (subjects.Count == 0) {
+			idStr += "ANYSUBJECT-";
+		} else {
+			idStr += subjects [0].subjectName + "-";
+		}
+		if (verb == null) {
+			idStr += "ANYVERB-";
+		} else {
+			idStr += verb.verbName +  "-";
+		}
+		if (directObjects.Count == 0) {
+			idStr += "ANYSUBJECT";
+		} else {
+			idStr += directObjects [0].subjectName;
+		}
+
+		return idStr;
 	}
 
 	public Assertion copyAssertion() {
@@ -59,11 +76,13 @@ public class Assertion {
 		newA.assertionType = assertionType;
 		newA.knowledgeGroups = knowledgeGroups;
 		foreach (KNSubject item in subjects) {
-			newA.subjects.Add (item);
+			if (item != null)
+				newA.subjects.Add (item);
 		}
 		newA.verb = verb;
 		foreach (KNSubject item in directObjects) {
-			newA.directObjects.Add (item);
+			if (item != null)
+				newA.directObjects.Add (item);
 		}
 		newA.info = info;
 		return newA;

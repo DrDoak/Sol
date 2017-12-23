@@ -63,11 +63,7 @@ public class SyKnife : MonoBehaviour {
 			m_speed.y += ACCELERATION * Mathf.Sign (User.transform.position.y - transform.position.y);
 		} else {
 			Available = true;
-			m_hb.Active = false;
-			m_hb.collidedObjs.Clear ();
-			part.startColor = blue;
-			trail.startColor = blue;
-			trail.endColor = blue;
+			SetActive (false);
 		}
 		m_speed *= 0.92f;
 		orientToSpeed (m_speed);
@@ -96,10 +92,24 @@ public class SyKnife : MonoBehaviour {
 		m_delay = delay;
 		//m_targetSpeed = speed;
 		m_targetingPoint = true;
-		Available = false;
-		part.startColor = red;
-		trail.startColor = red;
-		trail.endColor = red;
-		m_hb.Active = true;
+		SetActive (true);
+	}
+
+	public void SetActive(bool active) {
+		if (active) {
+			Available = false;
+			part.startColor = red;
+			trail.startColor = red;
+			trail.endColor = red;
+			m_hb.Active = true;
+		} else {
+			m_hb.Active = false;
+			m_hb.collidedObjs.Clear ();
+			part.startColor = blue;
+			trail.startColor = blue;
+			trail.endColor = blue;
+			m_targetingPoint = false;
+		}
+
 	}
 }

@@ -43,8 +43,8 @@ public class Movement : MonoBehaviour {
 
 	void Start() {
 		bCollider = GetComponent<BoxCollider2D> ();
-		float newBOffX = bCollider.offset.x + skinWidth;
-		bCollider.offset = new Vector2(newBOffX,bCollider.offset.y);
+		float newBOffY = bCollider.offset.y + skinWidth;
+		bCollider.offset = new Vector2(newBOffY,bCollider.offset.y);
 		sprite = GetComponent<SpriteRenderer> ();
 		CalculateRaySpacing ();
 		canMove = true;
@@ -229,7 +229,11 @@ public class Movement : MonoBehaviour {
 
 		for (int i = 0; i < horizontalRayCount; i ++) {
 			Vector2 rayOrigin = (directionX == -1)?raycastOrigins.bottomLeft:raycastOrigins.bottomRight;
-			rayOrigin += Vector2.up * (horizontalRaySpacing * i);
+			if (i == horizontalRayCount - 1) {
+				rayOrigin += Vector2.up * (horizontalRaySpacing * i);
+			} else {
+				rayOrigin += Vector2.up * (horizontalRaySpacing/2f * i);
+			}
 			RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.right * directionX, rayLength, collisionMask);
 			if (hit) {
 				Debug.DrawRay(rayOrigin, Vector2.right * directionX * rayLength,Color.red);
@@ -243,19 +247,20 @@ public class Movement : MonoBehaviour {
 					
 				} else {
 					float slopeAngle = Vector2.Angle (hit.normal, Vector2.up);
-
 					if (i == 0 && slopeAngle <= maxClimbAngle) {
 						float distanceToSlopeStart = 0;
 						if (slopeAngle != collisions.slopeAngleOld) {
 							distanceToSlopeStart = hit.distance - skinWidth;
-							velocity.x -= distanceToSlopeStart * directionX;
+							//velocity.x -= distanceToSlopeStart * directionX;
+							velocity.x = (Mathf.Abs(velocity.x) - distanceToSlopeStart) * directionX;
 						}
 						ClimbSlope (ref velocity, slopeAngle);
-						velocity.x += distanceToSlopeStart * directionX;
+						//velocity.x += distanceToSlopeStart * directionX;
+						velocity.x = (Mathf.Abs(velocity.x) + distanceToSlopeStart) * directionX;
 					}
 
 					if (!collisions.climbingSlope || slopeAngle > maxClimbAngle) {
-						velocity.x = (hit.distance - skinWidth) * directionX;
+						velocity.x = Mathf.Min(Mathf.Abs(velocity.x),(hit.distance - skinWidth)) * directionX;
 						rayLength = hit.distance;
 
 						if (collisions.climbingSlope) {
@@ -354,7 +359,7 @@ public class Movement : MonoBehaviour {
 
 	void CalculateRaySpacing() {
 		Bounds bounds = bCollider.bounds;
-		bounds.Expand (skinWidth * -2);
+		bounds.Expand (skinWidth * 2);
 
 		horizontalRayCount = Mathf.Clamp (horizontalRayCount, 2, int.MaxValue);
 		verticalRayCount = Mathf.Clamp (verticalRayCount, 2, int.MaxValue);

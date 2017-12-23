@@ -24,7 +24,7 @@ public class NPCMovement : MonoBehaviour {
 	bool targetObj = false;
 	Vector3 targetPoint;
 	public float minDistance = 1.0f;
-	public float abandonDistance = 10.0f;
+	public float abandonDistance = 25.0f;
 	float inputX = 0.0f;
 	float inputY = 0.0f;
 	AnimatorSprite m_anim;

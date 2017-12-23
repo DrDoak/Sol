@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class EVAttack : Event {
-	public AttackInfo attackInfo;
+	public AttackInfo AttackData;
 	public EVAttack() {
 		eventType = "attack";
 	}

@@ -53,14 +53,16 @@ public class OffenseAI : MonoBehaviour {
 		Vector3 otherPos = currentTarget.transform.position;
 		float xDiff = Mathf.Abs(transform.position.x - otherPos.x);
 		float yDiff = Mathf.Abs(transform.position.y - otherPos.y);
-		foreach (AttackInfo ainfo in allAttacks) {
-			if ((ainfo.AIPredictionHitbox.x + ainfo.AIPredictionOffset.x) + 
-				(ainfo.AIPredictionHitbox.x + ainfo.AIPredictionOffset.x) * Random.Range(0f, 1f-spacing) > xDiff &&
-				(ainfo.AIPredictionHitbox.y + ainfo.AIPredictionOffset.y) + 
-				(ainfo.AIPredictionHitbox.y + ainfo.AIPredictionOffset.y) * Random.Range(0f, 1f-spacing)> yDiff) {
-				m_fighter.tryAttack (ainfo.attackName);
-				currentAction = "attack";
-				break;
+		if (Random.value < (aggression * 0.1f)) {
+			foreach (AttackInfo ainfo in allAttacks) {
+				if ((ainfo.AIPredictionHitbox.x + ainfo.AIPredictionOffset.x) +
+				   (ainfo.AIPredictionHitbox.x + ainfo.AIPredictionOffset.x) * Random.Range (0f, 1f - spacing) > xDiff &&
+				   (ainfo.AIPredictionHitbox.y + ainfo.AIPredictionOffset.y) +
+				   (ainfo.AIPredictionHitbox.y + ainfo.AIPredictionOffset.y) * Random.Range (0f, 1f - spacing) > yDiff) {
+					m_fighter.tryAttack (ainfo.attackName);
+					currentAction = "attack";
+					break;
+				}
 			}
 		}
 		currentAction = "moveToTarget";

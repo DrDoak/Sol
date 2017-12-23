@@ -5,21 +5,30 @@ using UnityEngine;
 public class SylviaOffense : MonoBehaviour {
 
 	public GameObject KnifePrefab;
-	public int numKnives; 
-	List<SyKnife> knives;
+	public int NumKnives; 
+
+	List<SyKnife> m_knives;
+	Fighter m_fighter;
 	void Start () {	
-		knives = new List<SyKnife> ();
+		m_knives = new List<SyKnife> ();
 		Vector3 pos = transform.position;
-		for (int i = 0; i < numKnives; i++) {
+		m_fighter = GetComponent<Fighter> ();
+		for (int i = 0; i < NumKnives; i++) {
 			GameObject go = Instantiate (KnifePrefab, new Vector3 (pos.x + Random.Range (-1f, 1f), pos.y + Random.Range (-1f, 1f), pos.z), Quaternion.identity);
 			go.GetComponent<SyKnife> ().User = this;
-			knives.Add (go.GetComponent<SyKnife> ());
+			m_knives.Add (go.GetComponent<SyKnife> ());
 		}
 	}
-	void Update () { }
+	void Update () { 
+		if (m_fighter.stunTime > 0f) {
+			foreach (SyKnife k in m_knives) {
+				k.SetActive (false);
+			}
+		}
+	}
 
 	/*public void TargetPoint(Vector2 target) {
-		foreach (SyKnife k in knives) {
+		foreach (SyKnife k in m_knives) {
 			if (k.Available) {
 				k.TargetPoint (target);
 				break;
@@ -27,14 +36,14 @@ public class SylviaOffense : MonoBehaviour {
 		}
 	}
 
-	public void TargetPoint(Vector2 target, int numberKnives) {
+	public void TargetPoint(Vector2 target, int numberm_knives) {
 	}*/
 
 	public void TargetPoint(List<Vector2> targets,float delay) {
 		int next = 0;
 		float curr_delay = delay;
 		//List<SyKnife> newTargets = new List<SyKnife> ();
-		foreach (SyKnife k in knives) {
+		foreach (SyKnife k in m_knives) {
 			
 			if (next >= targets.Count) {
 				break;
@@ -44,6 +53,6 @@ public class SylviaOffense : MonoBehaviour {
 				next += 1;
 			}
 		}
-		knives.Reverse();
+		m_knives.Reverse();
 	}
 }

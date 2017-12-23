@@ -58,7 +58,6 @@ public class Fighter : MonoBehaviour {
 
 			stunTime = Mathf.Max (0.0f, stunTime - Time.deltaTime);
 			if (stunTime == 0.0f && attackable.alive) {
-				//Debug.Log ("ending stun");
 				endStun ();
 			}
 		}else if (!attackable.alive) {
@@ -155,15 +154,22 @@ public class Fighter : MonoBehaviour {
 		maxStun = st;
 		movement.canMove = false;
 	}
+
 	public void registerHit(GameObject otherObj) {
 		if (currentAttack != null) {
 			currentAttack.onHitConfirm (otherObj);
-			if (GetComponent<Player> ()) { //Stopgap in order to test beat recognition power.
+			if (GetComponent<Player> ()) {
 				GetComponent<Player> ().onHitConfirm(otherObj);
 			}
 			if (GetComponent<Character> ()) {
 				EVHitConfirm e = new EVHitConfirm ();
+				e.targetChar = GetComponent<Character> ();
+				e.ObjectHit = otherObj;
+				e.AttackData = currentAttack;
 				GetComponent<Observable> ().broadcastToObservers (e);
+				if (otherObj.GetComponent<Observer> ()) {
+					otherObj.GetComponent<Observer> ().respondToEvent (e);		
+				}
 			}
 		}
 	}
@@ -220,7 +226,7 @@ public class Fighter : MonoBehaviour {
 			if (GetComponent<Character> ()) {
 				EVAttack e = new EVAttack ();
 				e.targetChar = GetComponent<Character> ();
-				e.attackInfo = currentAttack;
+				e.AttackData = currentAttack;
 				GetComponent<Observable> ().broadcastToObservers (e);
 			}
 			return true;

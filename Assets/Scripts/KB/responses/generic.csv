@@ -1,0 +1,4 @@
+type,group,subjects,verb,receivers,template
+assertion,general,self,!know,*,Sorry $L I don't know about $R.
+assertion,general,self,know,*,I know that.
+assertion,general,self,!knofaw,*,I don't know $D.

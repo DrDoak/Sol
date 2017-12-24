@@ -51,6 +51,7 @@ public class Goal {
 		if (evalMethods.ContainsKey (eventName)) {
 			foreach (evaluationMethod eM in evalMethods[eventName]) {
 				Relationship ci = mChar.getCharInfo (e.targetChar);
+				//Debug.Log ("Relationship retrieved: " + ci);
 				float rating = eM (e, ci, mChar.pers);
 				if (execMethods.ContainsKey(eM) && rating > 0.0) {
 					Proposal p = new Proposal ();

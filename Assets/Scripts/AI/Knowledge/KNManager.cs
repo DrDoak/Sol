@@ -32,8 +32,10 @@ public class KNManager : MonoBehaviour {
 	}
 		
 	public void AddKnowledgeGroups(KNDatabase kd, string kGroup) {
+		Debug.Log ("Adding knowledge group: " + kGroup);
 		foreach (Assertion a in m_Database.Knowledge.Values) {
 			if (a.KnowledgeGroups.Contains (kGroup)) {
+				Debug.Log ("Adding Assertion: " + a.GetID ());
 				AddAssertion (kd, a.CopyAssertion());
 			}
 		}
@@ -57,8 +59,8 @@ public class KNManager : MonoBehaviour {
 			return ks;
 		} else {
 			var newSubject = new KNSubject { SubjectName = sid };
-			if (cm.findChar (sid) != null)
-				newSubject.Owner = cm.findChar (sid);
+			if (CharacterManager.Instance.findChar (sid) != null)
+				newSubject.Owner = CharacterManager.Instance.findChar (sid);
 			
 			m_Subjects.Add (sid, newSubject);
 			KNSubject ks = m_Subjects [sid].Copy ();

@@ -47,7 +47,7 @@ public class DialogueParser : MonoBehaviour {
 		List<DialogueUnit> subDS = new List<DialogueUnit> ();
 		Character speaker = GetComponent<Character>();
 		string targetCharName = speaker.name;
-		DialogueUnit ds = new DialogueUnit ();
+		DialogueUnit ds = new DialogueUnit {speaker = speaker};
 		subDS.Add (ds);
 		string lastText = "";
 		string lastAnim = "none";
@@ -72,7 +72,7 @@ public class DialogueParser : MonoBehaviour {
 					lastText += lastC;
 				} else if (!specialGroup && lastC == ':' && lastText.Length < 18) {
 					cm.setDialogueUnit (targetCharName, ds);
-					ds = new DialogueUnit ();
+					ds = new DialogueUnit {speaker = speaker};
 					subDS.Add (ds);
 					targetCharName = lastText;
 					//Debug.Log (targetCharName);

@@ -121,8 +121,6 @@ public class Player : MonoBehaviour {
 			}*/
 			//Movement controls
 			inputX = Input.GetAxis("Horizontal");
-			if (inputX != 0.0f)
-				movement.setFacingLeft ((inputX < 0.0f));
 			attackInput (inputX, inputY);
 
 			if (Input.GetButtonDown("Interact")) {

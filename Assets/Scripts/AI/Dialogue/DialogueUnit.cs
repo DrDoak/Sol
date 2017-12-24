@@ -8,7 +8,6 @@ public class DialogueUnit  {
 	textbox currentTB;
 	DialogBox currentDB;
 	ListSelection currentList;
-	public Character speaker;
 	public Character listener;
 	public bool finished = false;
 	bool awaitingResponse = false;
@@ -18,10 +17,11 @@ public class DialogueUnit  {
 	List<Character> modifiedAnims;
 	DialogueSubunit lastOptionsBox;
 
+
+	public Character speaker;
 	// Use this for initialization
 	public DialogueUnit () {
-		//Debug.Log ("starting a ds!");
-		tm = GameObject.FindObjectOfType<TextboxManager> ();
+		Debug.Log ("starting a ds!");
 		modifiedAnims = new List<Character> ();
 		elements = new List<DialogueSubunit> ();
 	}
@@ -30,6 +30,7 @@ public class DialogueUnit  {
 		parseNextElement ();
 	}
 	public void parseNextElement() {
+		TextboxManager tm = GameObject.FindObjectOfType<TextboxManager> ();
 		if (currentElement >= elements.Count) {
 			endSequence ();
 		} else {
@@ -47,6 +48,7 @@ public class DialogueUnit  {
 				currentList.masterSequence = this;
 			} else {
 				awaitingResponse = false;
+				Debug.Log ("Speaker: " + speaker);
 				currentTB = tm.addTextbox(ne.text,speaker.gameObject,true);
 				currentTB.masterSequence = this;
 			}

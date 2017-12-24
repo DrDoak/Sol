@@ -19,6 +19,7 @@ public class GlSurvival: Goal {
 
 		registerEvent ("sight", sightEvent);
 		registerEvent ("attack", sawAttackEvent);
+		registerEvent ("hit", hitEvent, initiateAttack);
 	}
 
 	/*void evaluateAttack(Proposal p) {
@@ -94,7 +95,7 @@ public class GlSurvival: Goal {
 		mChar.addProposal (initAttackProp, e,-favorAggressor);
 		return 0f;
 	}
-	public float hitEvent(Event e,Relationship r,Personality p)  {
+	/*public float hitEvent(Event e,Relationship r,Personality p)  {
 		//Initial impression of this guy
 		float favorAggressor = r.favorability * r.relevance;
 		//What is my tendency to trust my friends/ hate my enemies
@@ -134,12 +135,22 @@ public class GlSurvival: Goal {
 			mChar.addProposal (initAttackProp, e,-favorAggressor + favorVictim);
 		}
 		return 0f;
+	}*/
+	void investigateHit(Proposal p) {
+		EVHitConfirm eva = (EVHitConfirm)p.mEvent;
+		if (eva.targetChar.transform.position.x < mChar.transform.position.x) {
+			mChar.GetComponent<Movement> ().setFacingLeft (true);
+		} else {
+			mChar.GetComponent<Movement> ().setFacingLeft (false);
+		}
 	}
-	/*
-	public override void interactEvent(Event e,Relationship ci) {
+	float hitEvent(Event e, Relationship r, Personality p) {
+		EVHitConfirm eva = (EVHitConfirm)e;
+		//Debug.Log ("Hit event with target: " + eva.ObjectHit);
+		if (eva.ObjectHit == mChar.gameObject) {
+			return 1f;
+		}
+		return 0f;
 	}
-	public override void sawInteractEvent(Event e,Relationship ci) {
-	}
-	*/
 
 }

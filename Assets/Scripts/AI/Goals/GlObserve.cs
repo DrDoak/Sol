@@ -10,7 +10,10 @@ public class GlObserve : Goal{
 		//turnProp = new Proposal ();
 		//turnProp.mMethod = turn;
 		//turnProp.evalMethod = evaluateTurn;
-		registerEvent("sight",sightEvent,turn);
+		registerEvent("sight",outOfSight,turn);
+		registerEvent ("sight", sawCharacter, learnCharacter);
+		registerEvent ("interact", interactEvent, turn);
+
 	}
 
 	//void evaluateTurn(Proposal p) {}
@@ -22,9 +25,30 @@ public class GlObserve : Goal{
 		}
 	}
 
-	public float sightEvent(Event e,Relationship r,Personality p) {
+	void learnCharacter(Proposal p) {
+		Debug.Log ("Learning Character: " + p.mEvent.targetChar.name);
+		mChar.knowledgeBase.LearnSubject (GameObject.FindObjectOfType<KNManager>().FindOrCreateSubject(p.mEvent.targetChar.name));
+	}
+
+	float sawCharacter(Event e,Relationship r,Personality p) {
+		EVSight se = (EVSight)e;
+		if (se.onSight) {
+			//Debug.Log ("Saw character: " + r.Name);
+			if (!mChar.knowledgeBase.HasSubject(GameObject.FindObjectOfType<KNManager>().FindOrCreateSubject(r.Name))) {
+				return 1.0f;				
+			}
+		}
+		return 0.0f;
+	}
+	float outOfSight(Event e,Relationship r,Personality p) {
 		EVSight se = (EVSight)e;
 		if (!se.onSight) {
+			if (mChar.GetComponent<OffenseAI> ().currentTarget) {
+				if (mChar.GetComponent<OffenseAI> ().currentTarget !=
+					e.targetChar){
+					return 0.0f;
+				}
+			}
 			if (r.openHostile) {
 				mChar.addProposal (turnProp, e, 1f);
 			} else {
@@ -40,5 +64,8 @@ public class GlObserve : Goal{
 			}
 		}
 		return 0;
+	}
+	public float interactEvent(Event e,Relationship ci,Personality p) {
+		return 1f;
 	}
 }

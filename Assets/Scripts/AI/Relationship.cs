@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Relationship {
-	public Character parentChar;
+	public Character ParentChar;
+	public string Name;
 	//Relative ability:
 	public float relativeCombat = 0.0f;
 	public float relativeLogic = 0.0f;

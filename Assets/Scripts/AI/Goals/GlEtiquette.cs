@@ -11,7 +11,7 @@ public class GlEtiquette : Goal {
 	}
 
 	public float interactEvent(Event e,Relationship ci,Personality p) {
-		//Debug.Log ("Interact event!!!! from GLEtiquette");
+		Debug.Log ("Interact event!!!! from GLEtiquette. openly hostile?: " + ci.openHostile);
 		//Debug.Log ("OpenAllegience: " + p.opennessAllegiance + " Favor rating: " + favor);
 		if (!ci.openHostile) {
 			float favor = (ci.favorability * ci.relevance);
@@ -22,8 +22,7 @@ public class GlEtiquette : Goal {
 		return 0f;
 	}
 	void startDialogue(Proposal p) {
-		DialogueUnit du = new DialogueUnit ();
-		du.speaker = p.mEvent.targetChar;
+		DialogueUnit du = new DialogueUnit {speaker = p.mEvent.targetChar};
 		du.listener = mChar;
 		du.addDialogueOptions (getDialogueOptions (p.mEvent.targetChar));
 		p.mEvent.targetChar.processDialogueRequest (mChar,du);
@@ -31,7 +30,6 @@ public class GlEtiquette : Goal {
 	}
 	public float factEvent(Event e, Relationship ci, Personality p) {
 		Assertion a = e.assertion;
-		//Debug.Log("evaluating fact event: " + a.Source.Owner);
 		if (a.Source.Owner != null)
 			return 1.0f;
 		return 0f;

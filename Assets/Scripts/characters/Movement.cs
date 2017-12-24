@@ -41,10 +41,13 @@ public class Movement : MonoBehaviour {
 	bool resetPos = false;
 	AnimatorSprite m_anim;
 
+	float m_initialOffsetX;
+
 	void Start() {
 		bCollider = GetComponent<BoxCollider2D> ();
 		float newBOffY = bCollider.offset.y + skinWidth;
-		bCollider.offset = new Vector2(newBOffY,bCollider.offset.y);
+		m_initialOffsetX = bCollider.offset.x;
+		bCollider.offset = new Vector2(m_initialOffsetX,newBOffY);
 		sprite = GetComponent<SpriteRenderer> ();
 		CalculateRaySpacing ();
 		canMove = true;
@@ -79,7 +82,7 @@ public class Movement : MonoBehaviour {
 	}
 
 	void FixedUpdate() {
-		//Debug.Log (Time.deltaTime);
+		////Debug.Log (Time.deltaTime);
 		dropThruTime = Mathf.Max(0f,dropThruTime - Time.fixedDeltaTime);
 		if (Mathf.Abs(accumulatedVelocity.x) > 0.3f) {
 			if (collisions.below) {
@@ -131,8 +134,8 @@ public class Movement : MonoBehaviour {
 		velocity.x += (accumulatedVelocity.x * Time.fixedDeltaTime);
 		UpdateRaycastOrigins ();
 		collisions.Reset ();
-
-		if (velocity.x != 0) {
+		////Debug.Log ("Movement Update: SelfInputX: " + SelfInput.x);
+		if (velocity.x != 0 || SelfInput.x != 0) {
 			HorizontalCollisions (ref velocity);
 		}
 		if (velocity.y != 0) {
@@ -154,8 +157,11 @@ public class Movement : MonoBehaviour {
 	}
 
 	public void Move(Vector2 veloc, Vector2 input) {
+		//NumKnivesLog ("Move Called with input: " + input);
 		SelfInput = input;
 		playerForce = veloc;
+		if (SelfInput.x != 0.0f)
+			setFacingLeft (SelfInput.x < 0.0f);
 	}
 	bool handleStairs(RaycastHit2D hit,Vector2 vel) {
 		if (hit.collider.gameObject.GetComponent<JumpThru> ()) {
@@ -224,8 +230,14 @@ public class Movement : MonoBehaviour {
 		return false;
 	}
 	void HorizontalCollisions(ref Vector2 velocity) {
-		float directionX = Mathf.Sign (velocity.x);
-		float rayLength = Mathf.Abs (velocity.x) + skinWidth;
+		float directionX;
+		//Debug.Log ("Horizontal Collisions:" + SelfInput + " : " + velocity);
+		if (velocity.x == 0) {
+			directionX = Mathf.Sign (SelfInput.x);
+		} else {
+			directionX = Mathf.Sign (velocity.x);
+		}
+		float rayLength = Mathf.Max(0.05f,Mathf.Abs (velocity.x) + skinWidth);
 
 		for (int i = 0; i < horizontalRayCount; i ++) {
 			Vector2 rayOrigin = (directionX == -1)?raycastOrigins.bottomLeft:raycastOrigins.bottomRight;
@@ -236,9 +248,9 @@ public class Movement : MonoBehaviour {
 			}
 			RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.right * directionX, rayLength, collisionMask);
 			if (hit) {
-				Debug.DrawRay(rayOrigin, Vector2.right * directionX * rayLength,Color.red);
+				//Debug.DrawRay(rayOrigin, Vector2.right * directionX * rayLength,Color.red);
 			} else {
-				Debug.DrawRay(rayOrigin, Vector2.right * directionX * rayLength,Color.green);
+				//Debug.DrawRay(rayOrigin, Vector2.right * directionX * rayLength,Color.green);
 			}
 
 			if (hit && !hit.collider.isTrigger) {
@@ -252,7 +264,7 @@ public class Movement : MonoBehaviour {
 						if (slopeAngle != collisions.slopeAngleOld) {
 							distanceToSlopeStart = hit.distance - skinWidth;
 							//velocity.x -= distanceToSlopeStart * directionX;
-							velocity.x = (Mathf.Abs(velocity.x) - distanceToSlopeStart) * directionX;
+							velocity.x = (Mathf.Abs(velocity.x) + distanceToSlopeStart) * directionX;
 						}
 						ClimbSlope (ref velocity, slopeAngle);
 						//velocity.x += distanceToSlopeStart * directionX;
@@ -260,7 +272,7 @@ public class Movement : MonoBehaviour {
 					}
 
 					if (!collisions.climbingSlope || slopeAngle > maxClimbAngle) {
-						velocity.x = Mathf.Min(Mathf.Abs(velocity.x),(hit.distance - skinWidth)) * directionX;
+						velocity.x = (hit.distance - skinWidth) * directionX;
 						rayLength = hit.distance;
 
 						if (collisions.climbingSlope) {
@@ -312,15 +324,15 @@ public class Movement : MonoBehaviour {
 				if (hit && hit.collider.gameObject.GetComponent<JumpThru> () && (dropThruTime > 0f )) {
 				} else {
 					if (hit && !hit.collider.isTrigger && hit.collider.gameObject != gameObject) {
-						//Debug.Log (hit.collider.gameObject);
-						Debug.DrawRay(rayOrigin, Vector2.up * directionY * rayLength,Color.red);
+						////Debug.Log (hit.collider.gameObject);
+						//Debug.DrawRay(rayOrigin, Vector2.up * directionY * rayLength,Color.red);
 						onGround = true;
 						if ( started && !collide) {
 							falling = "left";
 						}
 						collide = true;
 					}  else {
-						Debug.DrawRay(rayOrigin, Vector2.up * directionY * rayLength,Color.green);
+						//Debug.DrawRay(rayOrigin, Vector2.up * directionY * rayLength,Color.green);
 						if (started && collide) {
 							falling = "right";
 						}
@@ -349,7 +361,7 @@ public class Movement : MonoBehaviour {
 	void UpdateRaycastOrigins() {
 		Bounds bounds = bCollider.bounds;
 	
-		bounds.Expand (skinWidth * 2);
+		bounds.Expand (skinWidth );
 
 		raycastOrigins.bottomLeft = new Vector2 (bounds.min.x , bounds.min.y);
 		raycastOrigins.bottomRight = new Vector2 (bounds.max.x, bounds.min.y);
@@ -359,7 +371,7 @@ public class Movement : MonoBehaviour {
 
 	void CalculateRaySpacing() {
 		Bounds bounds = bCollider.bounds;
-		bounds.Expand (skinWidth * 2);
+		bounds.Expand (skinWidth );
 
 		horizontalRayCount = Mathf.Clamp (horizontalRayCount, 2, int.MaxValue);
 		verticalRayCount = Mathf.Clamp (verticalRayCount, 2, int.MaxValue);
@@ -393,8 +405,10 @@ public class Movement : MonoBehaviour {
 		facingLeft = left;
 		if (sprite) {
 			if (facingLeft) {
+				//bCollider.offset = new Vector2(-m_initialOffsetX,bCollider.offset.y);
 				sprite.flipX = true;
 			} else {
+				//bCollider.offset = new Vector2(m_initialOffsetX,bCollider.offset.y);
 				sprite.flipX = false;
 			}
 		}

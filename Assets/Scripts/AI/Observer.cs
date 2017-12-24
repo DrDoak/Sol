@@ -50,15 +50,9 @@ public class Observer : MonoBehaviour {
 					float diff = Mathf.Abs (cDist - minDist);
 					if (diff < 1.0f) {
 						if (o.c != null) {
-							if (!c.charInfo.ContainsKey (o.c)) {
-								Relationship cin = new Relationship ();
-								cin.parentChar = c;
-								cin.lastTimeSeen = lts;
-								c.charInfo.Add (o.c, cin);
-							} else {
-								c.charInfo [o.c].lastTimeSeen = lts;
-								c.charInfo [o.c].canSee = true;
-							}
+							Relationship cin = c.getCharInfo (o.c);
+							cin.lastTimeSeen = lts;
+							cin.canSee = true;
 						}
 						if (!visibleObjs.Contains (o)) {
 							onSight (o);
@@ -74,14 +68,17 @@ public class Observer : MonoBehaviour {
 				Observable o = visibleObjs [i];
 				if (o == null || c.gameObject == null) {
 					visibleObjs.RemoveAt (i);
-				} else if (o.c && lts - c.charInfo [o.c].lastTimeSeen > postLineVisibleTime) {
-					o.removeObserver (this);
-					outOfSight (o, true);
-					visibleObjs.RemoveAt (i);
-				} else if (o.c && Mathf.Abs(lts - c.charInfo [o.c].lastTimeSeen) > 0.05f 
-					&& c.charInfo [o.c].canSee == true){
-					c.charInfo [o.c].canSee = false;
-					outOfSight (o, false);
+				} else if (o.c) {
+					Relationship r = c.getCharInfo (o.c);
+					if (lts - r.lastTimeSeen > postLineVisibleTime) {
+						o.removeObserver (this);
+						outOfSight (o, true);
+						visibleObjs.RemoveAt (i);
+					} else if (Mathf.Abs(lts - r.lastTimeSeen) > 0.05f 
+								&& r.canSee == true){
+						r.canSee = false;
+						outOfSight (o, false);
+					}	
 				}
 			}
 		}

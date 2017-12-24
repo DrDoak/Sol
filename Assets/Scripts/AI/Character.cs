@@ -13,7 +13,8 @@ using UnityEngine;
 [RequireComponent (typeof (RPSpeaker))]
 
 public class Character : Interactable {
-	
+
+	public bool HighlightInteractables = false;
 	new public string name = "default";
 	public List<string> knowledgeGroups;
 	public string faction = "noFaction";
@@ -23,7 +24,7 @@ public class Character : Interactable {
 
 	Movement movt;
 	DialogueParser parser;
-	public Observable ob;
+	public Observable m_observable;
 	Observer observer;
 
 	//Saving
@@ -58,7 +59,7 @@ public class Character : Interactable {
 	protected void init() {
 		movt = GetComponent<Movement> ();
 		observer = GetComponent<Observer> ();
-		ob = GetComponent<Observable> ();
+		m_observable = GetComponent<Observable> ();
 		tm = FindObjectOfType<TextboxManager> ();
 		km = FindObjectOfType<KNManager> ();
 		parser = GetComponent<DialogueParser> ();
@@ -130,8 +131,11 @@ public class Character : Interactable {
 			} else {
 				ie.targetedObj = i;
 			}
-			ob.broadcastToObservers (ie);
+			m_observable.broadcastToObservers (ie);
 			i.onInteract (this);
+			if (i.GetComponent<Observer> ()) {
+				i.GetComponent<Observer> ().respondToEvent (ie);		
+			}
 		}
 	}
 
@@ -171,6 +175,7 @@ public class Character : Interactable {
 		
 //--------Character info
 	public Relationship getCharInfo(Character c) {
+		//Debug.Log ("Getting Character info for: " + c);
 		if (c == null) {
 			//Debug.Log ("Why is the character null?");
 			return null;
@@ -181,8 +186,10 @@ public class Character : Interactable {
 		}
 	}
 	public Relationship evaluateNewChar(Character c) {
+		Debug.Log ("Evaluating new character: " + c.name);
 		Relationship ci = new Relationship ();
-		ci.parentChar = this;
+		ci.Name = c.name;
+		ci.ParentChar = this;
 		charInfo.Add (c, ci);
 		return ci;
 	}
@@ -213,6 +220,7 @@ public class Character : Interactable {
 			registryCheck ();
 		}
 	}
+
 	public void StoreData() {
 		//Debug.Log ("storing data");
 		data.name = gameObject.name;

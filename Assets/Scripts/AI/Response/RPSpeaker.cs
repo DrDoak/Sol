@@ -84,6 +84,7 @@ public class RPSpeaker : MonoBehaviour {
 		RPEntry newEntry = new RPEntry ();
 		newEntry.response = r;
 		log.Add (newEntry);
+		Debug.Log ("Emitting string: " + r.toString ());
 		c.say (r.toString ());
 	}
 	public RPTemplate GetBestResponse(List<RPTemplate> responses,Response r) {

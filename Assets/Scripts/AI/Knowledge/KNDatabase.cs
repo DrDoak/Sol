@@ -96,7 +96,7 @@ public class KNDatabase {
 	}
 
 	public void LearnFact(Assertion newF) {
-		Debug.Log (Owner.name + " is learning fact: " + newF.GetID());
+		//Debug.Log (Owner.name + " is learning fact: " + newF.GetID());
 		//Debug.Log ("source is: " + newF.mChar);
 		var evf = new EVFact ();
 		evf.assertion = newF;
@@ -113,5 +113,26 @@ public class KNDatabase {
 			AddAssertion (evf.assertion);
 		}
 		Owner.respondToEvent (evf);
+	}
+
+	public bool HasSubject(KNSubject sub) {
+		foreach(KNSubject s in Subjects) {
+			if (s.GetID() == sub.GetID())
+				return true;
+		}
+		return false;
+	}
+	public void LearnSubject(KNSubject s) {
+		if (!Subjects.Contains (s)) {
+			Subjects.Add (s);
+		}
+	}
+	public bool HasVerb(KNVerb v) {
+		return Verbs.Contains(v);
+	}
+	public void LearnVerb(KNVerb s) {
+		if (!Verbs.Contains (s)) {
+			Verbs.Add (s);
+		}
 	}
 }

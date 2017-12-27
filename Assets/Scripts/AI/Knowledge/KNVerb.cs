@@ -27,7 +27,7 @@ public class KNVerb {
 		if (a == null)
 			return true;
 		foreach (var s in Actors) {
-			if (a.Match (s))
+			if (a.Equals (s))
 				return true;
 		}
 		return false;
@@ -36,17 +36,20 @@ public class KNVerb {
 		if (receiver == null)
 			return true;
 		foreach (var s in Receivors) {
-			if (receiver.Match (s))
+			if (receiver.Equals (s))
 				return true;
 		}
 		return false;
 	}
-	public bool Match(KNVerb kv) {
-		if (kv.VerbName == VerbName)
-			return true;
+	public override bool Equals( System.Object obj ) {
+		if (obj == null)
+			return false;
 		
+		KNVerb kv = obj as KNVerb;
+		if (kv.VerbName == VerbName && (kv.Inverted == Inverted))
+			return true;
 		foreach (var v in Parents) {
-			if (v.Match (kv))
+			if (v.Equals (kv))
 				return true;
 		}
 		return false;

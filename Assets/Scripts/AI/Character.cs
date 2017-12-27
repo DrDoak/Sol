@@ -128,9 +128,8 @@ public class Character : Interactable {
 			if (i.GetComponent<Character> ()) {
 				ie.isCharInteraction = true;
 				ie.listenerChar = i.GetComponent<Character> ();
-			} else {
-				ie.targetedObj = i;
 			}
+			ie.targetedObj = i;
 			m_observable.broadcastToObservers (ie);
 			i.onInteract (this);
 			if (i.GetComponent<Observer> ()) {

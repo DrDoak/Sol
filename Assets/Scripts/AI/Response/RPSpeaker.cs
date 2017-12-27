@@ -32,8 +32,21 @@ public class RPSpeaker : MonoBehaviour {
 	public Response ConveyReceivor( Assertion a, Character listener) {
 		if (!a.HasReceivor)
 			return new Response ();
-		Debug.Log ("DO: " + a.Receivors [0].GetID ());
 		return Convey(a.Receivors[0],listener);
+	}
+	public Response Convey(string exclamation, Character listener) {
+		Response r = new Response ();
+		r.mChar = c;
+		r.speaker = this;
+		r.listener = listener;
+		List<RPTemplate> fullR = rpd.GetMatches (exclamation,c);
+		RPTemplate best = GetBestResponse (fullR,r);
+		if (best != null) {
+			r.applyTemplate (best);
+		} else {
+			r.setString (exclamation);
+		}
+		return r;
 	}
 	public Response Convey(KNSubject s, Character listener) {
 		Response r = new Response ();
@@ -100,7 +113,5 @@ public class RPSpeaker : MonoBehaviour {
 		return bestRP;
 	}
 
-	public float RateResponse(RPTemplate rp,Response r) {
-		return 1.0f;
-	}
+	public float RateResponse(RPTemplate rp,Response r) {return 1.0f;}
 }

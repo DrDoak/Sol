@@ -7,16 +7,31 @@ public class GlObserve : Goal{
 	public Character targetCh;
 	Proposal turnProp;
 	public GlObserve() {
-		//turnProp = new Proposal ();
-		//turnProp.mMethod = turn;
-		//turnProp.evalMethod = evaluateTurn;
 		registerEvent("sight",outOfSight,turn);
 		registerEvent ("sight", sawCharacter, learnCharacter);
-		registerEvent ("interact", interactEvent, turn);
-
+		registerEvent ("interact", turn);
+		registerEvent ("interact", rememberInteraction);
+		registerEvent ("hit", rememberHit);
 	}
 
-	//void evaluateTurn(Proposal p) {}
+	void rememberInteraction(Proposal p) {
+		Assertion a = new Assertion ();
+		EVInteract evi = (EVInteract)p.mEvent;
+		a.AddSubject (KNManager.FindOrCreateSubject (evi.targetChar.name));
+		a.AddVerb (KNManager.FindOrCreateVerb("interact"));
+		a.AddReceivor(KNManager.FindOrCreateSubject(evi.targetedObj.name));
+		mChar.knowledgeBase.LearnAssertion (a);
+	}
+
+	void rememberHit(Proposal p) {
+		Assertion a = new Assertion ();
+		Debug.Log (p.mEvent.eventType);
+		EVHitConfirm evh = (EVHitConfirm)p.mEvent;
+		a.AddSubject (KNManager.FindOrCreateSubject (evh.targetChar.name));
+		a.AddVerb (KNManager.FindOrCreateVerb("hit"));
+		a.AddReceivor(KNManager.FindOrCreateSubject(evh.ObjectHit.name));
+		mChar.knowledgeBase.LearnAssertion (a);
+	}
 	void turn(Proposal p) {
 		if (p.mEvent.targetChar.transform.position.x > mChar.transform.position.x) {
 			mChar.GetComponent<Movement> ().setFacingLeft (false);
@@ -27,14 +42,14 @@ public class GlObserve : Goal{
 
 	void learnCharacter(Proposal p) {
 		Debug.Log ("Learning Character: " + p.mEvent.targetChar.name);
-		mChar.knowledgeBase.LearnSubject (GameObject.FindObjectOfType<KNManager>().FindOrCreateSubject(p.mEvent.targetChar.name));
+		mChar.knowledgeBase.LearnSubject (KNManager.FindOrCreateSubject(p.mEvent.targetChar.name));
 	}
 
 	float sawCharacter(Event e,Relationship r,Personality p) {
 		EVSight se = (EVSight)e;
 		if (se.onSight) {
 			//Debug.Log ("Saw character: " + r.Name);
-			if (!mChar.knowledgeBase.HasSubject(GameObject.FindObjectOfType<KNManager>().FindOrCreateSubject(r.Name))) {
+			if (!mChar.knowledgeBase.HasSubject(KNManager.FindOrCreateSubject(r.Name))) {
 				return 1.0f;				
 			}
 		}
@@ -59,13 +74,9 @@ public class GlObserve : Goal{
 
 				// natural human nature nature to want to see things
 				favor += (0.1f - p.temperament * 0.2f);
-				//mChar.addProposal (turnProp, e, favor);
 				return favor;
 			}
 		}
 		return 0;
-	}
-	public float interactEvent(Event e,Relationship ci,Personality p) {
-		return 1f;
 	}
 }

@@ -5,85 +5,90 @@ using UnityEngine;
 public static class KNImporter {
 	
 	public static void InitDatabase(KNManager knm, string entriesSource, string subjectSource, string verbSource) {
-		InitVerbs (knm, verbSource);
-		InitSubjects (knm, subjectSource);
-		InitEntries (knm, entriesSource);
+		InitVerbs ( verbSource);
+		InitSubjects ( subjectSource);
+		InitEntries ( entriesSource);
 	}
 
-	static void InitSubjects(KNManager knm, string source) {
+	static void InitSubjects(string source) {
 		List<Dictionary<string,string>> subjects = FactCSVImporter.importFile (source);
 		foreach (Dictionary<string,string> d in subjects) {
-			KNSubject sub = knm.FindOrCreateSubject (d ["name"]);
+			if (d ["name"].Length == 0)
+				continue;
+			KNSubject sub = KNManager.FindOrCreateSubject (d ["name"],(d["hide"].Length > 0),false);
 			List<string> parents = FactCSVImporter.splitStringRow (d ["parent"]);
 			if (parents.Count > 0) {
 				foreach (string s in parents) {
-					KNSubject par = knm.FindOrCreateSubject (s);
+					KNSubject par = KNManager.FindOrCreateSubject (s);
 					sub.Parents.Add (par);
 				}
 			}
 			List<string> contradictions = FactCSVImporter.splitStringRow (d ["contradictions"]);
 			if (parents.Count > 0) {
 				foreach (string s in parents) {
-					KNSubject con = knm.FindOrCreateSubject (s);
+					KNSubject con = KNManager.FindOrCreateSubject (s);
 					sub.Contradictions.Add (con);
 				}
 			}
 		}
 	}
 
-	static void InitVerbs(KNManager knm, string source) {
+	static void InitVerbs( string source) {
 		List<Dictionary<string,string>> verbs = FactCSVImporter.importFile (source);
 		int t = 0;
 		foreach (Dictionary<string,string> d in verbs) {
 			t += 1;
-			KNVerb sub = knm.FindOrCreateVerb (d ["name"]);
+			if (d ["name"].Length == 0)
+				continue;
+			KNVerb sub = KNManager.FindOrCreateVerb (d ["name"]);
+			//Debug.Log ("INitializing verbs: " + d ["name"]);
 			List<string> actors = FactCSVImporter.splitStringRow (d ["actors"]);
 			if (actors.Count > 0) {
 				foreach (string s in actors) {
-					KNSubject par = knm.FindOrCreateSubject (s);
+					KNSubject par = KNManager.FindOrCreateSubject (s);
 					sub.Actors.Add (par);
 				}
 			}
 			List<string> receivers = FactCSVImporter.splitStringRow (d ["receivers"]);
 			if (receivers.Count > 0) {
 				foreach (string s in receivers) {
-					KNSubject con = knm.FindOrCreateSubject (s);
+					KNSubject con = KNManager.FindOrCreateSubject (s);
 					sub.Receivors.Add (con);
 				}
 			}
 		}
 	}
 
-	static void InitEntries(KNManager knm, string source) {
+	static void InitEntries( string source) {
 		List<Dictionary<string,string>> dbEntries = FactCSVImporter.importFile (source);
 		foreach (Dictionary<string,string> d in dbEntries) {
 			Assertion newEntry = new Assertion ();
 
-			newEntry.Subjects = ParseSubjectEntry (knm,d ["subjects"]);
-			newEntry.Verb = knm.FindOrCreateVerb (d ["verb"]);
-			newEntry.Receivors = ParseSubjectEntry (knm,d ["directObjects"]);
+			newEntry.Subjects = ParseSubjectEntry (d ["subjects"]);
+			newEntry.Verb = KNManager.FindOrCreateVerb (d ["verb"]);
+			newEntry.Receivors = ParseSubjectEntry (d ["directObjects"]);
 			newEntry.KnowledgeGroups = FactCSVImporter.splitStringRow (d ["knowledgeGroups"]);
-			knm.AddAssertion (newEntry);
+			KNManager.Instance.AddAssertion (newEntry);
 		}
 	}
 
 
-	static List<KNSubject> ParseSubjectEntry (KNManager knm, string subjectStr) {
+	static List<KNSubject> ParseSubjectEntry (string subjectStr) {
 		List<KNSubject> ret = new List<KNSubject> ();
 		string lastWord = "";
 		foreach (char lastC in subjectStr.ToCharArray()) {
 			if (lastC == ';') {
-				ret.Add (knm.FindOrCreateSubject (lastWord));
+				ret.Add (KNManager.FindOrCreateSubject (lastWord));
 				lastWord = "";
 			} else if (lastC != ' ') {
 				lastWord += lastC;
 			}
 		}
-		ret.Add (knm.FindOrCreateSubject (lastWord));
+		ret.Add (KNManager.FindOrCreateSubject (lastWord));
 		return ret;
 	}
 
-	static void ParseKnowledgeGroup(KNManager knm, Assertion a, string groupID) {
+	static void ParseKnowledgeGroup ( Assertion a, string groupID) {
 		string lastWord = "";
 		foreach (char lastC in groupID) {
 			if (lastC == ';') {

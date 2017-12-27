@@ -8,16 +8,21 @@ public class KNSubject {
 	public List<KNSubject> Parents;
 	public List<KNSubject> Contradictions;
 	public Character Owner;
+	public bool Hide = false;
+	public bool Exclamation = false;
 	int count;
 	public KNSubject() {
 		Parents = new List<KNSubject> ();
 		Contradictions = new List<KNSubject> ();
 	}
-	public virtual bool Match(KNSubject ks) {
+	public override bool Equals( System.Object obj ) {
+		if (obj == null)
+			return false;
+		KNSubject ks = obj as KNSubject;
 		if (ks.SubjectName == SubjectName)
 			return true;
 		foreach (var s in Parents) {
-			if (s.Match (ks)) {
+			if (s.Equals (ks)) {
 				return true;
 			}
 		}
@@ -25,7 +30,7 @@ public class KNSubject {
 	}
 	public virtual KNSubject Copy() {
 		KNSubject ks = new KNSubject {SubjectName = SubjectName, Parents = Parents,
-			Contradictions = Contradictions, Owner = Owner};
+			Contradictions = Contradictions, Owner = Owner, Hide = Hide, Exclamation = Exclamation};
 		return ks;
 	}
 	public virtual string GetID() {

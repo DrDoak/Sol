@@ -29,6 +29,8 @@ public class Assertion : KNSubject{
 		KnowledgeGroups = new List<string> ();
 		Subjects = new List<KNSubject> ();
 		Receivors = new List<KNSubject> ();
+		LastTimeDiscussed = GameManager.GameTime;
+		TimeLearned = GameManager.GameTime;
 	}
 
 	public void AddSubject(KNSubject s) {
@@ -72,7 +74,7 @@ public class Assertion : KNSubject{
 		return true;
 	}
 	public string GetSubjectID() {
-		if (HasSubject)
+		if (!HasSubject)
 			return "?SUB";
 		return Subjects [0].GetID ();
 	}
@@ -145,7 +147,7 @@ public class Assertion : KNSubject{
 			return true;
 		bool found = false;
 		foreach (var s in Subjects) {
-			if (s.Match(ks)) {
+			if (s.Equals(ks)) {
 				found = true;
 				continue;
 			}
@@ -154,7 +156,9 @@ public class Assertion : KNSubject{
 	}
 
 	public bool VerbMatch(KNVerb kv) {
-		return Verb.Match(kv);
+		if (Verb == null)
+			return false;
+		return Verb.Equals(kv);
 	}
 
 	public bool DOMatch(KNSubject ks) {
@@ -162,7 +166,7 @@ public class Assertion : KNSubject{
 			return true;
 		bool found = false;
 		foreach (var s in Receivors) {
-			if (s.Match(ks)) {
+			if (s.Equals(ks)) {
 				found = true;
 				continue;
 			}

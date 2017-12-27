@@ -30,7 +30,6 @@ public class TextboxManager : MonoBehaviour {
 	}
 	public textbox addTextbox(string text,GameObject targetObj,bool typeText,float textSpeed) {
 		Vector2 newPos = findPosition (targetObj.transform.position);
-		Debug.Log (newPos);
 		GameObject newTextbox = Instantiate (textboxPrefab,newPos,Quaternion.identity);
 		textbox tb = newTextbox.GetComponent<textbox> ();
 		if (!type) {
@@ -117,7 +116,7 @@ public class TextboxManager : MonoBehaviour {
 
 	public Vector2 findPosition(Vector2 startLocation) {
 		//Vector2 newPos;
-		float targetY = startLocation.y + 10f;
+		float targetY = startLocation.y + 5f;
 		//newPos.y = targetY;
 		foreach (GameObject o in textboxes) {
 		}

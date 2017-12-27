@@ -21,7 +21,7 @@ public class DialogueUnit  {
 	public Character speaker;
 	// Use this for initialization
 	public DialogueUnit () {
-		Debug.Log ("starting a ds!");
+		//Debug.Log ("starting a ds!");
 		modifiedAnims = new List<Character> ();
 		elements = new List<DialogueSubunit> ();
 	}
@@ -44,12 +44,11 @@ public class DialogueUnit  {
 				if (speaker != null)
 					speaker.setAutonomy (false);
 				//currentDB = tm.addDialogueOptions (ne.text,speaker.gameObject,ne.options);
-				currentList = tm.addListOptions(ne.text,speaker.gameObject,ne.options);
+				currentList = tm.addListOptions(ne.text,(speaker)?speaker.gameObject:null,ne.options);
 				currentList.masterSequence = this;
 			} else {
-				awaitingResponse = false;
-				Debug.Log ("Speaker: " + speaker);
-				currentTB = tm.addTextbox(ne.text,speaker.gameObject,true);
+				awaitingResponse = false;				
+				currentTB = tm.addTextbox(ne.text,(speaker)?speaker.gameObject:null,true);
 				currentTB.masterSequence = this;
 			}
 			setAnimation (ne.animation);

@@ -5,6 +5,7 @@ using UnityEngine;
 public class KNManager : MonoBehaviour {
 
 	public static KNManager Instance;
+	public delegate void OnSelection(DialogueOption doption);
 
 	[SerializeField] private string m_EntrySource;
 	[SerializeField] private string m_SubjectSource;
@@ -32,12 +33,18 @@ public class KNManager : MonoBehaviour {
 	}
 		
 	public void AddKnowledgeGroups(KNDatabase kd, string kGroup) {
-		Debug.Log ("Adding knowledge group: " + kGroup);
+		
 		foreach (Assertion a in m_Database.Knowledge.Values) {
 			if (a.KnowledgeGroups.Contains (kGroup)) {
-				Debug.Log ("Adding Assertion: " + a.GetID ());
-				AddAssertion (kd, a.CopyAssertion());
+				kd.AddAssertion (a.CopyAssertion ());
+				//AddAssertion (kd, a.CopyAssertion());
 			}
+		}
+		foreach (KNVerb v in m_Verbs.Values) {
+			kd.LearnVerb (v);
+		}
+		foreach (KNSubject s in m_Subjects.Values) {
+			kd.LearnSubject (s);
 		}
 	}
 	public void AddAssertion(Assertion a) {
@@ -53,17 +60,27 @@ public class KNManager : MonoBehaviour {
 	public void SetSubject(string sid, KNSubject subject) {
 		m_Subjects [sid] = subject;
 	}
-	public KNSubject FindOrCreateSubject(string sid) {
-		if (m_Subjects.ContainsKey (sid)) {
-			KNSubject ks = m_Subjects [sid].Copy ();
+	public static KNSubject FindOrCreateSubject(string sid, bool hide, bool exclamation) {
+		return Instance.m_FindOrCreateSubject (sid, hide, exclamation);		
+	}
+
+	public static KNSubject FindOrCreateSubject(string sid) {
+		return Instance.m_FindOrCreateSubject (sid, false, false);
+	}
+
+	KNSubject m_FindOrCreateSubject(string sid, bool hide, bool exclamation) {
+		string s = sid.ToLower ();
+		if (m_Subjects.ContainsKey (s)) {
+			KNSubject ks = m_Subjects [s].Copy ();
 			return ks;
 		} else {
 			var newSubject = new KNSubject { SubjectName = sid };
 			if (CharacterManager.Instance.findChar (sid) != null)
 				newSubject.Owner = CharacterManager.Instance.findChar (sid);
-			
-			m_Subjects.Add (sid, newSubject);
-			KNSubject ks = m_Subjects [sid].Copy ();
+			newSubject.Hide = hide;
+			newSubject.Exclamation = exclamation;
+			m_Subjects.Add (s, newSubject);
+			KNSubject ks = m_Subjects [s].Copy ();
 			return ks;
 		}
 	}
@@ -72,7 +89,11 @@ public class KNManager : MonoBehaviour {
 			return m_Verbs[vid];
 		return null;
 	}
-	public KNVerb FindOrCreateVerb(string vid) {
+	public static KNVerb FindOrCreateVerb(string vid) {
+		return Instance.m_FindOrCreateVerb(vid);
+	}
+
+	KNVerb m_FindOrCreateVerb(string vid) {
 		var invert = false;
 		if (vid [0] == '!') {
 			invert = true;
@@ -90,10 +111,9 @@ public class KNManager : MonoBehaviour {
 			return v;
 		}
 	}
-
-	public Assertion NewAssertion(KNSubject subject, KNVerb verb, KNSubject receiver, KNSubject source,bool isInquiry,Character c) {
-		var f = new Assertion { TimeLearned = Time.realtimeSinceStartup,Inquiry = isInquiry,
-			LastTimeDiscussed = Time.realtimeSinceStartup, Source = source};
+	Assertion m_newAssertion(KNSubject subject, KNVerb verb, KNSubject receiver, KNSubject source,bool isInquiry,Character c) {
+		var f = new Assertion { TimeLearned = GameManager.GameTime,Inquiry = isInquiry,
+			LastTimeDiscussed = GameManager.GameTime, Source = source};
 		f.SetOwner (c);
 		f.AddSubject (subject);
 		f.AddVerb (verb);
@@ -102,13 +122,16 @@ public class KNManager : MonoBehaviour {
 	}
 
 //----dialogue boxes-----
-	public void CreateSubjectList(Character speaker) {
-		CreateSubjectList (speaker, null,false);
+	public static void CreateSubjectList(Character speaker) {
+		CreateSubjectList (speaker, null, Instance.FinishFact);
 	}
 
-	public void CreateSubjectList(Character speaker,Character listener,bool isInquiry) {
+	public static void CreateSubjectList(Character speaker, Character listener) {
+		CreateSubjectList (speaker, listener, Instance.FinishFact);
+	}
+	public static void CreateSubjectList(Character speaker,Character listener,OnSelection selectionFunction) {
 		var du = new DialogueUnit {speaker = speaker, listener = listener};
-		du.addDialogueOptions (GetSubjectOptions (speaker, true, isInquiry));
+		du.addDialogueOptions (Instance.GetSubjectOptions (speaker, true, selectionFunction));
 		listener.processDialogueRequest (speaker, du);
 		du.startSequence ();
 	}
@@ -119,39 +142,48 @@ public class KNManager : MonoBehaviour {
 		dos.Add (o);
 	}
 
-	public List<DialogueOption> GetSubjectOptions(Character c,bool includeWildcard,bool isInquiry) {
+	public List<DialogueOption> GetSubjectOptions(Character c,bool includeWildcard,OnSelection selectionFunction) {
 		var dos = new List<DialogueOption> ();
 		KNDatabase kd = c.knowledgeBase;
 		foreach (var ks in kd.Subjects) {
+			if (ks.Hide)
+				continue;
 			OptionKnowledgeBase o = new OptionKnowledgeBase {responseFunction = SubjectSelected,
 				text = ks.SubjectName};
-			o.assertion = NewAssertion(ks,null,null,FindOrCreateSubject(c.name),isInquiry,c);
+			o.assertion = m_newAssertion (ks, null, null, FindOrCreateSubject (c.name), false, c);
+			o.SelectionFunction = selectionFunction;
 			dos.Add (o);
 		}
-		if (includeWildcard) { AddWildCard (dos, NewAssertion(null,null,null,FindOrCreateSubject(c.name),isInquiry,c)); }
+		if (includeWildcard) { AddWildCard (dos, m_newAssertion(null,null,null,FindOrCreateSubject(c.name),false,c)); }
 		return dos;
 	}
-	public List<DialogueOption> GetVerbOptions (Character c, Assertion a, bool includeWildcard) {
+
+	public List<DialogueOption> GetVerbOptions (Character c, Assertion a, bool includeWildcard, OnSelection selectionFunction) {
 		var dos = new List<DialogueOption> ();
 		KNDatabase kd = c.knowledgeBase;
+
 		foreach (var kv in kd.MatchingVerbs(a)) {
 			//Debug.Log ("Found verb: " + kv.VerbName + " subName: " + sub.subjectName + " canAct: " + kv.canAct(sub));
 			var o = new OptionKnowledgeBase { responseFunction = VerbSelected,
 				text = kv.VerbName, assertion = a.CopyAssertion()};
 			o.assertion.AddVerb( kv);
+			o.SelectionFunction = selectionFunction;
 			dos.Add (o);
 		}
 		if (includeWildcard) { AddWildCard (dos, a.CopyAssertion()); }
 		return dos;
 	}
 
-	public List<DialogueOption> getPossibleReceivers(Character c, Assertion a, bool includeWildcard) {
+	public List<DialogueOption> getPossibleReceivers(Character c, Assertion a, bool includeWildcard, OnSelection selectionFunction) {
 		var dos = new List<DialogueOption> ();
 		KNDatabase kd = c.knowledgeBase;
 		foreach (var ks in kd.MatchingDirectObjects(a)) {
+			if (ks.Hide)
+				continue;
 			var o = new OptionKnowledgeBase {responseFunction = FinishFact, text = ks.SubjectName,
 				assertion = a.CopyAssertion()};
 			o.assertion.AddReceivor(ks);
+			o.SelectionFunction = selectionFunction;
 			dos.Add (o);
 		}
 		if (includeWildcard) { AddWildCard (dos, a); }
@@ -163,23 +195,51 @@ public class KNManager : MonoBehaviour {
 
 		var du = new DialogueUnit {speaker = dob.speaker, listener = dob.listener};
 
-		du.addDialogueOptions (GetVerbOptions(dob.speaker,dob.assertion,true));
+		du.addDialogueOptions (GetVerbOptions(dob.speaker,dob.assertion,true,dob.SelectionFunction));
 		o.closeSequence();
 		du.startSequence ();
 	}
+
 	void VerbSelected (DialogueOption o) {
 		OptionKnowledgeBase dob = (OptionKnowledgeBase)o;
 
 		DialogueUnit du = new DialogueUnit {speaker = dob.speaker, listener = dob.listener};
-		du.addDialogueOptions (getPossibleReceivers(dob.speaker,dob.assertion,true));
+		du.addDialogueOptions (getPossibleReceivers(dob.speaker,dob.assertion,true, dob.SelectionFunction));
 		o.closeSequence();
 		du.startSequence ();
 	}
+
 	void FinishFact(DialogueOption o) {
 		OptionKnowledgeBase dob = (OptionKnowledgeBase)o;
 		o.closeSequence ();
 		if (dob.assertion != null && dob.listener)
-			dob.listener.knowledgeBase.LearnFact (dob.assertion);
+			dob.listener.knowledgeBase.LearnAssertion (dob.assertion);
+	}
+
+	public static void CreateExclamationList(Character speaker, Character listener) {
+		CreateExclamationList (speaker, listener, Instance.FinishFact);
+	}
+	public static void CreateExclamationList(Character speaker,Character listener,OnSelection selectionFunction) {
+		var du = new DialogueUnit {speaker = speaker, listener = listener};
+		du.addDialogueOptions (Instance.GetExclamations (speaker, true, selectionFunction));
+		listener.processDialogueRequest (speaker, du);
+		du.startSequence ();
+	}
+
+	public List<DialogueOption> GetExclamations(Character c,bool includeWildcard,OnSelection selectionFunction) {
+		var dos = new List<DialogueOption> ();
+		KNDatabase kd = c.knowledgeBase;
+		foreach (var ks in kd.Subjects) {
+			if (!ks.Exclamation)
+				continue;
+			OptionKnowledgeBase o = new OptionKnowledgeBase {responseFunction = FinishFact,
+				text = ks.SubjectName};
+			o.assertion = m_newAssertion(ks,null,null,FindOrCreateSubject(c.name),false,c);
+			o.SelectionFunction = selectionFunction;
+			dos.Add (o);
+		}
+		if (includeWildcard) { AddWildCard (dos, m_newAssertion(null,null,null,FindOrCreateSubject(c.name),false,c)); }
+		return dos;
 	}
 }
 

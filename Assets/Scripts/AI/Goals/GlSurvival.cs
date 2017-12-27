@@ -25,7 +25,9 @@ public class GlSurvival: Goal {
 	/*void evaluateAttack(Proposal p) {
 	}*/
 	void initiateAttack(Proposal p) {
+		Debug.Log ("Initiating attack");
 		mChar.offense.setTarget (p.mEvent.targetChar);
+		mChar.speaker.EmitResponse(mChar.speaker.Convey ("pain", p.mEvent.targetChar));
 	}
 
 	void initiateFlee(Proposal p) {

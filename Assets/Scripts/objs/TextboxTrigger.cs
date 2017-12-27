@@ -32,7 +32,7 @@ public class TextboxTrigger : Interactable {
 		Gizmos.DrawCube (transform.position, transform.localScale);
 	}
 	internal void OnTriggerEnter2D(Collider2D other) {
-		if (other.gameObject.GetComponent<Player> () && currentInterval <= 0.0f) {
+		if (autoTrigger && other.gameObject.GetComponent<Player> () && currentInterval <= 0.0f) {
 			triggerText ();
 		}
 	}

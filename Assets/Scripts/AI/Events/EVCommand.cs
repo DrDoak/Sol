@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EVFact : Event {
-	public bool isDuplicate = false;
-	public EVFact() {
+public class EVCommand : Event {
+	public EVCommand() {
 		eventType = "fact";
 	}
 }

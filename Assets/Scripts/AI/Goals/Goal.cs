@@ -15,6 +15,7 @@ public class Goal {
 
 	Dictionary<string,List<evaluationMethod>> evalMethods = new Dictionary<string,List<evaluationMethod>> ();
 	Dictionary<string,List<immediateExecute>> immExecMethods = new Dictionary<string,List<immediateExecute>>();
+	Dictionary<string,List<executionMethod>> immExecMethods2 = new Dictionary<string,List<executionMethod>>();
 	Dictionary<evaluationMethod,executionMethod> execMethods = new Dictionary<evaluationMethod,executionMethod> ();
 
 	public Goal () {}
@@ -23,6 +24,11 @@ public class Goal {
 		if (!(immExecMethods.ContainsKey (eventType)))
 			immExecMethods [eventType] = new List<immediateExecute> ();
 		immExecMethods[eventType].Add(immM);
+	}
+	protected void registerEvent(string eventType, executionMethod immE) {
+		if (!(immExecMethods2.ContainsKey (eventType)))
+			immExecMethods2 [eventType] = new List<executionMethod> ();
+		immExecMethods2[eventType].Add(immE);
 	}
 	protected void registerEvent(string eventType, evaluationMethod evalM) {
 		if (!(evalMethods.ContainsKey (eventType)))
@@ -48,6 +54,16 @@ public class Goal {
 				eX (e, ci, mChar.pers);
 			}
 		}
+		if (immExecMethods2.ContainsKey(eventName)) {
+			foreach (executionMethod eX in immExecMethods2[eventName]) {
+				Proposal p = new Proposal ();
+				p.mNPC = mChar;
+				p.mEvent = e;
+				p.mMethod = eX;
+				p.rating = 1.0f;
+				eX (p);
+			}
+		}
 		if (evalMethods.ContainsKey (eventName)) {
 			foreach (evaluationMethod eM in evalMethods[eventName]) {
 				Relationship ci = mChar.getCharInfo (e.targetChar);
@@ -62,6 +78,9 @@ public class Goal {
 				}
 			}
 		}
+	}
+	protected float always(Event e,Relationship ci,Personality p)  {
+		return 1f;
 	}
 	/*
 	public virtual void sightEvent(Event e,Relationship ci,Personality p) {}

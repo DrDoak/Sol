@@ -9,11 +9,11 @@ public class RPDatabase : MonoBehaviour {
 	List<RPTemplate> m_SubjectTemplates;
 	List<RPTemplate> m_VerbTemplates;
 
-	KNManager knm;
+	//KNManager knm;
 	bool m_Init;
 	// Use this for initialization
 	void Start () {
-		knm = FindObjectOfType<KNManager> ();
+		//knm = FindObjectOfType<KNManager> ();
 		m_SubjectTemplates = new List<RPTemplate> ();
 		m_ResponseTemplates = new List<RPTemplate> ();
 	}
@@ -24,6 +24,16 @@ public class RPDatabase : MonoBehaviour {
 			return;
 		ImportFromFile (ImportPath);
 		m_Init = true;
+	}
+
+	public List<RPTemplate> GetMatches(string exclamation, Character speaker) {
+		var responses = new List<RPTemplate> ();
+		foreach (var r in m_ResponseTemplates) {
+			r.setSpeaker (speaker);
+			if (r.match (exclamation))
+				responses.Add (r);
+		}
+		return responses;
 	}
 
 	public List<RPTemplate> GetMatches(Assertion a,Character speaker) {
@@ -69,26 +79,35 @@ public class RPDatabase : MonoBehaviour {
 						foreach (string s in subjects) {
 							//Debug.Log ("searching for subject: " + s);
 							//KNSubSelf kss = (KNSubSelf)knm.FindOrCreateSubject (s);
-							KNSubject par = knm.FindOrCreateSubject (s);
+							KNSubject par = KNManager.FindOrCreateSubject (s);
 							//Debug.Log ("ID is: " + par.getID ());
 							rpt.templateAssertion.AddSubject (par);
 						}
 					}
 				}
 				if (d ["verb"] != "*") {
-					KNVerb verb = knm.FindOrCreateVerb (d["verb"]);
+					KNVerb verb = KNManager.FindOrCreateVerb (d["verb"]);
 					rpt.templateAssertion.Verb = verb;
 				}
 				if (d ["receivers"] != "*") {
 					List<string> dobjs = FactCSVImporter.splitStringRow (d ["receivers"]);
 					if (dobjs.Count > 0) {
 						foreach (string s in dobjs) {
-							KNSubject par = knm.FindOrCreateSubject (s);
+							KNSubject par = KNManager.FindOrCreateSubject (s);
 							rpt.templateAssertion.AddReceivor (par);
 						}
 					}
 				}
-			} else {}
+			} else if (t == "exclamation") {
+				rpt.templateAssertion = new Assertion ();
+				List<string> subjects = FactCSVImporter.splitStringRow (d ["subjects"]);
+				if (subjects.Count > 0) {
+					foreach (string s in subjects) {
+						KNSubject par = KNManager.FindOrCreateSubject (s, true, true);
+						rpt.templateAssertion.AddSubject (par.Copy());
+					}
+				}
+			}
 			m_ResponseTemplates.Add(rpt);
 		}
 	}

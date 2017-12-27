@@ -9,9 +9,10 @@ public class KNSubSelf : KNSubject {
 		Parents = new List<KNSubject> ();
 		Contradictions = new List<KNSubject> ();
 	}
-	public override bool Match(KNSubject ks) {
-		//Debug.Log ("attempting match: " + ks.getID());
-		//Debug.Log ("I am: " + mChar.name.ToLower ());
+	public override bool Equals( System.Object obj ) {
+		if (obj == null || Owner == null)
+			return false;
+		KNSubject ks = obj as KNSubject;
 		if (ks.GetID().ToLower() == Owner.name.ToLower ()) {
 			//Debug.Log ("I subject MATCHED");
 			return true;

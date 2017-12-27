@@ -14,7 +14,6 @@ public class CharacterManager : MonoBehaviour {
 
 	bool m_InitChar = false;
 
-	KNManager km;
 	List<Character> m_toRegisterCharacters;
 	void Awake () {
 		if (Instance == null)
@@ -25,9 +24,7 @@ public class CharacterManager : MonoBehaviour {
 		m_toRegisterCharacters = new List<Character> ();
 	}
 
-	void Start() {
-		km = KNManager.Instance;
-	}
+	void Start() {}
 
 	void Update () {
 		if (m_InitChar)
@@ -43,10 +40,11 @@ public class CharacterManager : MonoBehaviour {
 		Debug.Log ("Loading all Characters from Source: " + source);
 		List<Dictionary<string,string>> subjects = FactCSVImporter.importFile (source);
 		foreach (Dictionary<string,string> d in subjects) {
-			KNSubject sub = KNManager.Instance.FindOrCreateSubject (d ["name"]);
+			KNSubject sub = KNManager.FindOrCreateSubject (d ["name"]);
 			Character c = findChar (d ["name"]);
 			if (c != null) {
 				applyLoadedDataToChar(c);
+				sub.Owner = c;
 			}
 			m_LoadedCharData [d ["name"]] = d;
 		}
@@ -58,7 +56,6 @@ public class CharacterManager : MonoBehaviour {
 			Dictionary<string,string> d = m_LoadedCharData [c.name];
 			c.knowledgeGroups = FactCSVImporter.splitStringRow (d ["knowledgeGroups"]);
 
-			Debug.Log("Knowledge groups: " + d["knowledgeGroups"]);
 			float.TryParse (d ["perception"],out c.perception);
 			float.TryParse (d ["persuasion"],out c.persuasion);
 			float.TryParse (d ["logic"],out c.logic);
@@ -75,9 +72,8 @@ public class CharacterManager : MonoBehaviour {
 			float.TryParse (d ["agreeableness"],out p.agreeableness);
 			float.TryParse (d ["pragmaticIdealistic"],out p.pragmaticIdealistic);
 		}
-		Debug.Log ("KnowledgeGroups: " + c.knowledgeGroups.Count);
 		foreach (string s in c.knowledgeGroups) {
-			km.AddKnowledgeGroups (c.knowledgeBase, s);
+			KNManager.Instance.AddKnowledgeGroups (c.knowledgeBase, s);
 		}
 	}
 
@@ -92,12 +88,9 @@ public class CharacterManager : MonoBehaviour {
 			return;
 		}
 		m_RegisteredChars.Add (c.name.ToLower(), c);
-		if (km == null) {
-			km = KNManager.Instance;
-		}
-		KNSubject ks = km.FindOrCreateSubject (c.name);
+		KNSubject ks = KNManager.FindOrCreateSubject (c.name);
 		ks.Owner = c;
-		km.SetSubject (c.name, ks);
+		KNManager.Instance.SetSubject (c.name, ks);
 		applyLoadedDataToChar (c);
 	}
 	public void animateChar(string name, string animation){}

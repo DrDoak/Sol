@@ -51,7 +51,7 @@ public class Response {
 				} else if (place == 'R') {
 					finalStr += speaker.ConveyReceivor (assertion, listener).toString();
 				} else if (place == 'L') {
-					finalStr += listener.name;
+					finalStr += (listener) ? listener.name : "";
 				}
 
 			} else {

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour {
-
+	public static float GameTime;
 	public static GameManager manager;
 	public GameObject cameraPrefab;
 	public float bottomOfWorld;
@@ -36,6 +36,7 @@ public class GameManager : MonoBehaviour {
 		currentCutscenes = new List<Cutscene> ();
 		registeredPermItems = new List<string> ();
 		SceneManager.sceneLoaded += initRoom;
+		GameTime = 0f;
 	}
 	void Start() {
 		smm = GetComponent<StatusMenuManager> ();
@@ -108,6 +109,7 @@ public class GameManager : MonoBehaviour {
 		
 	// Update is called once per frame
 	void Update () {
+		GameTime += Time.deltaTime;
 		/*if (Input.GetKeyDown(KeyCode.Escape)) {
 			Debug.Log (SceneManager.GetActiveScene ().name);
 			//SceneManager.LoadScene ("MainMenu", LoadSceneMode.Single);

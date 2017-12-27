@@ -1,4 +1,8 @@
 type,group,subjects,verb,receivers,template
-assertion,general,self,!know,*,Sorry $L I don't know about $R.
+assertion,general,self,!know,*,"Sorry $L, I don't know about $R."
 assertion,general,self,know,*,I know that.
-assertion,general,self,!knofaw,*,I don't know $D.
+assertion,general,self,!know,*,I don't know $R.
+exclamation,general,yes,,,Yes
+exclamation,general,no,,,No
+exclamation,general,pain,,,Ouch!
+exclamation,general,stop,,,Stop that $L!

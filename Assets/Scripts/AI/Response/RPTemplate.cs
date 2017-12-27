@@ -14,9 +14,12 @@ public class RPTemplate {
 		mChar = speaker;
 	}
 	public bool match(Assertion other) {
-		//Debug.Log ("Match me: " + a.getID () + " with " + other.getID ());
+		//Debug.Log ("Match me: " + templateAssertion.GetID () + " with " + other.GetID ());
 		//Debug.Log ("Char is: " + a.mChar + " mine is: " + mChar);
 		return templateAssertion.IsMatch (other);
+	}
+	public bool match(string exclamation) {
+		return (templateAssertion.Subjects [0].GetID () == exclamation);
 	}
 	public bool match(KNSubject s) {
 		return false;

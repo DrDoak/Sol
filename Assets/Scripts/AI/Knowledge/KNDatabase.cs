@@ -23,6 +23,7 @@ public class KNDatabase {
 	public List<KNVerb> MatchingVerbs(Assertion a) {
 		var verbs = new List<KNVerb> ();
 		foreach (var kv in Verbs) {
+			//Debug.Log ("All verbs: " + kv.GetID());
 			bool match = false;
 			if (a.Subjects != null) {
 				foreach (var s in a.Subjects) {
@@ -50,6 +51,13 @@ public class KNDatabase {
 			DOs.Add (kv);
 		}
 		return DOs;
+	}
+	public bool HasMatch(Assertion matchA) {
+		foreach (var a in Knowledge.Values) {
+			if (a.IsMatch (matchA))
+				return true;
+		}
+		return false;
 	}
 	public List<Assertion> GetMatches(Assertion matchA) {
 		var matches = new List<Assertion> ();
@@ -95,26 +103,32 @@ public class KNDatabase {
 		Knowledge.Add (k.GetID(), k);
 	}
 
-	public void LearnFact(Assertion newF) {
-		//Debug.Log (Owner.name + " is learning fact: " + newF.GetID());
-		//Debug.Log ("source is: " + newF.mChar);
+	public void LearnAssertion(Assertion newF) {
 		var evf = new EVFact ();
-		evf.assertion = newF;
-		foreach (var f in Knowledge.Values) { 
-			if (f.Equals (newF)) {
-				f.LastTimeDiscussed = newF.LastTimeDiscussed;
-				evf.isDuplicate = true;
-				evf.assertion = f;
-				return;
-			}
-		}
-		if (!evf.isDuplicate) {
+		Assertion oldAssertion = GetAssertion (newF);
+		if (oldAssertion != null) {
+			oldAssertion.LastTimeDiscussed = newF.LastTimeDiscussed;
+			evf.assertion = oldAssertion;
+			evf.isDuplicate = true;
+		} else {
 			evf.assertion = newF;
 			AddAssertion (evf.assertion);
+			if (newF.Source == null) {
+				newF.Source = KNManager.FindOrCreateSubject (Owner.name);
+			}
 		}
+		Debug.Log (Owner.name + " is learning: " + newF.GetID() + " source is: " + evf.assertion.Source.SubjectName);
 		Owner.respondToEvent (evf);
 	}
 
+	public Assertion GetAssertion(Assertion a) {
+		foreach (var f in Knowledge.Values) {
+			if (f.Equals (a)) {
+				return f;
+			}
+		}
+		return null;
+	}
 	public bool HasSubject(KNSubject sub) {
 		foreach(KNSubject s in Subjects) {
 			if (s.GetID() == sub.GetID())
@@ -130,9 +144,10 @@ public class KNDatabase {
 	public bool HasVerb(KNVerb v) {
 		return Verbs.Contains(v);
 	}
-	public void LearnVerb(KNVerb s) {
-		if (!Verbs.Contains (s)) {
-			Verbs.Add (s);
+	public void LearnVerb(KNVerb v) {
+		//Debug.Log ("learning verb" + v.GetID () + " for: " + Owner.name + " Added: " + !Verbs.Contains(v));
+		if (!Verbs.Contains (v)) {
+			Verbs.Add (v);
 		}
 	}
 }

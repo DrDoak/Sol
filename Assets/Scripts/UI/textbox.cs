@@ -74,7 +74,7 @@ public class textbox : MonoBehaviour {
 		if (targetedObj != null) {
 			transform.position += targetedObj.transform.position-lastPos;
 			//transform.position = targetedObj.transform.position;
-			//lastPos = targetedObj.transform.position;
+			lastPos = targetedObj.transform.position;
 			line.SetPosition (0, transform.position);
 			line.SetPosition (1, targetedObj.transform.position);
 		}

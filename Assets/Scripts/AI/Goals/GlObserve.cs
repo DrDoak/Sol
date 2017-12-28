@@ -7,63 +7,63 @@ public class GlObserve : Goal{
 	public Character targetCh;
 	Proposal turnProp;
 	public GlObserve() {
-		registerEvent("sight",outOfSight,turn);
+		registerEvent("sight",outOfSight,turnSight);
 		registerEvent ("sight", sawCharacter, learnCharacter);
-		registerEvent ("interact", turn);
-		registerEvent ("interact", rememberInteraction);
-		registerEvent ("hit", rememberHit);
+		registerEvent ("interact", 1.0f, turnInteract);
+		registerEvent ("interact", 1.0f, rememberInteraction);
+		registerEvent ("hit", 1.0f, rememberHit);
 	}
 
 	void rememberInteraction(Proposal p) {
 		Assertion a = new Assertion ();
 		EVInteract evi = (EVInteract)p.mEvent;
-		a.AddSubject (KNManager.FindOrCreateSubject (evi.targetChar.name));
-		a.AddVerb (KNManager.FindOrCreateVerb("interact"));
-		a.AddReceivor(KNManager.FindOrCreateSubject(evi.targetedObj.name));
+		a.AddSubject (KNManager.CopySubject (evi.Interactor.name));
+		a.AddVerb (KNManager.CopyVerb("interact"));
+		a.AddReceivor(KNManager.CopySubject(evi.Interactee.name));
 		mChar.knowledgeBase.LearnAssertion (a);
 	}
 
 	void rememberHit(Proposal p) {
 		Assertion a = new Assertion ();
-		Debug.Log (p.mEvent.eventType);
 		EVHitConfirm evh = (EVHitConfirm)p.mEvent;
-		a.AddSubject (KNManager.FindOrCreateSubject (evh.targetChar.name));
-		a.AddVerb (KNManager.FindOrCreateVerb("hit"));
-		a.AddReceivor(KNManager.FindOrCreateSubject(evh.ObjectHit.name));
+		a.AddSubject (KNManager.CopySubject (evh.attacker.name));
+		a.AddVerb (KNManager.CopyVerb("attack"));
+		a.AddReceivor(KNManager.CopySubject(evh.ObjectHit.name));
 		mChar.knowledgeBase.LearnAssertion (a);
 	}
-	void turn(Proposal p) {
-		if (p.mEvent.targetChar.transform.position.x > mChar.transform.position.x) {
-			mChar.GetComponent<Movement> ().setFacingLeft (false);
-		} else {
-			mChar.GetComponent<Movement> ().setFacingLeft (true);
-		}
+	void turnInteract(Proposal p) {
+		EVInteract evi = (EVInteract)p.mEvent;
+		mChar.GetComponent<Movement> ().TurnToTransform (evi.Interactor.transform);
 	}
-
+	void turnSight(Proposal p) {
+		EVSight evs = (EVSight)p.mEvent;
+		mChar.GetComponent<Movement> ().TurnToTransform (evs.Observee.transform);
+	}
 	void learnCharacter(Proposal p) {
-		Debug.Log ("Learning Character: " + p.mEvent.targetChar.name);
-		mChar.knowledgeBase.LearnSubject (KNManager.FindOrCreateSubject(p.mEvent.targetChar.name));
+		EVSight se = (EVSight)p.mEvent;
+		Debug.Log ("Learning Character: " + se.ObservedChar.name);
+		mChar.knowledgeBase.LearnSubject (KNManager.CopySubject(se.ObservedChar.name));
 	}
 
-	float sawCharacter(Event e,Relationship r,Personality p) {
+	float sawCharacter(Event e) {
 		EVSight se = (EVSight)e;
-		if (se.onSight) {
+		if (se.onSight && se.ObservedChar) {
 			//Debug.Log ("Saw character: " + r.Name);
-			if (!mChar.knowledgeBase.HasSubject(KNManager.FindOrCreateSubject(r.Name))) {
-				return 1.0f;				
-			}
+			Relationship r = mChar.getCharInfo (se.ObservedChar);
+			if (!mChar.knowledgeBase.HasSubject(KNManager.CopySubject(r.Name)))
+				return 1.0f;
 		}
 		return 0.0f;
 	}
-	float outOfSight(Event e,Relationship r,Personality p) {
+
+	float outOfSight(Event e) {
 		EVSight se = (EVSight)e;
-		if (!se.onSight) {
-			if (mChar.GetComponent<OffenseAI> ().currentTarget) {
-				if (mChar.GetComponent<OffenseAI> ().currentTarget !=
-					e.targetChar){
-					return 0.0f;
-				}
-			}
+		if (!se.onSight && se.ObservedChar != null) {
+			Relationship r = mChar.getCharInfo (se.ObservedChar);
+			Personality p = mChar.PersonalityData;
+			if (mChar.GetComponent<OffenseAI> ().currentTarget &&
+				mChar.GetComponent<OffenseAI> ().currentTarget != se.ObservedChar)
+				return 0.0f;
 			if (r.openHostile) {
 				mChar.addProposal (turnProp, e, 1f);
 			} else {

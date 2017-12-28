@@ -41,7 +41,7 @@ public class Cutscene : MonoBehaviour {
 
 	public void lockCharacter(string charName) {
 		//Debug.Log ("Attempting to lock character: " + charName);
-		Character c = cm.findChar (charName);
+		Character c = CharacterManager.FindChar (charName);
 		c.setAutonomy (false);
 		lockedCharacters.Add (c);
 	}

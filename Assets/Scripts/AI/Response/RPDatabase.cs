@@ -78,22 +78,22 @@ public class RPDatabase : MonoBehaviour {
 					if (subjects.Count > 0) {
 						foreach (string s in subjects) {
 							//Debug.Log ("searching for subject: " + s);
-							//KNSubSelf kss = (KNSubSelf)knm.FindOrCreateSubject (s);
-							KNSubject par = KNManager.FindOrCreateSubject (s);
+							//KNSubSelf kss = (KNSubSelf)knm.CopySubject (s);
+							KNSubject par = KNManager.CopySubject (s);
 							//Debug.Log ("ID is: " + par.getID ());
 							rpt.templateAssertion.AddSubject (par);
 						}
 					}
 				}
 				if (d ["verb"] != "*") {
-					KNVerb verb = KNManager.FindOrCreateVerb (d["verb"]);
+					KNVerb verb = KNManager.CopyVerb (d["verb"]);
 					rpt.templateAssertion.Verb = verb;
 				}
 				if (d ["receivers"] != "*") {
 					List<string> dobjs = FactCSVImporter.splitStringRow (d ["receivers"]);
 					if (dobjs.Count > 0) {
 						foreach (string s in dobjs) {
-							KNSubject par = KNManager.FindOrCreateSubject (s);
+							KNSubject par = KNManager.CopySubject (s);
 							rpt.templateAssertion.AddReceivor (par);
 						}
 					}
@@ -103,7 +103,8 @@ public class RPDatabase : MonoBehaviour {
 				List<string> subjects = FactCSVImporter.splitStringRow (d ["subjects"]);
 				if (subjects.Count > 0) {
 					foreach (string s in subjects) {
-						KNSubject par = KNManager.FindOrCreateSubject (s, true, true);
+						KNSubject par = KNManager.GetSubject (s);
+						par.Exclamation = true;
 						rpt.templateAssertion.AddSubject (par.Copy());
 					}
 				}

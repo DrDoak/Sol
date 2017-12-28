@@ -6,8 +6,8 @@ public class DialogueOption {
 	DialogueSequence parentSeq;
 	public ListSelection parentList;
 	public string text;
-	public delegate void optionResponse(DialogueOption thisOption);
-	public optionResponse responseFunction;
+	public delegate void OnSelection(DialogueOption thisOption);
+	public OnSelection responseFunction;
 	public Character speaker;
 	public Character listener;
 

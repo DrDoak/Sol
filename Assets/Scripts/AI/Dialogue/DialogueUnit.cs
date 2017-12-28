@@ -61,7 +61,7 @@ public class DialogueUnit  {
 		if (animateChar == null) {
 			setAnimation (animation);
 		} else {
-			setAnimation (GameObject.FindObjectOfType<CharacterManager> ().findChar (animateChar), animation);
+			setAnimation (CharacterManager.FindChar (animateChar), animation);
 		}
 	}
 	public void setAnimation(string animation) {
@@ -88,11 +88,11 @@ public class DialogueUnit  {
 		if (animateChar == null) {
 			walkToChar (speaker,name,prox);
 		} else {
-			walkToChar (GameObject.FindObjectOfType<CharacterManager> ().findChar (animateChar), name,prox);
+			walkToChar (CharacterManager.FindChar (animateChar), name,prox);
 		}
 	}
 	public void walkToChar(Character c, string name, float prox) {
-		Character talkTarget = GameObject.FindObjectOfType<CharacterManager> ().findChar (name);
+		Character talkTarget = CharacterManager.FindChar (name);
 		if (talkTarget != null) {
 			c.setTargetPoint (talkTarget.transform.position, prox);
 		}
@@ -103,14 +103,14 @@ public class DialogueUnit  {
 		if (turningPerson == null) {
 			turnTowards (name, towards);
 		} else {
-			turnTowards (GameObject.FindObjectOfType<CharacterManager> ().findChar (name), name, towards);
+			turnTowards (CharacterManager.FindChar (name), name, towards);
 		}
 	}
 	public void turnTowards(string name, bool towards) {
 		turnTowards (speaker, name, towards);
 	}
 	public void turnTowards(Character c, string name, bool towards) {
-		Character talkTarget = GameObject.FindObjectOfType<CharacterManager> ().findChar (name);
+		Character talkTarget = CharacterManager.FindChar (name);
 		Debug.Log ("Turning: " + c.name + " to " + name + " with: " + towards);
 		if (talkTarget != null) {
 			if (talkTarget.transform.position.x > c.transform.position.x) {

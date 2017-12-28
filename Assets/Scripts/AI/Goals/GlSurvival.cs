@@ -25,40 +25,87 @@ public class GlSurvival: Goal {
 	/*void evaluateAttack(Proposal p) {
 	}*/
 	void initiateAttack(Proposal p) {
-		Debug.Log ("Initiating attack");
-		mChar.offense.setTarget (p.mEvent.targetChar);
-		mChar.speaker.EmitResponse(mChar.speaker.Convey ("pain", p.mEvent.targetChar));
+		//Debug.Log ("Attacking the attacker");
+		EVAttack eva = (EVAttack)p.mEvent;
+		mChar.offense.setTarget (eva.attacker);
 	}
 
 	void initiateFlee(Proposal p) {
-		mChar.offense.setTarget (p.mEvent.targetChar);
+		EVAttack eva = (EVAttack)p.mEvent;
+		mChar.offense.setTarget (eva.attacker);
 	}
 
 	void initiateNegotiate(Proposal p) {
-		mChar.offense.setTarget (p.mEvent.targetChar);
+		EVAttack eva = (EVAttack)p.mEvent;
+		mChar.offense.setTarget (eva.attacker);
 	}
 
 
-	public float sightEvent(Event e,Relationship r,Personality p) {
-		if (r.openHostile) {
-			fightFlight (r, p,e);
-		} else {
-			//Initial empty impression of this guy
-			float favor = r.favorability * r.relevance;
+	public float sightEvent(Event e) {
+		EVSight es = (EVSight)e;
+		if (es.ObservedChar) {
+			Relationship r = mChar.getCharInfo (es.ObservedChar);
+			Personality p = mChar.PersonalityData;
+			if (r.openHostile) {
+				fightFlight (r, p, e);
+			} else {
+				//Initial empty impression of this guy
+				float favor = r.favorability * r.relevance;
 
-			//What is my tendency to trust my friends/ hate my enemies
-			favor +=  (favor * p.opennessAllegiance);
+				//What is my tendency to trust my friends/ hate my enemies
+				favor += (favor * p.opennessAllegiance);
 
-			//natural tendency to violence or agree
-			favor += (p.agreeableness * 0.4f);
-			// tendancy for pragmatic people to avoid combat.
-			favor -= (p.pragmaticIdealistic * 0.2f);
-			// natural human nature to avoid fighting
-			favor += (0.4f - p.temperament * 0.2f);
-			mChar.addProposal (initAttackProp,e, -favor);
+				//natural tendency to violence or agree
+				favor += (p.agreeableness * 0.4f);
+				// tendancy for pragmatic people to avoid combat.
+				favor -= (p.pragmaticIdealistic * 0.2f);
+				// natural human nature to avoid fighting
+				favor += (0.4f - p.temperament * 0.2f);
+				mChar.addProposal (initAttackProp, e, -favor);
+			}
 		}
 		return 0f;
 	}
+	public float sawAttackEvent(Event e)  {
+		EVAttack ea = (EVAttack)e;
+
+		Relationship r = mChar.getCharInfo (ea.attacker);
+		Personality p = mChar.PersonalityData;
+		//Initial impression of this guy
+		float favorAggressor = r.favorability * r.relevance;
+		//What is my tendency to trust my friends/ hate my enemies
+		favorAggressor +=  (favorAggressor * p.opennessAllegiance);
+		//natural tendency to violence or agree
+		favorAggressor += (p.agreeableness * 0.4f);
+		// tendancy for pragmatic people to avoid combat.
+		favorAggressor -= (p.pragmaticIdealistic * 0.2f);
+		// natural human nature to avoid fighting
+		favorAggressor += (0.2f - p.temperament * 0.2f);
+
+		//Distance currently ungauged maybe used later?
+		//float dist = Vector3.Distance (e.targetChar.transform.position, mChar.transform.position);
+		mChar.addProposal (initAttackProp, e,-favorAggressor);
+		return 0f;
+	}
+
+	void investigateHit(Proposal p) {
+		EVHitConfirm eva = (EVHitConfirm)p.mEvent;
+		if (eva.attacker.transform.position.x < mChar.transform.position.x) {
+			mChar.GetComponent<Movement> ().setFacingLeft (true);
+		} else {
+			mChar.GetComponent<Movement> ().setFacingLeft (false);
+		}
+	}
+	float hitEvent(Event e) {
+		EVHitConfirm eva = (EVHitConfirm)e;
+		//Debug.Log ("Hit event with target: " + eva.ObjectHit);
+		if (eva.ObjectHit == mChar.gameObject) {
+			return 1f;
+		}
+		return 0f;
+	}
+
+
 	void fightFlight(Relationship r, Personality p,Event e) {
 		r.openHostile = true;
 		float modifiedCombatEgo = (p.egoCombat + (p.egoCombat * p.confidence));
@@ -79,25 +126,10 @@ public class GlSurvival: Goal {
 		mChar.addProposal (initAttackProp,e,combatR);
 		mChar.addProposal (fleeProp, e, -combatR);
 	}
-	public float sawAttackEvent(Event e,Relationship r,Personality p)  {
-		//Initial impression of this guy
-		float favorAggressor = r.favorability * r.relevance;
-		//What is my tendency to trust my friends/ hate my enemies
-		favorAggressor +=  (favorAggressor * p.opennessAllegiance);
-		//natural tendency to violence or agree
-		favorAggressor += (p.agreeableness * 0.4f);
-		// tendancy for pragmatic people to avoid combat.
-		favorAggressor -= (p.pragmaticIdealistic * 0.2f);
-		// natural human nature to avoid fighting
-		favorAggressor += (0.2f - p.temperament * 0.2f);
+}
 
-		//Distance currently ungauged maybe used later?
-		//float dist = Vector3.Distance (e.targetChar.transform.position, mChar.transform.position);
 
-		mChar.addProposal (initAttackProp, e,-favorAggressor);
-		return 0f;
-	}
-	/*public float hitEvent(Event e,Relationship r,Personality p)  {
+/*public float hitEvent(Event e,Relationship r,Personality p)  {
 		//Initial impression of this guy
 		float favorAggressor = r.favorability * r.relevance;
 		//What is my tendency to trust my friends/ hate my enemies
@@ -137,22 +169,5 @@ public class GlSurvival: Goal {
 			mChar.addProposal (initAttackProp, e,-favorAggressor + favorVictim);
 		}
 		return 0f;
-	}*/
-	void investigateHit(Proposal p) {
-		EVHitConfirm eva = (EVHitConfirm)p.mEvent;
-		if (eva.targetChar.transform.position.x < mChar.transform.position.x) {
-			mChar.GetComponent<Movement> ().setFacingLeft (true);
-		} else {
-			mChar.GetComponent<Movement> ().setFacingLeft (false);
-		}
 	}
-	float hitEvent(Event e, Relationship r, Personality p) {
-		EVHitConfirm eva = (EVHitConfirm)e;
-		//Debug.Log ("Hit event with target: " + eva.ObjectHit);
-		if (eva.ObjectHit == mChar.gameObject) {
-			return 1f;
-		}
-		return 0f;
-	}
-
-}
+*/

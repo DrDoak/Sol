@@ -14,7 +14,7 @@ public class CPMoveToPoint : CutscenePiece {
 	}
 	void Update () {}
 	public override void onEventStart() {
-		targetNPC = cm.findChar (targetCharName);
+		targetNPC = CharacterManager.FindChar (targetCharName);
 		targetNPC.setTargetPoint (targetPoint, proximity);
 	}
 	public override void activeTick(float dt) {

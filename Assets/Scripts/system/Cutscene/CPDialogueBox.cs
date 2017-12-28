@@ -13,7 +13,7 @@ public class CPDialogueBox : CutscenePiece {
 		init ();
 	}
 	public override void onEventStart() {
-		speaker = cm.findChar (targetCharName);
+		speaker = CharacterManager.FindChar (targetCharName);
 		speakerParser = speaker.GetComponent<DialogueParser> ();
 		Debug.Log (speakerParser);
 		speaker.say (text, talkTo);

@@ -416,5 +416,12 @@ public class Movement : MonoBehaviour {
 			GetComponent<Character> ().facingLeft = facingLeft;
 		}
 	}
+	public void TurnToTransform(Transform t) {
+		if (t.position.x > transform.position.x) {
+			setFacingLeft (false);
+		} else if (t.position.x < transform.position.x) {
+			setFacingLeft (true);
+		}
+	}
 
 }

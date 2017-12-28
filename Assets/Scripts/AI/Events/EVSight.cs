@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class EVSight : Event {
 	public bool onSight = true;
-	public Observable observable;
+	public Observable Observee;
+	public Character ObservedChar;
 	public EVSight() {
 		eventType = "sight";
 	}

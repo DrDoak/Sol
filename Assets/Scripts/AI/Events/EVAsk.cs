@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class EVAsk : Event {
 	public Character Asker;
+	public Character Askee;
 	public EVAsk() {
 		eventType = "ask";
 	}

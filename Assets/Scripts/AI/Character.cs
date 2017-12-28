@@ -47,7 +47,7 @@ public class Character : Interactable {
 	public float perception = 0.0f;
 	public float persuasion = 0.0f;
 	public float logic = 0.0f;
-	public Personality pers;
+	public Personality PersonalityData;
 
 	public CharData data = new CharData();
 	public Dictionary<Character,Relationship> charInfo = new Dictionary<Character,Relationship> ();
@@ -65,7 +65,7 @@ public class Character : Interactable {
 		parser = GetComponent<DialogueParser> ();
 		speaker = GetComponent<RPSpeaker> ();
 
-		pers = new Personality ();
+		PersonalityData = new Personality ();
 		knowledgeBase = new KNDatabase ();
 		knowledgeBase.Owner = this;
 		if (faction == "noFaction" && GetComponent<Attackable> ()) {
@@ -124,12 +124,12 @@ public class Character : Interactable {
 		if (cDist < interactRange) {
 			Debug.Log ("Attempting Interaction with object: " + i.gameObject);
 			EVInteract ie = new EVInteract ();
-			ie.targetChar = this;
+			ie.Interactor = this;
 			if (i.GetComponent<Character> ()) {
-				ie.isCharInteraction = true;
-				ie.listenerChar = i.GetComponent<Character> ();
+				ie.IsCharInteraction = true;
+				ie.InteracteeChar = i.GetComponent<Character> ();
 			}
-			ie.targetedObj = i;
+			ie.Interactee = i;
 			m_observable.broadcastToObservers (ie);
 			i.onInteract (this);
 			if (i.GetComponent<Observer> ()) {

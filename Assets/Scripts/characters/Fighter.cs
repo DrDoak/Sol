@@ -163,7 +163,7 @@ public class Fighter : MonoBehaviour {
 			}
 			if (GetComponent<Character> ()) {
 				EVHitConfirm e = new EVHitConfirm ();
-				e.targetChar = GetComponent<Character> ();
+				e.attacker = GetComponent<Character> ();
 				e.ObjectHit = otherObj;
 				e.AttackData = currentAttack;
 				GetComponent<Observable> ().broadcastToObservers (e);
@@ -225,7 +225,7 @@ public class Fighter : MonoBehaviour {
 			if (currentAttack.startupSoundFX != null) {AudioSource.PlayClipAtPoint (currentAttack.startupSoundFX, transform.position);}
 			if (GetComponent<Character> ()) {
 				EVAttack e = new EVAttack ();
-				e.targetChar = GetComponent<Character> ();
+				e.attacker = GetComponent<Character> ();
 				e.AttackData = currentAttack;
 				GetComponent<Observable> ().broadcastToObservers (e);
 			}

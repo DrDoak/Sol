@@ -5,6 +5,7 @@ using UnityEngine;
 public class KNSubject {
 	public Assertion ParentAssertion;
 	public string SubjectName;
+	public string SubjectDisplayed = "none";
 	public List<KNSubject> Parents;
 	public List<KNSubject> Contradictions;
 	public Character Owner;

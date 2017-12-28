@@ -87,8 +87,8 @@ public class Observer : MonoBehaviour {
 	public virtual void onSight(Observable o) {
 		if (c != null) {
 			EVSight se = new EVSight ();
-			se.observable = o;
-			se.targetChar = o.c;
+			se.Observee = o;
+			se.ObservedChar = o.c;
 			c.respondToEvent (se);
 		}
 	}
@@ -97,8 +97,8 @@ public class Observer : MonoBehaviour {
 		} else {
 			if (c != null) {
 				EVSight se = new EVSight ();
-				se.targetChar = o.c;
-				se.observable = o;
+				se.ObservedChar = o.c;
+				se.Observee = o;
 				se.onSight = false;
 				c.respondToEvent (se);
 			}

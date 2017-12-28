@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class Goal {
 
-	public delegate float evaluationMethod( Event e,Relationship ci,Personality p);
-	public delegate void immediateExecute( Event e,Relationship ci,Personality p);
-	public delegate void executionMethod(Proposal p);
+	public delegate float evaluationMethod( Event e );
+	public delegate void immediateExecute( Event e );
+	public delegate void executionMethod( Proposal p );
 
 	public bool successful = true;
 	public NPC mChar = null;
@@ -15,7 +15,7 @@ public class Goal {
 
 	Dictionary<string,List<evaluationMethod>> evalMethods = new Dictionary<string,List<evaluationMethod>> ();
 	Dictionary<string,List<immediateExecute>> immExecMethods = new Dictionary<string,List<immediateExecute>>();
-	Dictionary<string,List<executionMethod>> immExecMethods2 = new Dictionary<string,List<executionMethod>>();
+	Dictionary<string,List<executionMethod>> probabilityMethods = new Dictionary<string,List<executionMethod>>();
 	Dictionary<evaluationMethod,executionMethod> execMethods = new Dictionary<evaluationMethod,executionMethod> ();
 
 	public Goal () {}
@@ -25,10 +25,12 @@ public class Goal {
 			immExecMethods [eventType] = new List<immediateExecute> ();
 		immExecMethods[eventType].Add(immM);
 	}
-	protected void registerEvent(string eventType, executionMethod immE) {
-		if (!(immExecMethods2.ContainsKey (eventType)))
-			immExecMethods2 [eventType] = new List<executionMethod> ();
-		immExecMethods2[eventType].Add(immE);
+	protected void registerEvent(string eventType, float probability, executionMethod immE) {
+		if (Random.value > probability)
+			return;
+		if (!(probabilityMethods.ContainsKey (eventType)))
+			probabilityMethods [eventType] = new List<executionMethod> ();
+		probabilityMethods[eventType].Add(immE);
 	}
 	protected void registerEvent(string eventType, evaluationMethod evalM) {
 		if (!(evalMethods.ContainsKey (eventType)))
@@ -50,12 +52,12 @@ public class Goal {
 		//Debug.Log (this + " hasEvent: " + evalMethods.ContainsKey (eventName));
 		if (immExecMethods.ContainsKey(eventName)) {
 			foreach (immediateExecute eX in immExecMethods[eventName]) {
-				Relationship ci = mChar.getCharInfo (e.targetChar);
-				eX (e, ci, mChar.pers);
+				//Relationship ci = mChar.getCharInfo (e.targetChar);
+				eX (e);
 			}
 		}
-		if (immExecMethods2.ContainsKey(eventName)) {
-			foreach (executionMethod eX in immExecMethods2[eventName]) {
+		if (probabilityMethods.ContainsKey(eventName)) {
+			foreach (executionMethod eX in probabilityMethods[eventName]) {
 				Proposal p = new Proposal ();
 				p.mNPC = mChar;
 				p.mEvent = e;
@@ -66,9 +68,9 @@ public class Goal {
 		}
 		if (evalMethods.ContainsKey (eventName)) {
 			foreach (evaluationMethod eM in evalMethods[eventName]) {
-				Relationship ci = mChar.getCharInfo (e.targetChar);
+				//Relationship ci = mChar.getCharInfo (e.targetChar);
 				//Debug.Log ("Relationship retrieved: " + ci);
-				float rating = eM (e, ci, mChar.pers);
+				float rating = eM ( e );
 				if (execMethods.ContainsKey(eM) && rating > 0.0) {
 					Proposal p = new Proposal ();
 					p.mNPC = mChar;
@@ -79,7 +81,7 @@ public class Goal {
 			}
 		}
 	}
-	protected float always(Event e,Relationship ci,Personality p)  {
+	protected float always(Event e )  {
 		return 1f;
 	}
 	/*

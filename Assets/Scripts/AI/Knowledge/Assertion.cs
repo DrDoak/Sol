@@ -59,7 +59,7 @@ public class Assertion : KNSubject{
 
 	public bool Equals(Assertion f) {
 		for (int i = 0; i < f.Subjects.Count; i++) {
-			if (f.Subjects[i].SubjectName != Subjects[i].SubjectName) {
+			if (f.Subjects[i].SubjectName != Subjects[0].SubjectName) {
 				return false;
 			}
 		}

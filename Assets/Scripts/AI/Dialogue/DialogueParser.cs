@@ -28,7 +28,7 @@ public class DialogueParser : MonoBehaviour {
 	}
 	public void say(string text,string talkTo) {
 		if (talkTo != "none") {
-			talkTarget = cm.findChar (talkTo);
+			talkTarget = CharacterManager.FindChar (talkTo);
 		}
 		isSpeaking = true;
 		currDSequence = parseSequence (text, 0, 0,null);

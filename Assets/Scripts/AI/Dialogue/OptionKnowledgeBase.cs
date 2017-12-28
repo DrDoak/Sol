@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class OptionKnowledgeBase : DialogueOption {
 	public Assertion assertion;
-	public KNManager.OnSelection SelectionFunction;
+	public DialogueOption.OnSelection SelectionFunction;
 	//public KNSubject mSubject;
 	//public KNVerb mVerb;
 }

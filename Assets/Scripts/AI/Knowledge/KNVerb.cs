@@ -4,7 +4,11 @@ using UnityEngine;
 
 public class KNVerb {
 	public string VerbName;
+	public string VerbDisplayed = "none";
+	public bool IsCommand = false;
 	public bool Inverted;
+	public bool Hide = false;
+
 	public Character Owner;
 	public List<KNSubject> Actors;
 	public List<KNSubject> Receivors;
@@ -20,7 +24,7 @@ public class KNVerb {
 	public KNVerb Copy() {
 		KNVerb v = new KNVerb {VerbName = VerbName, Actors = Actors,
 			Receivors = Receivors, Parents = Parents, Contradictory = Contradictory,
-			Inverted = Inverted};
+			Inverted = Inverted,IsCommand = IsCommand};
 		return v;
 	}
 	public bool CanAct(KNSubject a) {

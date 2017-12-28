@@ -5,7 +5,7 @@ using UnityEngine;
 public class KNManager : MonoBehaviour {
 
 	public static KNManager Instance;
-	public delegate void OnSelection(DialogueOption doption);
+	//public delegate void OnSelection(DialogueOption doption);
 
 	[SerializeField] private string m_EntrySource;
 	[SerializeField] private string m_SubjectSource;
@@ -60,16 +60,9 @@ public class KNManager : MonoBehaviour {
 	public void SetSubject(string sid, KNSubject subject) {
 		m_Subjects [sid] = subject;
 	}
-	public static KNSubject FindOrCreateSubject(string sid, bool hide, bool exclamation) {
-		return Instance.m_FindOrCreateSubject (sid, hide, exclamation);		
-	}
 
-	public static KNSubject FindOrCreateSubject(string sid) {
-		return Instance.m_FindOrCreateSubject (sid, false, false);
-	}
-
-	KNSubject m_FindOrCreateSubject(string sid, bool hide, bool exclamation) {
-		string s = sid.ToLower ();
+	public static KNSubject CopySubject(string sid) {
+		/*string s = sid.ToLower ();
 		if (m_Subjects.ContainsKey (s)) {
 			KNSubject ks = m_Subjects [s].Copy ();
 			return ks;
@@ -82,31 +75,46 @@ public class KNManager : MonoBehaviour {
 			m_Subjects.Add (s, newSubject);
 			KNSubject ks = m_Subjects [s].Copy ();
 			return ks;
-		}
-	}
-	public KNVerb FindVerb(string vid) {
-		if (m_Verbs.ContainsKey(vid) )
-			return m_Verbs[vid];
-		return null;
-	}
-	public static KNVerb FindOrCreateVerb(string vid) {
-		return Instance.m_FindOrCreateVerb(vid);
+		}*/
+		KNSubject ks = KNManager.GetSubject (sid);
+		return ks.Copy ();
 	}
 
-	KNVerb m_FindOrCreateVerb(string vid) {
+	public static KNSubject GetSubject(string sid) {
+		string s = sid.ToLower ();
+		if (Instance.m_Subjects.ContainsKey (s)) {
+			return Instance.m_Subjects [s];
+		} else {
+			var newSubject = new KNSubject{ SubjectName = sid };
+			if (CharacterManager.FindChar (sid) != null)
+				newSubject.Owner = CharacterManager.FindChar (sid);
+			Instance.m_Subjects.Add (s, newSubject);
+			return Instance.m_Subjects [s];
+		}
+	}
+
+	public static KNVerb CopyVerb(string vid) {
+		return Instance.m_CopyVerb(vid);
+	}
+
+	KNVerb m_CopyVerb(string vid) {
+		return GetVerb (vid).Copy ();
+	}
+
+	public static KNVerb GetVerb(string vid) {
 		var invert = false;
 		if (vid [0] == '!') {
 			invert = true;
 			vid = vid.Substring (1);
 		}
-		if (m_Verbs.ContainsKey (vid)) {
-			KNVerb v = m_Verbs [vid].Copy();
+		if (Instance.m_Verbs.ContainsKey (vid)) {
+			KNVerb v = Instance.m_Verbs [vid];
 			v.Inverted = invert;
 			return v;
 		} else {
 			var newVerb = new KNVerb {VerbName = vid};
-			m_Verbs.Add (vid, newVerb);
-			KNVerb v = m_Verbs [vid].Copy ();
+			Instance.m_Verbs.Add (vid, newVerb);
+			KNVerb v = Instance.m_Verbs [vid];
 			v.Inverted = invert;
 			return v;
 		}
@@ -129,7 +137,7 @@ public class KNManager : MonoBehaviour {
 	public static void CreateSubjectList(Character speaker, Character listener) {
 		CreateSubjectList (speaker, listener, Instance.FinishFact);
 	}
-	public static void CreateSubjectList(Character speaker,Character listener,OnSelection selectionFunction) {
+	public static void CreateSubjectList(Character speaker,Character listener,DialogueOption.OnSelection selectionFunction) {
 		var du = new DialogueUnit {speaker = speaker, listener = listener};
 		du.addDialogueOptions (Instance.GetSubjectOptions (speaker, true, selectionFunction));
 		listener.processDialogueRequest (speaker, du);
@@ -141,28 +149,66 @@ public class KNManager : MonoBehaviour {
 			assertion = a, responseFunction = FinishFact};
 		dos.Add (o);
 	}
-
-	public List<DialogueOption> GetSubjectOptions(Character c,bool includeWildcard,OnSelection selectionFunction) {
+	public List<DialogueOption> GetExclamations(Character c,bool includeWildcard,DialogueOption.OnSelection selectionFunction) {
 		var dos = new List<DialogueOption> ();
 		KNDatabase kd = c.knowledgeBase;
 		foreach (var ks in kd.Subjects) {
-			if (ks.Hide)
+			if (!ks.Exclamation || ks.Hide)
 				continue;
-			OptionKnowledgeBase o = new OptionKnowledgeBase {responseFunction = SubjectSelected,
-				text = ks.SubjectName};
-			o.assertion = m_newAssertion (ks, null, null, FindOrCreateSubject (c.name), false, c);
+			OptionKnowledgeBase o = new OptionKnowledgeBase {responseFunction = FinishFact,
+				text = (ks.SubjectDisplayed == "none")?ks.SubjectName:ks.SubjectDisplayed};
+			o.assertion = m_newAssertion(ks,null,null,CopySubject(c.name),false,c);
 			o.SelectionFunction = selectionFunction;
 			dos.Add (o);
 		}
-		if (includeWildcard) { AddWildCard (dos, m_newAssertion(null,null,null,FindOrCreateSubject(c.name),false,c)); }
+		if (includeWildcard) { AddWildCard (dos, m_newAssertion(null,null,null,CopySubject(c.name),false,c)); }
 		return dos;
 	}
 
-	public List<DialogueOption> GetVerbOptions (Character c, Assertion a, bool includeWildcard, OnSelection selectionFunction) {
+	public List<DialogueOption> GetSubjectOptions(Character c,bool includeWildcard,DialogueOption.OnSelection selectionFunction) {
+		var dos = new List<DialogueOption> ();
+		KNDatabase kd = c.knowledgeBase;
+		foreach (var ks in kd.Subjects) {
+			if (ks.Hide || ks.Exclamation)
+				continue;
+			OptionKnowledgeBase o = new OptionKnowledgeBase {responseFunction = SubjectSelected,
+				text = (ks.SubjectDisplayed == "none")?ks.SubjectName:ks.SubjectDisplayed};
+			o.assertion = m_newAssertion (ks, null, null, CopySubject (c.name), false, c);
+			o.SelectionFunction = selectionFunction;
+			dos.Add (o);
+		}
+		if (includeWildcard) { AddWildCard (dos, m_newAssertion(null,null,null,CopySubject(c.name),false,c)); }
+		return dos;
+	}
+
+	public List<DialogueOption> GetVerbOptions (Character c, Assertion a, bool includeWildcard, DialogueOption.OnSelection selectionFunction) {
 		var dos = new List<DialogueOption> ();
 		KNDatabase kd = c.knowledgeBase;
 
 		foreach (var kv in kd.MatchingVerbs(a)) {
+			//Debug.Log ("Found verb: " + kv.VerbName + " subName: " + sub.subjectName + " canAct: " + kv.canAct(sub));
+			var o = new OptionKnowledgeBase { responseFunction = VerbSelected,
+				text = (kv.VerbDisplayed == "none")?kv.VerbName:kv.VerbDisplayed, assertion = a.CopyAssertion()};
+			o.assertion.AddVerb( kv);
+			o.SelectionFunction = selectionFunction;
+			dos.Add (o);
+		}
+		if (includeWildcard) { AddWildCard (dos, a.CopyAssertion()); }
+		return dos;
+	}
+	public static void CreateCommandList(Character speaker, Assertion a, Character listener, DialogueOption.OnSelection selectionFunction) {
+		var du = new DialogueUnit {speaker = speaker, listener = listener};
+		du.addDialogueOptions (Instance.GetCommandOptions (speaker, a, true, selectionFunction));
+		listener.processDialogueRequest (speaker, du);
+		du.startSequence ();
+	}
+	public List<DialogueOption> GetCommandOptions (Character c, Assertion a, bool includeWildcard, DialogueOption.OnSelection selectionFunction) {
+		var dos = new List<DialogueOption> ();
+		KNDatabase kd = c.knowledgeBase;
+
+		foreach (var kv in kd.MatchingVerbs(a)) {
+			if (!kv.IsCommand)
+				continue;
 			//Debug.Log ("Found verb: " + kv.VerbName + " subName: " + sub.subjectName + " canAct: " + kv.canAct(sub));
 			var o = new OptionKnowledgeBase { responseFunction = VerbSelected,
 				text = kv.VerbName, assertion = a.CopyAssertion()};
@@ -174,13 +220,14 @@ public class KNManager : MonoBehaviour {
 		return dos;
 	}
 
-	public List<DialogueOption> getPossibleReceivers(Character c, Assertion a, bool includeWildcard, OnSelection selectionFunction) {
+	public List<DialogueOption> GetReceiverOptions(Character c, Assertion a, bool includeWildcard,DialogueOption.OnSelection selectionFunction) {
 		var dos = new List<DialogueOption> ();
 		KNDatabase kd = c.knowledgeBase;
 		foreach (var ks in kd.MatchingDirectObjects(a)) {
+			Debug.Log ("name: " + ks.SubjectName + " hide: " + ks.Hide);
 			if (ks.Hide)
 				continue;
-			var o = new OptionKnowledgeBase {responseFunction = FinishFact, text = ks.SubjectName,
+			var o = new OptionKnowledgeBase {responseFunction = selectionFunction, text = ks.SubjectName,
 				assertion = a.CopyAssertion()};
 			o.assertion.AddReceivor(ks);
 			o.SelectionFunction = selectionFunction;
@@ -204,7 +251,7 @@ public class KNManager : MonoBehaviour {
 		OptionKnowledgeBase dob = (OptionKnowledgeBase)o;
 
 		DialogueUnit du = new DialogueUnit {speaker = dob.speaker, listener = dob.listener};
-		du.addDialogueOptions (getPossibleReceivers(dob.speaker,dob.assertion,true, dob.SelectionFunction));
+		du.addDialogueOptions (GetReceiverOptions(dob.speaker,dob.assertion,true, dob.SelectionFunction));
 		o.closeSequence();
 		du.startSequence ();
 	}
@@ -219,27 +266,11 @@ public class KNManager : MonoBehaviour {
 	public static void CreateExclamationList(Character speaker, Character listener) {
 		CreateExclamationList (speaker, listener, Instance.FinishFact);
 	}
-	public static void CreateExclamationList(Character speaker,Character listener,OnSelection selectionFunction) {
+	public static void CreateExclamationList(Character speaker,Character listener,DialogueOption.OnSelection selectionFunction) {
 		var du = new DialogueUnit {speaker = speaker, listener = listener};
 		du.addDialogueOptions (Instance.GetExclamations (speaker, true, selectionFunction));
 		listener.processDialogueRequest (speaker, du);
 		du.startSequence ();
-	}
-
-	public List<DialogueOption> GetExclamations(Character c,bool includeWildcard,OnSelection selectionFunction) {
-		var dos = new List<DialogueOption> ();
-		KNDatabase kd = c.knowledgeBase;
-		foreach (var ks in kd.Subjects) {
-			if (!ks.Exclamation)
-				continue;
-			OptionKnowledgeBase o = new OptionKnowledgeBase {responseFunction = FinishFact,
-				text = ks.SubjectName};
-			o.assertion = m_newAssertion(ks,null,null,FindOrCreateSubject(c.name),false,c);
-			o.SelectionFunction = selectionFunction;
-			dos.Add (o);
-		}
-		if (includeWildcard) { AddWildCard (dos, m_newAssertion(null,null,null,FindOrCreateSubject(c.name),false,c)); }
-		return dos;
 	}
 }
 

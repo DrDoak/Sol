@@ -114,10 +114,10 @@ public class KNDatabase {
 			evf.assertion = newF;
 			AddAssertion (evf.assertion);
 			if (newF.Source == null) {
-				newF.Source = KNManager.FindOrCreateSubject (Owner.name);
+				newF.Source = KNManager.CopySubject (Owner.name);
 			}
 		}
-		Debug.Log (Owner.name + " is learning: " + newF.GetID() + " source is: " + evf.assertion.Source.SubjectName);
+		//Debug.Log (Owner.name + " is learning: " + newF.GetID() + " source is: " + evf.assertion.Source.SubjectName);
 		Owner.respondToEvent (evf);
 	}
 

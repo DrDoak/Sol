@@ -40,8 +40,8 @@ public class CharacterManager : MonoBehaviour {
 		Debug.Log ("Loading all Characters from Source: " + source);
 		List<Dictionary<string,string>> subjects = FactCSVImporter.importFile (source);
 		foreach (Dictionary<string,string> d in subjects) {
-			KNSubject sub = KNManager.FindOrCreateSubject (d ["name"]);
-			Character c = findChar (d ["name"]);
+			KNSubject sub = KNManager.CopySubject (d ["name"]);
+			Character c = m_findChar (d ["name"]);
 			if (c != null) {
 				applyLoadedDataToChar(c);
 				sub.Owner = c;
@@ -60,7 +60,7 @@ public class CharacterManager : MonoBehaviour {
 			float.TryParse (d ["persuasion"],out c.persuasion);
 			float.TryParse (d ["logic"],out c.logic);
 
-			Personality p = c.pers;
+			Personality p = c.PersonalityData;
 			float.TryParse (d ["egoCombat"],out p.egoCombat);
 			float.TryParse (d ["egoLogic"],out p.egoLogic);
 			float.TryParse (d ["egoSocial"],out p.egoSocial);
@@ -88,19 +88,19 @@ public class CharacterManager : MonoBehaviour {
 			return;
 		}
 		m_RegisteredChars.Add (c.name.ToLower(), c);
-		KNSubject ks = KNManager.FindOrCreateSubject (c.name);
+		KNSubject ks = KNManager.CopySubject (c.name);
 		ks.Owner = c;
 		KNManager.Instance.SetSubject (c.name, ks);
 		applyLoadedDataToChar (c);
 	}
 	public void animateChar(string name, string animation){}
 	public void setDialogueUnit(string name, DialogueUnit ds) {
-		Character c = findChar (name);
+		Character c = m_findChar (name);
 		if (c != null) {
 			c.setDialogueUnit (ds);
 		}
 	}
-	public Character findChar(string targetName) {
+	Character m_findChar(string targetName) {
 		string lowerName = targetName.ToLower ();
 		foreach (string k in m_RegisteredChars.Keys) {
 			if (m_RegisteredChars[k].name.ToLower () == lowerName) {
@@ -116,5 +116,9 @@ public class CharacterManager : MonoBehaviour {
 			}
 		}
 		return null;
+	}
+
+	public static Character FindChar(string targetName) {
+		return Instance.m_findChar (targetName);;
 	}
 }

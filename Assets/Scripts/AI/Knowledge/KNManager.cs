@@ -130,18 +130,18 @@ public class KNManager : MonoBehaviour {
 	}
 
 //----dialogue boxes-----
-	public static void CreateSubjectList(Character speaker) {
-		CreateSubjectList (speaker, null, Instance.FinishFact);
+	public static DialogueUnit CreateSubjectList(Character speaker) {
+		return CreateSubjectList (speaker, null, Instance.FinishFact);
 	}
 
-	public static void CreateSubjectList(Character speaker, Character listener) {
-		CreateSubjectList (speaker, listener, Instance.FinishFact);
+	public static DialogueUnit CreateSubjectList(Character speaker, Character listener) {
+		return CreateSubjectList (speaker, listener, Instance.FinishFact);
 	}
-	public static void CreateSubjectList(Character speaker,Character listener,DialogueOption.OnSelection selectionFunction) {
+	public static DialogueUnit CreateSubjectList(Character speaker,Character listener,DialogueOption.OnSelection selectionFunction) {
 		var du = new DialogueUnit {speaker = speaker, listener = listener};
 		du.addDialogueOptions (Instance.GetSubjectOptions (speaker, true, selectionFunction));
 		listener.processDialogueRequest (speaker, du);
-		du.startSequence ();
+		return du;
 	}
 
 	void AddWildCard(List<DialogueOption> dos,Assertion a){ 
@@ -149,6 +149,7 @@ public class KNManager : MonoBehaviour {
 			assertion = a, responseFunction = FinishFact};
 		dos.Add (o);
 	}
+
 	public List<DialogueOption> GetExclamations(Character c,bool includeWildcard,DialogueOption.OnSelection selectionFunction) {
 		var dos = new List<DialogueOption> ();
 		KNDatabase kd = c.knowledgeBase;
@@ -196,11 +197,11 @@ public class KNManager : MonoBehaviour {
 		if (includeWildcard) { AddWildCard (dos, a.CopyAssertion()); }
 		return dos;
 	}
-	public static void CreateCommandList(Character speaker, Assertion a, Character listener, DialogueOption.OnSelection selectionFunction) {
+	public static DialogueUnit CreateCommandList(Character speaker, Assertion a, Character listener, DialogueOption.OnSelection selectionFunction) {
 		var du = new DialogueUnit {speaker = speaker, listener = listener};
 		du.addDialogueOptions (Instance.GetCommandOptions (speaker, a, true, selectionFunction));
 		listener.processDialogueRequest (speaker, du);
-		du.startSequence ();
+		return du;
 	}
 	public List<DialogueOption> GetCommandOptions (Character c, Assertion a, bool includeWildcard, DialogueOption.OnSelection selectionFunction) {
 		var dos = new List<DialogueOption> ();
@@ -240,8 +241,8 @@ public class KNManager : MonoBehaviour {
 	void SubjectSelected(DialogueOption o) {
 		OptionKnowledgeBase dob = (OptionKnowledgeBase)o;
 
-		var du = new DialogueUnit {speaker = dob.speaker, listener = dob.listener};
-
+		var du = new DialogueUnit {speaker = dob.speaker, listener = dob.listener,Previous = o.GetSequence()};
+		Debug.Log ("Previous sequence: " + du.Previous);
 		du.addDialogueOptions (GetVerbOptions(dob.speaker,dob.assertion,true,dob.SelectionFunction));
 		o.closeSequence();
 		du.startSequence ();
@@ -250,7 +251,7 @@ public class KNManager : MonoBehaviour {
 	void VerbSelected (DialogueOption o) {
 		OptionKnowledgeBase dob = (OptionKnowledgeBase)o;
 
-		DialogueUnit du = new DialogueUnit {speaker = dob.speaker, listener = dob.listener};
+		DialogueUnit du = new DialogueUnit {speaker = dob.speaker, listener = dob.listener,Previous = o.GetSequence()};
 		du.addDialogueOptions (GetReceiverOptions(dob.speaker,dob.assertion,true, dob.SelectionFunction));
 		o.closeSequence();
 		du.startSequence ();
@@ -263,14 +264,13 @@ public class KNManager : MonoBehaviour {
 			dob.listener.knowledgeBase.LearnAssertion (dob.assertion);
 	}
 
-	public static void CreateExclamationList(Character speaker, Character listener) {
-		CreateExclamationList (speaker, listener, Instance.FinishFact);
+	public static DialogueUnit CreateExclamationList(Character speaker, Character listener) {
+		return CreateExclamationList (speaker, listener, Instance.FinishFact);
 	}
-	public static void CreateExclamationList(Character speaker,Character listener,DialogueOption.OnSelection selectionFunction) {
+	public static DialogueUnit CreateExclamationList(Character speaker,Character listener,DialogueOption.OnSelection selectionFunction) {
 		var du = new DialogueUnit {speaker = speaker, listener = listener};
 		du.addDialogueOptions (Instance.GetExclamations (speaker, true, selectionFunction));
 		listener.processDialogueRequest (speaker, du);
-		du.startSequence ();
+		return du;
 	}
 }
-

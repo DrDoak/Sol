@@ -6,6 +6,8 @@ using UnityEngine.UI;
 public class ListSelection : MonoBehaviour {
 	public GameObject kEntry;
 	public DialogueUnit masterSequence;
+	public bool Escapable = true;
+	List<DialogueOption> prevEntries;
 	List<DialogueOption> fullEntries;
 	List<string> displayedNames;
 	List<GameObject> entries;
@@ -23,6 +25,13 @@ public class ListSelection : MonoBehaviour {
 	void Update() {
 		if (inputField.text.Length != lastChar) {
 			searchList (inputField.text);
+		}
+		if (Escapable && Input.GetButtonDown ("Cancel")) {
+			masterSequence.closeSequence ();
+			Debug.Log ("Previous is: " + masterSequence.Previous);
+			if (masterSequence.Previous != null) {
+				masterSequence.Previous.RestartSequence ();
+			}
 		}
 		//float inputY = Input.GetAxis ("Vertical");
 		//if (Mathf.Abs (inputY) > 0.4f)
@@ -65,6 +74,7 @@ public class ListSelection : MonoBehaviour {
 		}
 		lastChar = inputField.text.Length;
 	}
+
 	public void addOptions(List<DialogueOption> options) {
 		foreach (DialogueOption o in options) {
 			addOption (o);
@@ -100,5 +110,9 @@ public class ListSelection : MonoBehaviour {
 			entries = preserveList;
 		}
 		changeOption (0f);
+	}
+
+	public List<DialogueOption> GetOptions() {
+		return fullEntries;
 	}
 }

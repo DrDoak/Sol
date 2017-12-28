@@ -19,9 +19,9 @@ public static class KNImporter {
 			sub.Hide = (d ["hide"].Length > 0);
 			sub.Exclamation = (d ["exclamation"].Length > 0);
 			sub.SubjectDisplayed = (d ["displayed"].Length > 0) ? d ["displayed"] : "none";
-			Debug.Log ("name: " + sub.SubjectName + " hide: " + sub.Hide);
+			//Debug.Log ("name: " + sub.SubjectName + " hide: " + sub.Hide);
 			sub = KNManager.CopySubject (d ["name"]);
-			Debug.Log ("name: " + sub.SubjectName + " hide: " + sub.Hide);
+			//Debug.Log ("name: " + sub.SubjectName + " hide: " + sub.Hide);
 			List<string> parents = FactCSVImporter.splitStringRow (d ["parent"]);
 			if (parents.Count > 0) {
 				foreach (string s in parents) {

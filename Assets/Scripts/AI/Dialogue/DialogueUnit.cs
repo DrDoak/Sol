@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class DialogueUnit  {
 
+	public DialogueUnit Previous;
 	List<DialogueSubunit> elements;
 	textbox currentTB;
 	DialogBox currentDB;
@@ -26,13 +27,20 @@ public class DialogueUnit  {
 		elements = new List<DialogueSubunit> ();
 	}
 
+	public void RestartSequence() {
+		var du = new DialogueUnit {speaker = speaker, listener = listener, Previous = Previous,
+			elements = elements};
+		Debug.Log ("Restarting sequence with " + du.elements.Count + " elements");
+		listener.processDialogueRequest (speaker, du);
+		du.startSequence ();
+	}
 	public void startSequence() {
 		parseNextElement ();
 	}
 	public void parseNextElement() {
 		TextboxManager tm = GameObject.FindObjectOfType<TextboxManager> ();
 		if (currentElement >= elements.Count) {
-			endSequence ();
+			closeSequence ();
 		} else {
 			if (currentList) 
 				GameObject.Destroy (currentList.gameObject);
@@ -166,7 +174,7 @@ public class DialogueUnit  {
 		parseNextElement ();
 	}
 
-	public void endSequence() {
+	public void closeSequence() {
 		speaker.setAutonomy (true);
 		foreach(Character c in modifiedAnims){
 			c.GetComponent<Animator> ().runtimeAnimatorController = c.animDefault;

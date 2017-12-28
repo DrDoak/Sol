@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class DialogueOption {
 	DialogueSequence parentSeq;
+	public DialogueOption PreviousSequence;
 	public ListSelection parentList;
 	public string text;
 	public delegate void OnSelection(DialogueOption thisOption);
@@ -22,6 +23,9 @@ public class DialogueOption {
 		closeSequence ();
 	}
 	public void closeSequence() {
-		parentList.masterSequence.endSequence ();
+		parentList.masterSequence.closeSequence ();
+	}
+	public DialogueUnit GetSequence() {
+		return parentList.masterSequence;
 	}
 }

@@ -87,10 +87,10 @@ public class GlInteractive : Goal {
 		askAbout.responseFunction = startAsk;
 		options.Add (askAbout);
 
-		DialogueOption talkAbout = new DialogueOption ();
+		/*DialogueOption talkAbout = new DialogueOption ();
 		talkAbout.text = "Tell Fact...";
-		talkAbout.responseFunction = startTalk;
-		options.Add (talkAbout);
+		talkAbout.responseFunction = startAsk;
+		options.Add (talkAbout);*/
 
 		DialogueOption leave = new DialogueOption ();
 		leave.text = "Leave";
@@ -102,22 +102,28 @@ public class GlInteractive : Goal {
 	void startCommand(DialogueOption d) {
 		d.closeSequence ();
 		Assertion a = new Assertion ();
-		KNManager.CreateCommandList (d.speaker, a, d.listener,commandResponse);
+		DialogueUnit du = KNManager.CreateCommandList (d.speaker, a, d.listener,commandResponse);
+		du.Previous = d.GetSequence ();
+		du.startSequence ();
 	}
 	void commandResponse(DialogueOption d) {
 		d.closeSequence();
-		Debug.Log ("Emitting Command Response");
 		OptionKnowledgeBase okb = (OptionKnowledgeBase)d;
+		Assertion a = okb.assertion;
 		var evc = new  EVCommand();
 		evc.Commander = okb.speaker;
-		evc.assertion = okb.assertion;
+		evc.Command = a.Verb;
+		evc.Target = a.Receivors [0];
+		evc.assertion = a;
 		mChar.respondToEvent (evc);
 	}
 
 	//Exclamation
 	void startExclaim(DialogueOption d) {
 		d.closeSequence ();
-		KNManager.CreateExclamationList (d.speaker, d.listener,exclamationResponse);
+		DialogueUnit du = KNManager.CreateExclamationList (d.speaker, d.listener,exclamationResponse);
+		du.Previous = d.GetSequence ();
+		du.startSequence ();
 	}
 	void exclamationResponse(DialogueOption o) {
 		OptionKnowledgeBase okb = (OptionKnowledgeBase)o;
@@ -129,22 +135,14 @@ public class GlInteractive : Goal {
 	//Ask
 	void startAsk(DialogueOption d) {
 		d.closeSequence ();
-		KNManager.CreateSubjectList(d.speaker,d.listener,answerQuestion);
+		DialogueUnit du = KNManager.CreateSubjectList(d.speaker,d.listener,answerQuestion);
+		du.Previous = d.GetSequence ();
+		du.startSequence ();
 	}
 	void answerQuestion(DialogueOption o) {
 		OptionKnowledgeBase okb = (OptionKnowledgeBase)o;
 		var evf = new EVAsk ();
 		evf.assertion = okb.assertion;
 		mChar.respondToEvent (evf);
-	}
-
-	void startGossip(DialogueOption d) {
-		d.closeSequence ();
-		KNManager.CreateSubjectList(d.speaker,d.listener);
-	}
-
-	void startTalk(DialogueOption d) {
-		d.closeSequence ();
-		KNManager.CreateSubjectList(d.speaker,d.listener);
 	}
 }

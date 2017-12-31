@@ -7,11 +7,11 @@ public class GlObserve : Goal{
 	public Character targetCh;
 	Proposal turnProp;
 	public GlObserve() {
-		registerEvent("sight",outOfSight,turnSight);
-		registerEvent ("sight", sawCharacter, learnCharacter);
-		registerEvent ("interact", 1.0f, turnInteract);
-		registerEvent ("interact", 1.0f, rememberInteraction);
-		registerEvent ("hit", 1.0f, rememberHit);
+		registerEvent(EventType.Sight,outOfSight,turnSight);
+		registerEvent (EventType.Sight, sawCharacter, learnCharacter);
+		registerEvent (EventType.Interact, 1.0f, turnInteract);
+		registerEvent (EventType.Interact, 1.0f, rememberInteraction);
+		registerEvent (EventType.Hit, 1.0f, rememberHit);
 	}
 
 	void rememberInteraction(Proposal p) {
@@ -46,6 +46,7 @@ public class GlObserve : Goal{
 			Debug.Log ("Learning Character: " + se.ObservedChar.name);
 			mChar.knowledgeBase.LearnSubject (KNManager.CopySubject (se.ObservedChar.name));
 		}
+		Debug.Log ("Learn character event");
 		Assertion a = new Assertion ();
 		a.AddSubject (KNManager.CopySubject (mChar.name));
 		a.AddVerb (KNManager.CopyVerb("sight"));
@@ -56,7 +57,6 @@ public class GlObserve : Goal{
 	float sawCharacter(Event e) {
 		EVSight se = (EVSight)e;
 		if (se.onSight && se.ObservedChar) {
-			//Debug.Log ("Saw character: " + r.Name);
 			return 1.0f;
 		}
 		return 0.0f;

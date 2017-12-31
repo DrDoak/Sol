@@ -111,11 +111,14 @@ public class KNDatabase {
 		if (oldAssertion != null) {
 			oldAssertion.LastTimeReferenced = newF.LastTimeReferenced;
 			oldAssertion.TimesReferenced.Add (newF.LastTimeReferenced);
+
+			Debug.Log ("Adding old reference: " + oldAssertion.TimesReferenced.Count);
 			evf.assertion = oldAssertion;
 			evf.isDuplicate = true;
 			Owner.respondToEvent (evf);
 			return oldAssertion;
 		} else {
+			Debug.Log ("new assertion reference!");
 			evf.assertion = newF;
 			AddAssertion (evf.assertion);
 			if (newF.Source == null)
@@ -169,8 +172,9 @@ public class KNDatabase {
 		Assertion b = GetAssertion (a);
 		if (b == null)
 			return 1.0f;
-		foreach (float time in b.TimesReferenced) {
-			ratio -= compoundDecay * Mathf.Max(0f,(1f - (GameManager.GameTime - time)/maxDecayTime));
+		Debug.Log ("Times referenced: " + b.TimesReferenced.Count);
+		foreach (float t in b.TimesReferenced) {
+			ratio -= compoundDecay * Mathf.Max(0f,(1f - (GameManager.GameTime - t)/maxDecayTime));
 		}
 		return Mathf.Max(0f,ratio);
 	}

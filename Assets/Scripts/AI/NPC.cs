@@ -78,8 +78,8 @@ public class NPC : Character {
 	}
 
 	void executeValidProposals() {
-		Dictionary<string, float> highestEvaluation = new Dictionary<string, float> ();
-		Dictionary<string,Proposal> highestProposal = new Dictionary<string, Proposal> ();
+		Dictionary<ProposalClass, float> highestEvaluation = new Dictionary<ProposalClass, float> ();
+		Dictionary<ProposalClass,Proposal> highestProposal = new Dictionary<ProposalClass, Proposal> ();
 
 		foreach (Proposal p in m_newProposals) {
 			/*if (p.evalMethod != null) {
@@ -87,9 +87,9 @@ public class NPC : Character {
 			}*/
 
 			//Debug.Log ("Rating is: " + p.getRating ());
-			string pClass = p.ProposalClass;
+			ProposalClass pClass = p.ProposalType;
 			if (p.getRating () > 0f) {
-				if (pClass == "none") {
+				if (pClass == ProposalClass.None) {
 					executeProposalEvent (p);
 				} else if (!highestEvaluation.ContainsKey (pClass) || p.getRating () > highestEvaluation [pClass]) {
 					highestEvaluation [pClass] = p.getRating ();

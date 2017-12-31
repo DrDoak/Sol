@@ -6,6 +6,6 @@ public class EVAttack : Event {
 	public AttackInfo AttackData;
 	public Character attacker;
 	public EVAttack() {
-		eventType = "attack";
+		eventType = EventType.Attack;
 	}
 }

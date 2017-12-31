@@ -5,21 +5,22 @@ using UnityEngine;
 public class GlMakeFriends : Goal {
 
 	public GlMakeFriends() {
-		registerEvent ("exclamation",greeting,respond, "verbal");
-		registerEvent ("sight", sawFriend, respondToSight, "verbal");
-
+		registerEvent (EventType.Exclamation,greeting,respond, ProposalClass.Verbal);
+		registerEvent (EventType.Sight, sawFriend, respondToSight, ProposalClass.Verbal);
 	}
 
 	float sawFriend(Event e) {
 		EVSight es = (EVSight)e;
-		if (es.ObservedChar != null) {
-			Assertion a = new Assertion ();
-			a.AddSubject (KNManager.CopySubject (mChar.name));
-			a.AddVerb (KNManager.CopyVerb("sight"));
-			a.AddReceivor(KNManager.CopySubject(es.ObservedChar.name));
-			float decVal = mChar.knowledgeBase.GetDecayRatio (a) - 0.5f;
-			Debug.Log ("Exclaim rating: " + decVal);
-			return decVal;
+		if (es.ObservedChar != null && es.onSight) {
+			Relationship r = mChar.getCharInfo (es.ObservedChar);
+			if (!r.openHostile) {
+				Assertion a = new Assertion ();
+				a.AddSubject (KNManager.CopySubject (mChar.name));
+				a.AddVerb (KNManager.CopyVerb ("sight"));
+				a.AddReceivor (KNManager.CopySubject (es.ObservedChar.name));
+				float decVal = mChar.knowledgeBase.GetDecayRatio (a,120f) - 0.5f;
+				return decVal;
+			}
 		}
 		return 0.0f;
 	}

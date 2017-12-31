@@ -9,11 +9,11 @@ public class GlSurvival: Goal {
 	public GlSurvival() {
 		fleeProp = new Proposal ();
 		fleeProp.mMethod = initiateFlee;
-		fleeProp.ProposalClass = "movement";
+		fleeProp.ProposalType = ProposalClass.Action;
 
-		registerEvent ("sight", sightEvent,attackOnSight);
-		registerEvent ("attack", sawAttackEvent,initiateAttack);
-		registerEvent ("hit", hitEvent, initiateAttack,"attack");
+		registerEvent (EventType.Sight, sightEvent,attackOnSight);
+		registerEvent (EventType.Attack, sawAttackEvent,initiateAttack);
+		registerEvent (EventType.Hit, hitEvent, initiateAttack,ProposalClass.Action);
 	}
 
 	float sightEvent(Event e) {

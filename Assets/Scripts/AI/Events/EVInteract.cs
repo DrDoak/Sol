@@ -8,6 +8,6 @@ public class EVInteract : Event {
 	public bool IsCharInteraction = false;
 	public Character InteracteeChar;
 	public EVInteract() {
-		eventType = "interact";
+		eventType = EventType.Interact;
 	}
 }

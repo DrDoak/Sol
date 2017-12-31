@@ -7,6 +7,6 @@ public class EVSight : Event {
 	public Observable Observee;
 	public Character ObservedChar;
 	public EVSight() {
-		eventType = "sight";
+		eventType = EventType.Sight;
 	}
 }

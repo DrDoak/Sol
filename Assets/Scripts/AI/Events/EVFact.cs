@@ -5,6 +5,6 @@ using UnityEngine;
 public class EVFact : Event {
 	public bool isDuplicate = false;
 	public EVFact() {
-		eventType = "fact";
+		eventType = EventType.Fact;
 	}
 }

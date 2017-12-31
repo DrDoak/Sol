@@ -6,8 +6,8 @@ public class GlAttackEnemies : Goal {
 
 	// Use this for initialization
 	public GlAttackEnemies () {
-		registerEvent ("sight", sightEvent,initiateAttack);
-		registerEvent ("hit", hitEvent, initiateAttack);
+		registerEvent (EventType.Sight, sightEvent,initiateAttack);
+		registerEvent (EventType.Hit, hitEvent, initiateAttack);
 	}
 
 	void initiateAttack(Proposal p) {

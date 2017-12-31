@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GlObediance : Goal {
 	public GlObediance() {
-		registerEvent ("command", attackCommand,executeAttack);
+		registerEvent (EventType.Command, attackCommand,executeAttack);
 	}
 
 	float attackCommand(Event e) {

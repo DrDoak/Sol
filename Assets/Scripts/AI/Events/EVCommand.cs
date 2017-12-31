@@ -7,6 +7,6 @@ public class EVCommand : Event {
 	public KNVerb Command;
 	public KNSubject Target;
 	public EVCommand() {
-		eventType = "command";
+		eventType = EventType.Command;
 	}
 }

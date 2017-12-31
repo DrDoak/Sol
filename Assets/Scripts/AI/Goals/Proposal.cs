@@ -2,6 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum ProposalClass {
+	None,
+	Action,
+	Verbal,
+	Knowledge
+};
+
 public class Proposal {
 
 	public NPC mNPC;
@@ -9,7 +16,7 @@ public class Proposal {
 	public Goal.executionMethod mMethod;
 	//public Goal.evaluationMethod evalMethod;
 	public float rating = 0.0f;
-	public string ProposalClass = "none";
+	public ProposalClass ProposalType = ProposalClass.None;
 
 	public Proposal() {
 		//evalMethod = genericEvaluate;

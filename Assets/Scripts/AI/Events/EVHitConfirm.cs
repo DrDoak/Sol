@@ -5,6 +5,6 @@ using UnityEngine;
 public class EVHitConfirm : EVAttack {
 	public GameObject ObjectHit;
 	public EVHitConfirm() {
-		eventType = "hit";
+		eventType = EventType.Hit;
 	}
 }

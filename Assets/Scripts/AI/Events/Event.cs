@@ -10,12 +10,13 @@ public enum EventType {
 	Fact,
 	Command,
 	Ask,
-	Tell
+	Tell,
+	Exclamation
 };
 
 public class Event {
 
-	public string eventType;
+	public EventType eventType;
 	public float refreshTime = -1f;
 	public Assertion assertion;
 //	public float aggression;

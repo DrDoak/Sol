@@ -13,20 +13,20 @@ public class Goal {
 	public string relationsPath = "relations";
 	public string objectsPath = "objects";
 
-	Dictionary<string,List<evaluationMethod>> evalMethods = new Dictionary<string,List<evaluationMethod>> ();
-	Dictionary<string,List<immediateExecute>> immExecMethods = new Dictionary<string,List<immediateExecute>>();
-	Dictionary<string,List<executionMethod>> probabilityMethods = new Dictionary<string,List<executionMethod>>();
+	Dictionary<EventType,List<evaluationMethod>> evalMethods = new Dictionary<EventType,List<evaluationMethod>> ();
+	Dictionary<EventType,List<immediateExecute>> immExecMethods = new Dictionary<EventType,List<immediateExecute>>();
+	Dictionary<EventType,List<executionMethod>> probabilityMethods = new Dictionary<EventType,List<executionMethod>>();
 	Dictionary<evaluationMethod,executionMethod> execMethods = new Dictionary<evaluationMethod,executionMethod> ();
-	Dictionary<executionMethod,string> execToClass = new Dictionary<executionMethod,string> ();
+	Dictionary<executionMethod,ProposalClass> execToClass = new Dictionary<executionMethod,ProposalClass> ();
 
 	public Goal () {}
 
-	protected void registerEvent(string eventType, immediateExecute immM) {
+	protected void registerEvent(EventType eventType, immediateExecute immM) {
 		if (!(immExecMethods.ContainsKey (eventType)))
 			immExecMethods [eventType] = new List<immediateExecute> ();
 		immExecMethods[eventType].Add(immM);
 	}
-	protected void registerEvent(string eventType, float probability, executionMethod immE, string proposalClass = "none") {
+	protected void registerEvent(EventType eventType, float probability, executionMethod immE, ProposalClass proposalClass = ProposalClass.None) {
 		if (Random.value > probability)
 			return;
 		if (!(probabilityMethods.ContainsKey (eventType)))
@@ -34,12 +34,12 @@ public class Goal {
 		probabilityMethods[eventType].Add(immE);
 		execToClass[immE] = proposalClass;
 	}
-	protected void registerEvent(string eventType, evaluationMethod evalM) {
+	protected void registerEvent(EventType eventType, evaluationMethod evalM) {
 		if (!(evalMethods.ContainsKey (eventType)))
 			evalMethods [eventType] = new List<evaluationMethod> ();
 		evalMethods[eventType].Add(evalM);
 	}
-	protected void registerEvent(string eventType, evaluationMethod evalMethod, executionMethod execMethod, string proposalClass = "none") {
+	protected void registerEvent(EventType eventType, evaluationMethod evalMethod, executionMethod execMethod, ProposalClass proposalClass = ProposalClass.None) {
 		if (!(evalMethods.ContainsKey (eventType)))
 			evalMethods [eventType] = new List<evaluationMethod> ();
 		evalMethods[eventType].Add(evalMethod);
@@ -50,7 +50,7 @@ public class Goal {
 	public virtual void onImport() {}
 
 	public virtual void respondToEvent(Event e) {
-		string eventName = e.eventType;
+		EventType eventName = e.eventType;
 		//Debug.Log ("Event of type: " + eventName);
 		//Debug.Log (this + " hasEvent: " + evalMethods.ContainsKey (eventName));
 		if (immExecMethods.ContainsKey(eventName)) {
@@ -66,7 +66,7 @@ public class Goal {
 				p.mEvent = e;
 				p.mMethod = eX;
 				p.rating = 1.0f;
-				p.ProposalClass = execToClass [eX];
+				p.ProposalType = execToClass [eX];
 				eX (p);
 			}
 		}
@@ -81,7 +81,7 @@ public class Goal {
 					p.mNPC = mChar;
 					p.mEvent = e;
 					p.mMethod = execMethods[eM];
-					p.ProposalClass = execToClass[ execMethods[eM]];
+					p.ProposalType = execToClass[ execMethods[eM]];
 					mChar.addProposal (p, e, rating);
 				}
 			}

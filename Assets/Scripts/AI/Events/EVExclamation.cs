@@ -6,6 +6,6 @@ public class EVExclamation : Event {
 	public Character speaker;
 	public string Exclamation;
 	public EVExclamation() {
-		eventType = "exclamation";
+		eventType = EventType.Exclamation;
 	}
 }

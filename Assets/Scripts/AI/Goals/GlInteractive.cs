@@ -17,7 +17,7 @@ public class GlInteractive : Goal {
 	//KNManager km;
 	public GlInteractive() {
 		//km = GameObject.FindObjectOfType<KNManager> ();
-		registerEvent ("interact", interactEvent,startDialogue);
+		registerEvent (EventType.Interact, interactEvent,startDialogue);
 		//registerEvent ("ask", factEvent,answerQuestion);
 		//registerEvent ("inform", fact, answerQuestion);
 	}

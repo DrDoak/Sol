@@ -5,7 +5,7 @@ using UnityEngine;
 public class GlPeace : Goal {
 
 	public GlPeace() {
-		registerEvent ("hit",hitMe,expressPain,"attack");
+		registerEvent (EventType.Hit,hitMe,expressPain,ProposalClass.Verbal);
 	}
 
 	float hitMe(Event e) {

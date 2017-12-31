@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class RPTemplate {
-	public string template;
+	public string OutputTemplate;
 	public string speechGroup;
 	public Assertion templateAssertion;
 	Character mChar;

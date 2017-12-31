@@ -33,7 +33,7 @@ public class TextboxManager : MonoBehaviour {
 		GameObject newTextbox = Instantiate (textboxPrefab,newPos,Quaternion.identity);
 		textbox tb = newTextbox.GetComponent<textbox> ();
 		if (!type) {
-			Debug.Log ("displaying Textbox: " + text);
+			//Debug.Log ("displaying Textbox: " + text);
 			newTextbox.GetComponent<disappearing> ().duration = textSpeed * text.Length + timeAfter;
 			newTextbox.GetComponent<disappearing> ().toDisappear = true;
 		}

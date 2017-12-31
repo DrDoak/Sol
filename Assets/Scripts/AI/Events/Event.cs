@@ -2,6 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum EventType {
+	Sight,
+	Attack,
+	Hit,
+	Interact,
+	Fact,
+	Command,
+	Ask,
+	Tell
+};
+
 public class Event {
 
 	public string eventType;

@@ -78,22 +78,35 @@ public class NPC : Character {
 	}
 
 	void executeValidProposals() {
+		Dictionary<string, float> highestEvaluation = new Dictionary<string, float> ();
+		Dictionary<string,Proposal> highestProposal = new Dictionary<string, Proposal> ();
+
 		foreach (Proposal p in m_newProposals) {
-			if (p.evalMethod != null) {
+			/*if (p.evalMethod != null) {
 				p.evalMethod (p);
-			}
+			}*/
+
 			//Debug.Log ("Rating is: " + p.getRating ());
-			if (p.getRating() > 0f) {
-				executeProposalEvent (p);
+			string pClass = p.ProposalClass;
+			if (p.getRating () > 0f) {
+				if (pClass == "none") {
+					executeProposalEvent (p);
+				} else if (!highestEvaluation.ContainsKey (pClass) || p.getRating () > highestEvaluation [pClass]) {
+					highestEvaluation [pClass] = p.getRating ();
+					highestProposal [pClass] = p;
+				}
 			}
+		}
+		foreach (Proposal p in highestProposal.Values){
+			executeProposalEvent (p);
 		}
 		if (m_currentProposals.Count > 0) {
 			for (int i= m_currentProposals.Count - 1; i >= 0; i --) {
-				Proposal p = m_currentProposals [i];
+				/*Proposal p = m_currentProposals [i];
 				p.evalMethod (p);
 				if (p.getRating() <= 0f) {
 					m_currentProposals.RemoveAt (i);
-				}
+				}*/
 			}
 		}
 		m_newProposals.Clear ();

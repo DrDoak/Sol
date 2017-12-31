@@ -126,8 +126,11 @@ public class GlInteractive : Goal {
 		du.startSequence ();
 	}
 	void exclamationResponse(DialogueOption o) {
+		o.closeSequence ();
 		OptionKnowledgeBase okb = (OptionKnowledgeBase)o;
 		var evc = new  EVExclamation();
+		evc.speaker = okb.speaker;
+		evc.Exclamation = okb.assertion.Subjects [0].SubjectName;
 		evc.assertion = okb.assertion;
 		mChar.respondToEvent (evc);
 	}

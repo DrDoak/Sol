@@ -120,8 +120,7 @@ public class KNManager : MonoBehaviour {
 		}
 	}
 	Assertion m_newAssertion(KNSubject subject, KNVerb verb, KNSubject receiver, KNSubject source,bool isInquiry,Character c) {
-		var f = new Assertion { TimeLearned = GameManager.GameTime,Inquiry = isInquiry,
-			LastTimeDiscussed = GameManager.GameTime, Source = source};
+		var f = new Assertion { Inquiry = isInquiry, Source = source};
 		f.SetOwner (c);
 		f.AddSubject (subject);
 		f.AddVerb (verb);
@@ -156,7 +155,7 @@ public class KNManager : MonoBehaviour {
 		foreach (var ks in kd.Subjects) {
 			if (!ks.Exclamation || ks.Hide)
 				continue;
-			OptionKnowledgeBase o = new OptionKnowledgeBase {responseFunction = FinishFact,
+			OptionKnowledgeBase o = new OptionKnowledgeBase {responseFunction = selectionFunction,
 				text = (ks.SubjectDisplayed == "none")?ks.SubjectName:ks.SubjectDisplayed};
 			o.assertion = m_newAssertion(ks,null,null,CopySubject(c.name),false,c);
 			o.SelectionFunction = selectionFunction;

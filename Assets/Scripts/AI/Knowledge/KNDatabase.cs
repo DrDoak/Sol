@@ -68,19 +68,21 @@ public class KNDatabase {
 		return matches;
 	}
 
-	public Assertion GetAssertion(string factID) {
-		if (Knowledge.ContainsKey(factID)) {
-			return null;
-		} else {
-			return Knowledge[factID];
+	public float TimeSinceLastMatch(Assertion matchA) {
+		float time = float.MaxValue;
+		foreach (var a in Knowledge.Values) {
+			if (a.IsMatch (matchA))
+				time = Mathf.Min (time, GameManager.GameTime - a.LastTimeReferenced);
 		}
+		return time;
 	}
 
 	public void AddAssertion(Assertion k) {
 		Assertion newA = k;
 		foreach (var f in Knowledge.Values) {
 			if (f.GetID() == k.GetID()) {
-				f.LastTimeDiscussed = k.LastTimeDiscussed;
+				f.LastTimeReferenced = k.LastTimeReferenced;
+				f.TimesReferenced.Add (k.LastTimeReferenced);
 				return;
 			}
 		}
@@ -103,22 +105,33 @@ public class KNDatabase {
 		Knowledge.Add (k.GetID(), k);
 	}
 
-	public void LearnAssertion(Assertion newF) {
+	public Assertion LearnAssertion(Assertion newF) {
 		var evf = new EVFact ();
 		Assertion oldAssertion = GetAssertion (newF);
 		if (oldAssertion != null) {
-			oldAssertion.LastTimeDiscussed = newF.LastTimeDiscussed;
+			oldAssertion.LastTimeReferenced = newF.LastTimeReferenced;
+			oldAssertion.TimesReferenced.Add (newF.LastTimeReferenced);
 			evf.assertion = oldAssertion;
 			evf.isDuplicate = true;
+			Owner.respondToEvent (evf);
+			return oldAssertion;
 		} else {
 			evf.assertion = newF;
 			AddAssertion (evf.assertion);
-			if (newF.Source == null) {
+			if (newF.Source == null)
 				newF.Source = KNManager.CopySubject (Owner.name);
-			}
+			Owner.respondToEvent (evf);
+			return newF;
 		}
 		//Debug.Log (Owner.name + " is learning: " + newF.GetID() + " source is: " + evf.assertion.Source.SubjectName);
-		Owner.respondToEvent (evf);
+	}
+
+	public Assertion GetAssertion(string factID) {
+		if (Knowledge.ContainsKey(factID)) {
+			return null;
+		} else {
+			return Knowledge[factID];
+		}
 	}
 
 	public Assertion GetAssertion(Assertion a) {
@@ -149,5 +162,27 @@ public class KNDatabase {
 		if (!Verbs.Contains (v)) {
 			Verbs.Add (v);
 		}
+	}
+
+	public float GetDecayRatio(Assertion a, float maxDecayTime = 300.0f, float compoundDecay = 0.4f) {
+		float ratio = 1.0f;
+		Assertion b = GetAssertion (a);
+		if (b == null)
+			return 1.0f;
+		foreach (float time in b.TimesReferenced) {
+			ratio -= compoundDecay * Mathf.Max(0f,(1f - (GameManager.GameTime - time)/maxDecayTime));
+		}
+		return Mathf.Max(0f,ratio);
+	}
+
+	public float GetScaleRatio(Assertion a, float maxDecayTime = 300.0f, float compoundScale = 0.5f) {
+		float ratio = 1.0f;
+		Assertion b = GetAssertion (a);
+		if (b == null)
+			return 1.0f;
+		foreach (float time in b.TimesReferenced) {
+			ratio += compoundScale * Mathf.Max(0f,(1f - (GameManager.GameTime - time)/maxDecayTime));
+		}
+		return Mathf.Max(0f,ratio);
 	}
 }

@@ -5,4 +5,8 @@ assertion,general,self,!know,*,I don't know $R.
 exclamation,general,yes,,,Yes
 exclamation,general,no,,,No
 exclamation,general,pain,,,Ouch!
-exclamation,general,stop,,,Stop that $L!
+exclamation,general,stop,,,"Stop that, $L!"
+exclamation,general,greeting,,,Hello!
+exclamation,general,greeting,,,Greetings.
+exclamation,general,confusion,,,What?
+exclamation,general,confusion,,,Hmm?

@@ -70,7 +70,7 @@ public class RPDatabase : MonoBehaviour {
 			RPTemplate rpt = new RPTemplate ();
 			string t = d ["type"];
 			rpt.speechGroup = d ["group"];
-			rpt.template = d ["template"];
+			rpt.OutputTemplate = d ["template"];
 			if (t == "assertion") {
 				rpt.templateAssertion = new Assertion ();
 				if (d ["subjects"] != "*") {

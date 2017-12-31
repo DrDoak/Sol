@@ -17,6 +17,7 @@ public class Goal {
 	Dictionary<string,List<immediateExecute>> immExecMethods = new Dictionary<string,List<immediateExecute>>();
 	Dictionary<string,List<executionMethod>> probabilityMethods = new Dictionary<string,List<executionMethod>>();
 	Dictionary<evaluationMethod,executionMethod> execMethods = new Dictionary<evaluationMethod,executionMethod> ();
+	Dictionary<executionMethod,string> execToClass = new Dictionary<executionMethod,string> ();
 
 	public Goal () {}
 
@@ -25,23 +26,25 @@ public class Goal {
 			immExecMethods [eventType] = new List<immediateExecute> ();
 		immExecMethods[eventType].Add(immM);
 	}
-	protected void registerEvent(string eventType, float probability, executionMethod immE) {
+	protected void registerEvent(string eventType, float probability, executionMethod immE, string proposalClass = "none") {
 		if (Random.value > probability)
 			return;
 		if (!(probabilityMethods.ContainsKey (eventType)))
 			probabilityMethods [eventType] = new List<executionMethod> ();
 		probabilityMethods[eventType].Add(immE);
+		execToClass[immE] = proposalClass;
 	}
 	protected void registerEvent(string eventType, evaluationMethod evalM) {
 		if (!(evalMethods.ContainsKey (eventType)))
 			evalMethods [eventType] = new List<evaluationMethod> ();
 		evalMethods[eventType].Add(evalM);
 	}
-	protected void registerEvent(string eventType, evaluationMethod evalMethod, executionMethod execMethod) {
+	protected void registerEvent(string eventType, evaluationMethod evalMethod, executionMethod execMethod, string proposalClass = "none") {
 		if (!(evalMethods.ContainsKey (eventType)))
 			evalMethods [eventType] = new List<evaluationMethod> ();
 		evalMethods[eventType].Add(evalMethod);
 		execMethods[evalMethod] = execMethod;
+		execToClass [execMethod] = proposalClass;
 	}
 
 	public virtual void onImport() {}
@@ -63,6 +66,7 @@ public class Goal {
 				p.mEvent = e;
 				p.mMethod = eX;
 				p.rating = 1.0f;
+				p.ProposalClass = execToClass [eX];
 				eX (p);
 			}
 		}
@@ -73,13 +77,16 @@ public class Goal {
 				float rating = eM ( e );
 				if (execMethods.ContainsKey(eM) && rating > 0.0) {
 					Proposal p = new Proposal ();
+					p.rating = rating;
 					p.mNPC = mChar;
 					p.mEvent = e;
-					p.mMethod = execMethods [eM];
-					mChar.addProposal (p, e,rating);
+					p.mMethod = execMethods[eM];
+					p.ProposalClass = execToClass[ execMethods[eM]];
+					mChar.addProposal (p, e, rating);
 				}
 			}
 		}
+
 	}
 	protected float always(Event e )  {
 		return 1f;

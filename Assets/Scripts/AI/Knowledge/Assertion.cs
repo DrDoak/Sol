@@ -13,7 +13,8 @@ public class Assertion : KNSubject{
 	public List<string> KnowledgeGroups;
 
 	public float TimeLearned = 0f;
-	public float LastTimeDiscussed = 0f;
+	public float LastTimeReferenced = 0f;
+	public List<float> TimesReferenced;
 	public Character LastCharacterDiscussed;
 	public KNSubject Source;
 	public bool Inquiry;
@@ -29,7 +30,9 @@ public class Assertion : KNSubject{
 		KnowledgeGroups = new List<string> ();
 		Subjects = new List<KNSubject> ();
 		Receivors = new List<KNSubject> ();
-		LastTimeDiscussed = GameManager.GameTime;
+		LastTimeReferenced = GameManager.GameTime;
+		TimesReferenced = new List<float> ();
+		TimesReferenced.Add (LastTimeReferenced);
 		TimeLearned = GameManager.GameTime;
 	}
 

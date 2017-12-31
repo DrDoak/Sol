@@ -15,9 +15,9 @@ public class GlObediance : Goal {
 		Relationship r = mChar.getCharInfo (commander);
 		if (!r.openHostile && a.Verb.VerbName == "attack") {
 			Character targetChar = CharacterManager.FindChar (a.Receivors [0].SubjectName);
-			Debug.Log ("Found target: " + targetChar);
+			//Debug.Log ("Found target: " + targetChar);
 			if (targetChar != null && targetChar != mChar)
-				return 1.0f;
+				return (r.authority * r.affirmation) + mChar.PersonalityData.agreeableness * 0.2f + 0.1f;
 		}
 		return 0f;
 	}

@@ -41,17 +41,23 @@ public class GlObserve : Goal{
 	}
 	void learnCharacter(Proposal p) {
 		EVSight se = (EVSight)p.mEvent;
-		Debug.Log ("Learning Character: " + se.ObservedChar.name);
-		mChar.knowledgeBase.LearnSubject (KNManager.CopySubject(se.ObservedChar.name));
+		Relationship r = mChar.getCharInfo (se.ObservedChar);
+		if (!mChar.knowledgeBase.HasSubject (KNManager.CopySubject (r.Name))) {
+			Debug.Log ("Learning Character: " + se.ObservedChar.name);
+			mChar.knowledgeBase.LearnSubject (KNManager.CopySubject (se.ObservedChar.name));
+		}
+		Assertion a = new Assertion ();
+		a.AddSubject (KNManager.CopySubject (mChar.name));
+		a.AddVerb (KNManager.CopyVerb("sight"));
+		a.AddReceivor(KNManager.CopySubject(se.ObservedChar.name));
+		mChar.knowledgeBase.LearnAssertion (a);
 	}
 
 	float sawCharacter(Event e) {
 		EVSight se = (EVSight)e;
 		if (se.onSight && se.ObservedChar) {
 			//Debug.Log ("Saw character: " + r.Name);
-			Relationship r = mChar.getCharInfo (se.ObservedChar);
-			if (!mChar.knowledgeBase.HasSubject(KNManager.CopySubject(r.Name)))
-				return 1.0f;
+			return 1.0f;
 		}
 		return 0.0f;
 	}

@@ -7,12 +7,12 @@ public class Proposal {
 	public NPC mNPC;
 	public Event mEvent;
 	public Goal.executionMethod mMethod;
-	public Goal.executionMethod evalMethod;
+	//public Goal.evaluationMethod evalMethod;
 	public float rating = 0.0f;
-	public bool movement = false;
+	public string ProposalClass = "none";
 
 	public Proposal() {
-		evalMethod = genericEvaluate;
+		//evalMethod = genericEvaluate;
 	}
 	// Use this for initialization
 	public void setRating(float f) {
@@ -29,6 +29,8 @@ public class Proposal {
 	protected void resolve() {
 		mNPC.resolveProposal (this);
 	}
-	void genericEvaluate(Proposal p) {}
+	float genericEvaluate(Event e) {
+		return 0f;
+	}
 
 }

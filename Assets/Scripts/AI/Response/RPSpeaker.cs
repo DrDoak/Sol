@@ -9,15 +9,17 @@ public class RPSpeaker : MonoBehaviour {
 	Character c;
 	List<RPTemplate> fullRPs;
 	List<RPTemplate> VerbRPs;
-	List<RPEntry> log;
+	List<RPEntry> ResponseLog;
 	RPDatabase rpd;
+
+	float FORGET_TIME = 500f;
 
 	// Use this for initialization
 	void Start () {
 		c = GetComponent<Character> ();
 		dp = GetComponent<DialogueParser> ();
 		rpd = FindObjectOfType<RPDatabase> ();
-		log = new List<RPEntry> ();
+		ResponseLog = new List<RPEntry> ();
 	}
 	public Response ConveySubject( Assertion a, Character listener) {
 		if (!a.HasSubject)
@@ -42,9 +44,9 @@ public class RPSpeaker : MonoBehaviour {
 		List<RPTemplate> fullR = rpd.GetMatches (exclamation,c);
 		RPTemplate best = GetBestResponse (fullR,r);
 		if (best != null) {
-			r.applyTemplate (best);
+			r.ApplyTemplate (best);
 		} else {
-			r.setString (exclamation);
+			r.SetString (exclamation);
 		}
 		return r;
 	}
@@ -56,9 +58,9 @@ public class RPSpeaker : MonoBehaviour {
 		List<RPTemplate> fullR = rpd.GetMatches (s,c);
 		RPTemplate best = GetBestResponse (fullR,r);
 		if (best != null) {
-			r.applyTemplate (best);
+			r.ApplyTemplate (best);
 		} else {
-			r.setString (s.Convey ());
+			r.SetString (s.Convey ());
 		}
 		return r;
 	}
@@ -70,9 +72,9 @@ public class RPSpeaker : MonoBehaviour {
 		List<RPTemplate> fullR = rpd.GetMatches (v,c);
 		RPTemplate best = GetBestResponse (fullR,r);
 		if (best != null) {
-			r.applyTemplate (best);
+			r.ApplyTemplate (best);
 		} else {
-			r.setString (v.Convey ());
+			r.SetString (v.Convey ());
 		}
 		return r;
 	}
@@ -82,23 +84,25 @@ public class RPSpeaker : MonoBehaviour {
 		r.mChar = c;
 		r.speaker = this;
 		r.listener = listener;
-		r.setAssertion (a);
+		r.SetAssertion (a);
 		List<RPTemplate> fullR = rpd.GetMatches (a,c);
 		RPTemplate best = GetBestResponse (fullR,r);
 		if (best != null) {
-			r.applyTemplate (best);
+			r.ApplyTemplate (best);
 		} else {
-			r.setString (a.Convey ());
+			r.SetString (a.Convey ());
 		}
 		return r;
 	}
 	public void EmitResponse(Response r) {
 		//Debug.Log ("emitting response!");
 		RPEntry newEntry = new RPEntry ();
+		newEntry.lastTime = GameManager.GameTime;
 		newEntry.response = r;
-		log.Add (newEntry);
-		Debug.Log ("Emitting string: " + r.toString ());
-		c.say (r.toString ());
+		newEntry.Template = r.Template;
+		ResponseLog.Add (newEntry);
+		//Debug.Log ("Emitting string: " + r.ToString ());
+		c.say (r.ToString ());
 	}
 	public RPTemplate GetBestResponse(List<RPTemplate> responses,Response r) {
 		float max = 0f;
@@ -113,5 +117,16 @@ public class RPSpeaker : MonoBehaviour {
 		return bestRP;
 	}
 
-	public float RateResponse(RPTemplate rp,Response r) {return 1.0f;}
+	public float RateResponse(RPTemplate rp,Response r) {return freshness(rp);}
+
+	float freshness(RPTemplate rp, float decayScale = 1f, float randomScale = 1f) {
+		float f = 1.0f;
+		List<RPEntry> newLog = new List<RPEntry>();
+		foreach(RPEntry re in ResponseLog) {
+			if (re.Template.OutputTemplate == rp.OutputTemplate) {
+				f -= decayScale * 0.1f + ((Random.value - 0.5f) * randomScale * 0.1f);
+			}
+		}
+		return f;
+	}
 }

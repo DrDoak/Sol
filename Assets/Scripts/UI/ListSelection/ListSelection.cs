@@ -7,6 +7,7 @@ public class ListSelection : MonoBehaviour {
 	public GameObject kEntry;
 	public DialogueUnit masterSequence;
 	public bool Escapable = true;
+	public bool AlphaSort = true;
 	List<DialogueOption> prevEntries;
 	List<DialogueOption> fullEntries;
 	List<string> displayedNames;
@@ -94,6 +95,7 @@ public class ListSelection : MonoBehaviour {
 			displayedNames.Add (name);
 			entries.Add (newEntry);
 		}
+		displayedNames.Sort ();
 	}
 	public void removeOption(DialogueOption DOption) {
 		string name = DOption.text;
@@ -110,6 +112,7 @@ public class ListSelection : MonoBehaviour {
 			entries = preserveList;
 		}
 		changeOption (0f);
+		displayedNames.Sort ();
 	}
 
 	public List<DialogueOption> GetOptions() {

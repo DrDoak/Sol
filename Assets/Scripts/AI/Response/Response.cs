@@ -10,21 +10,21 @@ public class Response {
 	string responseString = "";
 	bool fixedStr = true;
 
-	RPTemplate mTemplate;
+	public RPTemplate Template;
 
-	public void applyTemplate(RPTemplate rp) {
+	public void ApplyTemplate(RPTemplate rp) {
 		fixedStr = false;
-		mTemplate = rp;
+		Template = rp;
 	}
-	public void setAssertion(Assertion a) {
+	public void SetAssertion(Assertion a) {
 		assertion = a;
 		responseString = a.GetID ();
 	}
-	public void setString(string s) {
+	public void SetString(string s) {
 		fixedStr = true;
 		responseString = s;
 	}
-	public string toString() {
+	public override string ToString() {
 		if (fixedStr)
 			return responseString;
 		return parseTemplate ();
@@ -37,7 +37,7 @@ public class Response {
 	string parseTemplate() {
 		int i = 0;
 		string finalStr = "";
-		string temp = mTemplate.template;
+		string temp = Template.OutputTemplate;
 		while (i < temp.Length) {
 			char lastC = temp.ToCharArray ()[i];
 			if (lastC == '$') {
@@ -45,11 +45,11 @@ public class Response {
 				char place = temp.ToCharArray ()[i];
 				if (place == 'S') {
 					//finalStr += assertion.getSubjectID ();
-					finalStr += speaker.ConveySubject (assertion, listener).toString();
+					finalStr += speaker.ConveySubject (assertion, listener).ToString();
 				} else if (place == 'V') {
-					finalStr += speaker.ConveyVerb (assertion, listener).toString();
+					finalStr += speaker.ConveyVerb (assertion, listener).ToString();
 				} else if (place == 'R') {
-					finalStr += speaker.ConveyReceivor (assertion, listener).toString();
+					finalStr += speaker.ConveyReceivor (assertion, listener).ToString();
 				} else if (place == 'L') {
 					finalStr += (listener) ? listener.name : "";
 				}

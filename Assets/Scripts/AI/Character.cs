@@ -89,7 +89,7 @@ public class Character : Interactable {
 	public override void onInteract(Character interactor) {}
 
 	public void playerInteraction() {
-		Debug.Log (gameObject + " is trying an interaction");
+		//Debug.Log (gameObject + " is trying an interaction");
 		Interactable[] allIter = FindObjectsOfType<Interactable> ();
 		float maxPriority = 0f;
 		Interactable interObj = null;

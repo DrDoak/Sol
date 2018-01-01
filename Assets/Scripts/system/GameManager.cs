@@ -18,7 +18,7 @@ public class GameManager : MonoBehaviour {
 	new public GameObject audio;
 	public float introTime;
 
-	public SaveObjManager mSaves;
+	//public SaveObjManager mSaves;
 	public StatusMenuManager smm;
 	string curRoomName;
 	bool toInit = false;
@@ -31,7 +31,7 @@ public class GameManager : MonoBehaviour {
 			manager = this;
 			initGame ();
 		}else if  (manager != this) {
-			Destroy (this);
+			Destroy (gameObject);
 		}
 		currentCutscenes = new List<Cutscene> ();
 		registeredPermItems = new List<string> ();
@@ -50,7 +50,7 @@ public class GameManager : MonoBehaviour {
 		}*/
 	}
 	void initRoom(Scene scene, LoadSceneMode mode) {
-//		Debug.Log ("initRoom from game. Room:" + SceneManager.GetActiveScene ().name);
+		Debug.Log ("initRoom from game. Room:" + SceneManager.GetActiveScene ().name);
 		GameObject[] obj = GameObject.FindGameObjectsWithTag ("jumpThru");
 
 		foreach (GameObject go in obj) {
@@ -71,6 +71,7 @@ public class GameManager : MonoBehaviour {
 		string s = SceneManager.GetActiveScene ().name;
 		if ( s != "MainMenu" && s != "InfoScene") {
 			curPlayer = FindObjectOfType<Player> ().gameObject;
+			Debug.Log ("Found current player; " + curPlayer);
 			cameraInit ();
 		}
 //		Debug.Log ("Done with init room");

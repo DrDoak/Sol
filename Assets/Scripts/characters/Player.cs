@@ -70,7 +70,6 @@ public class Player : MonoBehaviour {
 
 	public void Reset() {
 		//GetComponent<ReturnToCheckpoint>().resetPos();
-		attackable.resetHealth ();
 		attackable.energy = 0.0f;
 		attackable.alive = true;
 	}

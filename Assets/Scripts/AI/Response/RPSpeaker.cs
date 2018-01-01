@@ -10,7 +10,6 @@ public class RPSpeaker : MonoBehaviour {
 	List<RPTemplate> fullRPs;
 	List<RPTemplate> VerbRPs;
 	List<RPEntry> ResponseLog;
-	RPDatabase rpd;
 
 	float FORGET_TIME = 500f;
 
@@ -18,7 +17,6 @@ public class RPSpeaker : MonoBehaviour {
 	void Start () {
 		c = GetComponent<Character> ();
 		dp = GetComponent<DialogueParser> ();
-		rpd = FindObjectOfType<RPDatabase> ();
 		ResponseLog = new List<RPEntry> ();
 	}
 	public Response ConveySubject( Assertion a, Character listener) {
@@ -41,7 +39,7 @@ public class RPSpeaker : MonoBehaviour {
 		r.mChar = c;
 		r.speaker = this;
 		r.listener = listener;
-		List<RPTemplate> fullR = rpd.GetMatches (exclamation,c);
+		List<RPTemplate> fullR = RPDatabase.GetMatches (exclamation,c);
 		RPTemplate best = GetBestResponse (fullR,r);
 		if (best != null) {
 			r.ApplyTemplate (best);
@@ -55,7 +53,7 @@ public class RPSpeaker : MonoBehaviour {
 		r.mChar = c;
 		r.speaker = this;
 		r.listener = listener;
-		List<RPTemplate> fullR = rpd.GetMatches (s,c);
+		List<RPTemplate> fullR = RPDatabase.GetMatches (s,c);
 		RPTemplate best = GetBestResponse (fullR,r);
 		if (best != null) {
 			r.ApplyTemplate (best);
@@ -69,7 +67,7 @@ public class RPSpeaker : MonoBehaviour {
 		r.mChar = c;
 		r.speaker = this;
 		r.listener = listener;
-		List<RPTemplate> fullR = rpd.GetMatches (v,c);
+		List<RPTemplate> fullR = RPDatabase.GetMatches (v,c);
 		RPTemplate best = GetBestResponse (fullR,r);
 		if (best != null) {
 			r.ApplyTemplate (best);
@@ -85,7 +83,7 @@ public class RPSpeaker : MonoBehaviour {
 		r.speaker = this;
 		r.listener = listener;
 		r.SetAssertion (a);
-		List<RPTemplate> fullR = rpd.GetMatches (a,c);
+		List<RPTemplate> fullR = RPDatabase.GetMatches (a,c);
 		RPTemplate best = GetBestResponse (fullR,r);
 		if (best != null) {
 			r.ApplyTemplate (best);

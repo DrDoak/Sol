@@ -27,9 +27,6 @@ public class CharacterManager : MonoBehaviour {
 	void Start() {}
 
 	void Update () {
-		if (m_InitChar)
-			return;
-		m_InitChar = true;
 		foreach (Character c in m_toRegisterCharacters) {
 			initChar (c);
 		}
@@ -77,8 +74,8 @@ public class CharacterManager : MonoBehaviour {
 		}
 	}
 
-	public void registerChar(Character c) {
-		m_toRegisterCharacters.Add (c);
+	public static void RegisterChar(Character c) {
+		Instance.m_toRegisterCharacters.Add (c);
 	}
 
 	void initChar(Character c) {

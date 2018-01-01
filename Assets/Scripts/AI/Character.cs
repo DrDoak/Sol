@@ -71,7 +71,8 @@ public class Character : Interactable {
 		if (faction == "noFaction" && GetComponent<Attackable> ()) {
 			faction = GetComponent<Attackable> ().faction;
 		}
-		FindObjectOfType<CharacterManager> ().registerChar (this);
+		Debug.Log ("Character initialization for: " + gameObject);
+		CharacterManager.RegisterChar (this);
 	}
 
 	public virtual void setAutonomy(bool active) {
@@ -206,23 +207,23 @@ public class Character : Interactable {
 
 //-------------Saving:--------------------//
 	public void registryCheck() {
-		if (data.regID == "") {
+		/*if (data.regID == "") {
 			data.regID = "Not Assigned";
 		}
 		if (FindObjectOfType<GameManager>().checkRegistered(gameObject)) {
 			Destroy(gameObject);
 		}
-		registryChecked = true;
+		registryChecked = true;*/
 	}
 	void Update () {
-		if (!registryChecked) {
+		/*if (!registryChecked) {
 			registryCheck ();
-		}
+		}*/
 	}
 
 	public void StoreData() {
 		//Debug.Log ("storing data");
-		data.name = gameObject.name;
+		/*data.name = gameObject.name;
 		data.pos = transform.position;
 		data.health = GetComponent<Attackable>().health;
 		string properName = "";
@@ -234,13 +235,13 @@ public class Character : Interactable {
 			}
 		}
 		//Debug.Log("ID: " + properName);
-		data.prefabPath = properName; //gameObject.name;
+		data.prefabPath = properName; //gameObject.name;*/
 	}
 
 	public void LoadData() {
 		name = data.name;
-		transform.position = data.pos;
-		GetComponent<Attackable>().health = data.health;
+		/*transform.position = data.pos;
+		GetComponent<Attackable>().health = data.health;*/
 	}
 	/*
 	public void ApplyData() {

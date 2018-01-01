@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class RPDatabase : MonoBehaviour {
 
+	public static RPDatabase Instance;
+
 	[SerializeField] private string ImportPath;
 	List<RPTemplate> m_ResponseTemplates;
 	List<RPTemplate> m_SubjectTemplates;
@@ -13,6 +15,9 @@ public class RPDatabase : MonoBehaviour {
 	bool m_Init;
 	// Use this for initialization
 	void Start () {
+		if (Instance == null)
+			Instance = this;
+		Debug.Log ("Create function");
 		//knm = FindObjectOfType<KNManager> ();
 		m_SubjectTemplates = new List<RPTemplate> ();
 		m_ResponseTemplates = new List<RPTemplate> ();
@@ -20,15 +25,16 @@ public class RPDatabase : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		//Debug.Log ("RT: " + m_ResponseTemplates);
 		if (m_Init)
 			return;
 		ImportFromFile (ImportPath);
 		m_Init = true;
 	}
 
-	public List<RPTemplate> GetMatches(string exclamation, Character speaker) {
+	public static List<RPTemplate> GetMatches(string exclamation, Character speaker) {
 		var responses = new List<RPTemplate> ();
-		foreach (var r in m_ResponseTemplates) {
+		foreach (var r in Instance.m_ResponseTemplates) {
 			r.setSpeaker (speaker);
 			if (r.match (exclamation))
 				responses.Add (r);
@@ -36,27 +42,27 @@ public class RPDatabase : MonoBehaviour {
 		return responses;
 	}
 
-	public List<RPTemplate> GetMatches(Assertion a,Character speaker) {
+	public static List<RPTemplate> GetMatches(Assertion a,Character speaker) {
 		var responses = new List<RPTemplate> ();
-		foreach (var r in m_ResponseTemplates) {
+		foreach (var r in Instance.m_ResponseTemplates) {
 			r.setSpeaker (speaker);
 			if (r.match (a))
 				responses.Add (r);
 		}
 		return responses;
 	}
-	public List<RPTemplate> GetMatches(KNSubject s,Character speaker) {
+	public static List<RPTemplate> GetMatches(KNSubject s,Character speaker) {
 		var responses = new List<RPTemplate> ();
-		foreach (var r in m_SubjectTemplates) {
+		foreach (var r in Instance.m_SubjectTemplates) {
 			r.setSpeaker (speaker);
 			if (r.match (s))
 				responses.Add (r);
 		}
 		return responses;
 	}
-	public List<RPTemplate> GetMatches(KNVerb v,Character speaker) {
+	public static List<RPTemplate> GetMatches(KNVerb v,Character speaker) {
 		var responses = new List<RPTemplate> ();
-		foreach (var r in m_VerbTemplates) {
+		foreach (var r in Instance.m_VerbTemplates) {
 			r.setSpeaker (speaker);
 			if (r.match (v))
 				responses.Add (r);

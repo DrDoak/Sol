@@ -25,7 +25,6 @@ public class StatusMenuManager : MonoBehaviour {
 		}
 	}
 	public void setDebug(bool debugActive) {
-		Debug.Log ("Switching debug mode to: " +debug);
 		debug = debugActive;
 	}
 
@@ -37,8 +36,6 @@ public class StatusMenuManager : MonoBehaviour {
 	}
 
 	public void toggleMenu() {
-		Debug.Log ("toggle menu display");
-		Debug.Log (menuPrefab);
 		menuPrefab.SetActive (!menuOpen);
 		if (currentTab != null) {
 			currentTab.OnPointerClick ();

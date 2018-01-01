@@ -13,7 +13,7 @@ public class SyKnife : MonoBehaviour {
 	float m_targetSpeed;
 	Hitbox m_hb;
 
-	const float ACCELERATION = 0.05f;
+	const float ACCELERATION = 5f;
 	const float CHASE_TOLERANCE = 0.75f;
 	const float PLAYER_LEASE = 1.5f;
 	Vector2 MAX_KNIFE = new Vector2(20.0f,20.0f);
@@ -25,6 +25,8 @@ public class SyKnife : MonoBehaviour {
 	Color red;
 	Color blue;
 
+	float timeOut = 0f;
+	float targetTime = 0.6f;
 	// Use this for initialization
 	void Start () {
 		m_sprite = GetComponent<SpriteRenderer> ();
@@ -32,6 +34,7 @@ public class SyKnife : MonoBehaviour {
 		m_speed = new Vector2 ();
 		m_hb = GetComponent<Hitbox> ();
 		m_hb.Active = false;
+		m_hb.creator = User.gameObject;
 		m_hb.setFaction(User.GetComponent<Attackable>().faction);
 
 		red = new Color(1f, 0f, 0f, 1f);
@@ -44,6 +47,10 @@ public class SyKnife : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		if (User == null) {
+			Destroy (gameObject);
+			return;
+		}
 		if (m_delay > 0f) {
 			m_delay -= Time.deltaTime;
 		} else if (m_targetingPoint) {
@@ -59,8 +66,8 @@ public class SyKnife : MonoBehaviour {
 			offset *= -1f;
 		}
 		if (Vector2.Distance (transform.position, new Vector2 (User.transform.position.x + offset, User.transform.position.y)) > PLAYER_LEASE) {
-			m_speed.x += ACCELERATION * Mathf.Sign ((offset + User.transform.position.x) - transform.position.x);
-			m_speed.y += ACCELERATION * Mathf.Sign (User.transform.position.y - transform.position.y);
+			m_speed.x += ACCELERATION * Time.deltaTime * Mathf.Sign ((offset + User.transform.position.x) - transform.position.x);
+			m_speed.y += ACCELERATION * Time.deltaTime * Mathf.Sign (User.transform.position.y - transform.position.y);
 		} else {
 			Available = true;
 			SetActive (false);
@@ -72,9 +79,13 @@ public class SyKnife : MonoBehaviour {
 
 	void chaseTarget() {
 		if (Vector3.Distance (transform.position, m_currentTarget) > CHASE_TOLERANCE) {
-			m_speed.x += ACCELERATION * Mathf.Sign (m_currentTarget.x - transform.position.x);
-			m_speed.y += ACCELERATION * Mathf.Sign (m_currentTarget.y - transform.position.y);
+			m_speed.x += ACCELERATION * Time.deltaTime * Mathf.Sign (m_currentTarget.x - transform.position.x);
+			m_speed.y += ACCELERATION * Time.deltaTime * Mathf.Sign (m_currentTarget.y - transform.position.y);
 		} else {
+			m_targetingPoint = false;
+		}
+		timeOut += Time.deltaTime;
+		if (timeOut > targetTime) {
 			m_targetingPoint = false;
 		}
 		m_speed *= 0.98f;
@@ -93,6 +104,7 @@ public class SyKnife : MonoBehaviour {
 		//m_targetSpeed = speed;
 		m_targetingPoint = true;
 		SetActive (true);
+		timeOut = 0f;
 	}
 
 	public void SetActive(bool active) {

@@ -35,7 +35,9 @@ public class MainMenuButton : MonoBehaviour, IPointerClickHandler {
 //	}
 
 	public void setScene() {
-		SceneManager.LoadScene (sceneName, LoadSceneMode.Single);
+		if (sceneName != "None") {
+			SceneManager.LoadScene (sceneName, LoadSceneMode.Single);
+		}
 	}
 
 	public void OnPointerClick(PointerEventData eventData)

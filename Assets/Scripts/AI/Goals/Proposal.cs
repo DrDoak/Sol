@@ -6,7 +6,8 @@ public enum ProposalClass {
 	None,
 	Action,
 	Verbal,
-	Knowledge
+	Knowledge,
+	Relationship
 };
 
 public class Proposal {

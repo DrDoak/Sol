@@ -27,27 +27,27 @@ public class Relationship {
 	public bool canSee;
 
 	Personality pers;
-	/*
-	 * //Character Traits:
-	public float egoCombat = 0.0f;
-	public float egoLogic = 0.0f;
-	public float egoSocial = 0.0f;
-
-	public float boldness = 0.0f;
-	public float temperament = 0.5f;
-	public float emotionLogic = 0.0f;
-	public float opennessAllegiance = 0.0f;
-	public float agreeableness = 0.0f;
-	public float pragmaticIdealistic = 0.0f;
-
-	//Mood
+/*	//Mood
 	public float confidence = 0.0f;
 	public float happiness = 0.0f;
 	public float emotion = 0.0f;
 */
-	public float evaluateTrustWorthySource() {
-		float trustVal = 0.0f;
-		return trustVal;
+	public void ChangeFavor(float favorChange, bool changeRelevance = true, bool paradigmShift = false) {
+		if (paradigmShift) {
+			favorability += favorChange;
+		} else {
+			favorability += favorChange * (1f - relevance);
+		}	
+		//Debug.Log ("Favor changed by " + favorChange * (1f - relevance) + " to: " + favorability);
+		if (changeRelevance) {
+		}
+	}
+	public float GetFavorScaled() {
+		return (favorability * (2f - relevance)/2f) * (1f + ParentChar.PersonalityData.opennessAllegiance);
 	}
 
+	public float GetAuthorityScaled() {
+		Personality p = ParentChar.PersonalityData;
+		return GetFavorScaled() * Mathf.Max(0f,-p.emotionLogic) + authority * (2f - affirmation) * (1f + ParentChar.PersonalityData.opennessAllegiance) + p.agreeableness;
+	}
 }

@@ -7,7 +7,7 @@ public class GlAttackEnemies : Goal {
 	// Use this for initialization
 	public GlAttackEnemies () {
 		registerEvent (EventType.Sight, sightEvent,initiateAttack);
-		registerEvent (EventType.Hit, hitEvent, initiateAttack);
+		registerEvent (EventType.Hit, hitEvent, investigateHit);
 	}
 
 	void initiateAttack(Proposal p) {
@@ -25,7 +25,6 @@ public class GlAttackEnemies : Goal {
 
 	void investigateHit(Proposal p) {
 		EVHitConfirm eva = (EVHitConfirm)p.mEvent;
-		//Debug.Log ("INvestigating hit");
 		if (eva.attacker.transform.position.x < mChar.transform.position.x) {
 			mChar.GetComponent<Movement> ().setFacingLeft (true);
 		} else {

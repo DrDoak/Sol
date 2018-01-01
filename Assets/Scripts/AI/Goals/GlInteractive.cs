@@ -18,7 +18,7 @@ public class GlInteractive : Goal {
 	public GlInteractive() {
 		//km = GameObject.FindObjectOfType<KNManager> ();
 		registerEvent (EventType.Interact, interactEvent,startDialogue);
-		//registerEvent ("ask", factEvent,answerQuestion);
+		registerEvent (EventType.Ask, questionEvent,answerQuestion);
 		//registerEvent ("inform", fact, answerQuestion);
 	}
 
@@ -47,24 +47,23 @@ public class GlInteractive : Goal {
 		du.startSequence ();
 	}
 
-	float factEvent(Event e, Relationship ci, Personality p) {
-		EVFact evf = (EVFact)e;
+	float questionEvent(Event e) {
+		EVAsk evf = (EVAsk)e;
 		Assertion a = e.assertion;
 		Character listener = CharacterManager.FindChar(a.Source.SubjectName);
 		//Debug.Log ("Fact event: " + a.GetID () +  " From: " + listener + " DUP: " + evf.isDuplicate);
 		if (listener)
-			return 1.0f;
+			return 0.1f;
 		return 0f;
 	}
 
 	void answerQuestion(Proposal p) {
-		EVFact evf = (EVFact)p.mEvent;
-		Debug.Log ("Answering the question DUP: " + evf.isDuplicate);
+		EVAsk evf = (EVAsk)p.mEvent;
 		Assertion a = evf.assertion;
 		Assertion statement = new Assertion ();
 		Character me = p.mNPC;
 		statement.AddSubject (KNManager.CopySubject (me.name));
-		statement.AddVerb (KNManager.CopyVerb ("know"), !evf.isDuplicate);
+		statement.AddVerb (KNManager.CopyVerb ("know"),(me.knowledgeBase.GetAssertion(a) != null));
 		statement.AddReceivor (a);
 		Character listener = CharacterManager.FindChar (a.Source.SubjectName);
 		mChar.speaker.EmitResponse(mChar.speaker.Convey (statement, listener));
@@ -144,8 +143,10 @@ public class GlInteractive : Goal {
 	}
 	void answerQuestion(DialogueOption o) {
 		OptionKnowledgeBase okb = (OptionKnowledgeBase)o;
+		o.closeSequence ();
 		var evf = new EVAsk ();
 		evf.assertion = okb.assertion;
+		Debug.Log ("Asking a question: " + evf.assertion.GetID());
 		mChar.respondToEvent (evf);
 	}
 }

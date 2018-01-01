@@ -185,7 +185,7 @@ public class Character : Interactable {
 		}
 	}
 	public Relationship evaluateNewChar(Character c) {
-		Debug.Log ("Evaluating new character: " + c.name);
+		//Debug.Log ("Evaluating new character: " + c.name);
 		Relationship ci = new Relationship ();
 		ci.Name = c.name;
 		ci.ParentChar = this;

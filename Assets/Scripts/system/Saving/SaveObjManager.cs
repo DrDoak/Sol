@@ -1,10 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
 using System.IO;
 
-public class SaveObjManager : Editor {
+public class SaveObjManager : MonoBehaviour {
 	//Dictionary<string, Dictionary<string,GameObject>> roomItems = new Dictionary<string,Dictionary<string,GameObject>>();
 	//Dictionary<string,GameObject> curRoomInfo;
 	static RoomChanger [] roomChangers;

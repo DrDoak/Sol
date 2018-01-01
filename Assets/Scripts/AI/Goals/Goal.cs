@@ -75,6 +75,9 @@ public class Goal {
 				//Relationship ci = mChar.getCharInfo (e.targetChar);
 				//Debug.Log ("Relationship retrieved: " + ci);
 				float rating = eM ( e );
+				if (rating != 0.0 && rating != 1.0) {
+					Debug.Log("Goal " + this.GetType() + " has rating: " + rating);
+				}
 				if (execMethods.ContainsKey(eM) && rating > 0.0) {
 					Proposal p = new Proposal ();
 					p.rating = rating;
@@ -82,7 +85,7 @@ public class Goal {
 					p.mEvent = e;
 					p.mMethod = execMethods[eM];
 					p.ProposalType = execToClass[ execMethods[eM]];
-					mChar.addProposal (p, e, rating);
+					mChar.AddProposal (p, e, rating);
 				}
 			}
 		}

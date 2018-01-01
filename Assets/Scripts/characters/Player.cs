@@ -109,6 +109,7 @@ public class Player : MonoBehaviour {
 			}
 			moveToPoint (targetPoint);
 		}else if (movement.canMove && autonomy) {
+			
 			if (Input.GetButtonDown("Menu")) {
 				gameManager.toggleMenu ();
 			}

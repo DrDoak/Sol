@@ -8,5 +8,12 @@ exclamation,general,pain,,,Ouch!
 exclamation,general,stop,,,"Stop that, $L!"
 exclamation,general,greeting,,,Hello!
 exclamation,general,greeting,,,Greetings.
-exclamation,general,confusion,,,What?
-exclamation,general,confusion,,,Hmm?
+exclamation,general,disinterest,,,. . .
+exclamation,general,disinterest,,,ok. . .
+exclamation,general,disinterest,,,mmhmm. . .
+assertion,general,self,like,Character,I like $R
+assertion,general,self,dislike,Character,I do not like $R
+assertion,general,self,indifferent,Character,I don't have an opinion towards $R
+exclamation,general,confusion,,,???
+exclamation,general,confusion,,,Huh?
+exclamation,general,confusion,,,what?

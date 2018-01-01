@@ -63,11 +63,11 @@ public class NPC : Character {
 			GetComponent<NPCMovement> ().endTarget ();
 		}
 	}
-	public void addProposal(Proposal p, Event e) {
-		addProposal (p, e, -100f);
+	public void AddProposal(Proposal p, Event e) {
+		AddProposal (p, e, -100f);
 	}
 
-	public void addProposal(Proposal p, Event e,float rating) {
+	public void AddProposal(Proposal p, Event e,float rating) {
 		if (!m_newProposals.Contains (p)) {
 			p.mEvent = e;
 			if (rating > -100f) {
@@ -75,6 +75,15 @@ public class NPC : Character {
 			}
 			m_newProposals.Add (p);
 		}
+	}
+
+	public void AddProposal(Goal.executionMethod ex, Event e, float rating, ProposalClass pClass = ProposalClass.None) {
+		Proposal p = new Proposal();
+		Debug.Log ("Method: " + ex + " proposed with rating: " + rating);
+		p.mMethod = ex;
+		p.rating = rating;
+		p.mNPC = this;
+		AddProposal(p,e,rating);
 	}
 
 	void executeValidProposals() {
@@ -175,5 +184,10 @@ public class NPC : Character {
 		} else {
 			return null;
 		}
+	}
+
+	public void SetTarget(Character target) {
+		getCharInfo (target).openHostile = true;
+		offense.setTarget (target);
 	}
 }

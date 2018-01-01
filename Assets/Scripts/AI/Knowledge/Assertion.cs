@@ -62,15 +62,15 @@ public class Assertion : KNSubject{
 
 	public bool Equals(Assertion f) {
 		for (int i = 0; i < f.Subjects.Count; i++) {
-			if (f.Subjects[i].SubjectName != Subjects[0].SubjectName) {
+			if (!f.Subjects[i].Equals(Subjects[0])) {
 				return false;
 			}
 		}
-		if (f.Verb.VerbName != Verb.VerbName) {
+		if (f.Verb != null && !f.Verb.Equals(Verb)) {
 			return false;
 		}
 		for (int i = 0; i < f.Subjects.Count; i++) {
-			if (f.Receivors[i].SubjectName != Receivors[i].SubjectName) {
+			if (!f.Receivors[i].Equals( Receivors[i])) {
 				return false;
 			}
 		}

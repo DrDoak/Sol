@@ -58,9 +58,10 @@ public class OffenseAI : MonoBehaviour {
 				if ((ainfo.AIPredictionHitbox.x + ainfo.AIPredictionOffset.x) +
 				   (ainfo.AIPredictionHitbox.x + ainfo.AIPredictionOffset.x) * Random.Range (0f, 1f - spacing) > xDiff &&
 				   (ainfo.AIPredictionHitbox.y + ainfo.AIPredictionOffset.y) +
-				   (ainfo.AIPredictionHitbox.y + ainfo.AIPredictionOffset.y) * Random.Range (0f, 1f - spacing) > yDiff) {
+					(ainfo.AIPredictionHitbox.y + ainfo.AIPredictionOffset.y) * Random.Range (0f, 1f - spacing) > yDiff && Random.value > 0.5f) {
 					m_fighter.tryAttack (ainfo.attackName);
 					currentAction = "attack";
+					allAttacks.Reverse ();
 					break;
 				}
 			}

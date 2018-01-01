@@ -11,7 +11,7 @@ public class GlSurvival: Goal {
 		fleeProp.mMethod = initiateFlee;
 		fleeProp.ProposalType = ProposalClass.Action;
 
-		registerEvent (EventType.Sight, sightEvent,attackOnSight);
+		//registerEvent (EventType.Sight, sightEvent,attackOnSight);
 		registerEvent (EventType.Attack, sawAttackEvent,initiateAttack);
 		registerEvent (EventType.Hit, hitEvent, initiateAttack,ProposalClass.Action);
 	}
@@ -67,36 +67,35 @@ public class GlSurvival: Goal {
 	float hitEvent(Event e) {
 		EVHitConfirm eva = (EVHitConfirm)e;
 		if (eva.ObjectHit == mChar.gameObject) {
+			Relationship r = mChar.getCharInfo (eva.attacker);
+			if (r.openHostile)
+				return 1.0f;
+			Personality p = mChar.PersonalityData;
 			Assertion a = new Assertion ();
 			a.AddSubject (KNManager.CopySubject (eva.attacker.name));
 			a.AddVerb (KNManager.CopyVerb ("attack"));
 			a.AddReceivor (KNManager.CopySubject (mChar.name));
-			Assertion b = mChar.knowledgeBase.GetAssertion (a);
-			//Debug.Log ("HE: " + b);
-			if (b != null) {
-			/*	Debug.Log (b.GetID ());
-				Debug.Log (b.LastTimeReferenced);
-				Debug.Log (b.TimesReferenced.Count);*/
-				return 0.3f * b.TimesReferenced.Count;
-			}
-			return 0.3f;
+			float scale = mChar.knowledgeBase.GetScaleRatio (a, 1800f) * ((-r.favorability * (1 + p.opennessAllegiance)) +
+				(0.25f + (p.temperament * 0.05f) - (p.agreeableness * 0.05f) - (r.authority * (1f - r.affirmation))));
+			mChar.getCharInfo(eva.attacker).ChangeFavor(-0.05f * mChar.knowledgeBase.GetScaleRatio(a,1800f,1.0f));
+			return scale;
 		}
 		return 0f;
 	}
 	void initiateAttack(Proposal p) {
 		//Debug.Log ("Attacking the attacker");
 		EVAttack eva = (EVAttack)p.mEvent;
-		mChar.offense.setTarget (eva.attacker);
+		mChar.SetTarget (eva.attacker);
 	}
 
 	void initiateFlee(Proposal p) {
 		EVAttack eva = (EVAttack)p.mEvent;
-		mChar.offense.setTarget (eva.attacker);
+		mChar.SetTarget (eva.attacker);
 	}
 
 	void initiateNegotiate(Proposal p) {
 		EVAttack eva = (EVAttack)p.mEvent;
-		mChar.offense.setTarget (eva.attacker);
+		mChar.SetTarget (eva.attacker);
 	}
 
 	void investigateHit(Proposal p) {
@@ -125,51 +124,7 @@ public class GlSurvival: Goal {
 			peacefulResolve -= 0.2f;
 		}
 		//mChar.addProposal (negotiateProp,e,peacefulResolve);
-		mChar.addProposal (initAttackProp,e,combatR);
-		mChar.addProposal (fleeProp, e, -combatR);
+		mChar.AddProposal (initiateAttack,e,combatR);
+		mChar.AddProposal (initiateFlee, e, -combatR);
 	}
 }
-
-
-/*public float hitEvent(Event e,Relationship r,Personality p)  {
-		//Initial impression of this guy
-		float favorAggressor = r.favorability * r.relevance;
-		//What is my tendency to trust my friends/ hate my enemies
-		favorAggressor +=  (favorAggressor * p.opennessAllegiance);
-		//natural tendency to violence or agree
-		favorAggressor += (p.agreeableness * 0.4f);
-		// tendancy for pragmatic people to avoid combat.
-		favorAggressor -= (p.pragmaticIdealistic * 0.2f);
-		// natural human nature to fight back
-		favorAggressor += (-0.2f - p.temperament * 0.2f);
-		if (favorAggressor < 0f) {
-			fightFlight (r, p, e);
-		}
-		return 0f;
-	}
-	public float sawHitEvent(Event e,Relationship r,Personality p) {
-		//Initial impression of this guy
-		float favorAggressor = r.favorability * r.relevance;
-		//What is my tendency to trust my friends/ hate my enemies
-		favorAggressor +=  (favorAggressor * p.opennessAllegiance);
-		//natural tendency to violence or agree
-		favorAggressor += (p.agreeableness * 0.4f);
-		// tendancy for pragmatic people to avoid combat.
-		favorAggressor -= (p.pragmaticIdealistic * 0.2f);
-		// natural human nature to avoid fighting
-		favorAggressor += (0.3f - p.temperament * 0.2f);
-
-		//impression of other guy
-		Relationship r2 = mChar.getCharInfo(e.targetChar2);
-		float favorVictim = r2.favorability * r2.relevance;
-		//What is my tendency to trust my friends/ hate my enemies
-		favorVictim +=  (favorVictim * p.opennessAllegiance);
-
-		if (-favorAggressor + favorVictim > 0) {
-			mChar.addProposal (initAttackProp, e,-favorAggressor + favorVictim);
-		} else {
-			mChar.addProposal (initAttackProp, e,-favorAggressor + favorVictim);
-		}
-		return 0f;
-	}
-*/

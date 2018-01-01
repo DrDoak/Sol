@@ -44,10 +44,10 @@ public class GameManager : MonoBehaviour {
 	}
 
 	void initGame() {
-		if (mSaves == null) {
+	/*	if (mSaves == null) {
 			mSaves = new SaveObjManager ();
 			mSaves.resetRoomData ();
-		}
+		}*/
 	}
 	void initRoom(Scene scene, LoadSceneMode mode) {
 //		Debug.Log ("initRoom from game. Room:" + SceneManager.GetActiveScene ().name);
@@ -67,9 +67,12 @@ public class GameManager : MonoBehaviour {
 		foreach (Attackable a in atkM) {
 		//	a.bottomOfTheWorld = bottomOfWorld;
 		}
-		mSaves.onRoomLoad (curRoomName);
-		curPlayer = FindObjectOfType<Player> ().gameObject;
-		cameraInit ();
+		//mSaves.onRoomLoad (curRoomName);
+		string s = SceneManager.GetActiveScene ().name;
+		if ( s != "MainMenu" && s != "InfoScene") {
+			curPlayer = FindObjectOfType<Player> ().gameObject;
+			cameraInit ();
+		}
 //		Debug.Log ("Done with init room");
 	}
 	void cameraInit() {
@@ -116,14 +119,18 @@ public class GameManager : MonoBehaviour {
 		}*/
 		if (Input.GetButtonDown("Debug")) {
 			setDebug (!debug);
+			if (SceneManager.GetActiveScene ().name != "MainMenu") {
+				SceneManager.LoadScene ("MainMenu", LoadSceneMode.Single);
+			}
 		}
+
 		foreach (Cutscene c in currentCutscenes) {
 			c.cutsceneUpdate (Time.deltaTime);
 		}
 	}
 
 	public void setDebug(bool debugActive) {
-		Debug.Log ("Switching debug mode to: " +debug);
+		//Debug.Log ("Switching debug mode to: " +debug);
 		debug = debugActive;
 		smm.setDebug (debug);
 	}
@@ -132,17 +139,17 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void moveItem(GameObject gm,string newRoom, Vector3 newPos) {
-		Debug.Log ("Moving item to " + newRoom + " at position: " + newPos);
+	/*	Debug.Log ("Moving item to " + newRoom + " at position: " + newPos);
 		gm.GetComponent<PersItem> ().targetID = null;
 		gm.GetComponent<Character> ().StoreData ();
-		mSaves.moveItem (gm.GetComponent<Character> ().data, newRoom, newPos);
+		mSaves.moveItem (gm.GetComponent<Character> ().data, newRoom, newPos);*/
 	}
 	public void moveItem(GameObject gm,string newRoom, string newID,string newDir) {
-		Debug.Log ("Moving item to " + newRoom + " at position: " + newID + " direction: " + newDir);
+		/*Debug.Log ("Moving item to " + newRoom + " at position: " + newID + " direction: " + newDir);
 		Debug.Log (gm);
 		Debug.Log(gm.GetComponent<Character>());
 		gm.GetComponent<Character> ().StoreData ();
-		mSaves.moveItem (gm.GetComponent<Character> ().data, newRoom, newID,newDir);
+		mSaves.moveItem (gm.GetComponent<Character> ().data, newRoom, newID,newDir);*/
 	}
 
 	public void loadRoom(string name) {

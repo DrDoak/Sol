@@ -198,7 +198,7 @@ public class KNManager : MonoBehaviour {
 	}
 	public static DialogueUnit CreateCommandList(Character speaker, Assertion a, Character listener, DialogueOption.OnSelection selectionFunction) {
 		var du = new DialogueUnit {speaker = speaker, listener = listener};
-		du.addDialogueOptions (Instance.GetCommandOptions (speaker, a, true, selectionFunction));
+		du.addDialogueOptions (Instance.GetCommandOptions (speaker, a, false, selectionFunction));
 		listener.processDialogueRequest (speaker, du);
 		return du;
 	}
@@ -224,7 +224,7 @@ public class KNManager : MonoBehaviour {
 		var dos = new List<DialogueOption> ();
 		KNDatabase kd = c.knowledgeBase;
 		foreach (var ks in kd.MatchingDirectObjects(a)) {
-			Debug.Log ("name: " + ks.SubjectName + " hide: " + ks.Hide);
+			//Debug.Log ("name: " + ks.SubjectName + " hide: " + ks.Hide);
 			if (ks.Hide)
 				continue;
 			var o = new OptionKnowledgeBase {responseFunction = selectionFunction, text = ks.SubjectName,
@@ -241,7 +241,7 @@ public class KNManager : MonoBehaviour {
 		OptionKnowledgeBase dob = (OptionKnowledgeBase)o;
 
 		var du = new DialogueUnit {speaker = dob.speaker, listener = dob.listener,Previous = o.GetSequence()};
-		Debug.Log ("Previous sequence: " + du.Previous);
+		//Debug.Log ("Previous sequence: " + du.Previous);
 		du.addDialogueOptions (GetVerbOptions(dob.speaker,dob.assertion,true,dob.SelectionFunction));
 		o.closeSequence();
 		du.startSequence ();
@@ -257,6 +257,7 @@ public class KNManager : MonoBehaviour {
 	}
 
 	void FinishFact(DialogueOption o) {
+		//Debug.Log ("Finishing fact");
 		OptionKnowledgeBase dob = (OptionKnowledgeBase)o;
 		o.closeSequence ();
 		if (dob.assertion != null && dob.listener)
@@ -268,7 +269,7 @@ public class KNManager : MonoBehaviour {
 	}
 	public static DialogueUnit CreateExclamationList(Character speaker,Character listener,DialogueOption.OnSelection selectionFunction) {
 		var du = new DialogueUnit {speaker = speaker, listener = listener};
-		du.addDialogueOptions (Instance.GetExclamations (speaker, true, selectionFunction));
+		du.addDialogueOptions (Instance.GetExclamations (speaker, false, selectionFunction));
 		listener.processDialogueRequest (speaker, du);
 		return du;
 	}

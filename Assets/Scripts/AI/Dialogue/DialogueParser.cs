@@ -132,7 +132,7 @@ public class DialogueParser : MonoBehaviour {
 		currDSequence.allDUnits.Remove (currDialogueUnit);
 	}
 	public void endDialogue() {
-		Debug.Log ("End of character's dialogue");
+		//Debug.Log ("End of character's dialogue");
 		currDSequence = null;
 		currDialogueUnit = null;
 		isSpeaking = false;

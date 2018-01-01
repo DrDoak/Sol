@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class GlObserve : Goal{
 
 	public Character targetCh;
-	Proposal turnProp;
+
 	public GlObserve() {
 		registerEvent(EventType.Sight,outOfSight,turnSight);
 		registerEvent (EventType.Sight, sawCharacter, learnCharacter);
@@ -43,10 +44,8 @@ public class GlObserve : Goal{
 		EVSight se = (EVSight)p.mEvent;
 		Relationship r = mChar.getCharInfo (se.ObservedChar);
 		if (!mChar.knowledgeBase.HasSubject (KNManager.CopySubject (r.Name))) {
-			Debug.Log ("Learning Character: " + se.ObservedChar.name);
 			mChar.knowledgeBase.LearnSubject (KNManager.CopySubject (se.ObservedChar.name));
 		}
-		Debug.Log ("Learn character event");
 		Assertion a = new Assertion ();
 		a.AddSubject (KNManager.CopySubject (mChar.name));
 		a.AddVerb (KNManager.CopyVerb("sight"));
@@ -71,7 +70,7 @@ public class GlObserve : Goal{
 				mChar.GetComponent<OffenseAI> ().currentTarget != se.ObservedChar)
 				return 0.0f;
 			if (r.openHostile) {
-				mChar.addProposal (turnProp, e, 1f);
+				mChar.AddProposal (turnSight, e, 1f);
 			} else {
 				//Natural curiousity can be based on agreeableness.
 				float favor = p.agreeableness * 0.3f;

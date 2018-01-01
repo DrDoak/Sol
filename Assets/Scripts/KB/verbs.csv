@@ -3,5 +3,6 @@ is,Character,Group;Characterization,,,
 like,Character,Character;Group;Characterization;Place,,,T
 dislike,Character,Character;Group;Characterization;Place,,,T
 attack,Character,Character;Group,,,T
-interact,Character,Character;Group;Characterization;Place,talk,,T
+interact,Character,Character;Group;Characterization;Place,talk,T,T
 greet,Character,Character,,,T
+indifferent,Character,Character;Group;Characterization;Place,,,

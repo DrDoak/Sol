@@ -112,13 +112,13 @@ public class KNDatabase {
 			oldAssertion.LastTimeReferenced = newF.LastTimeReferenced;
 			oldAssertion.TimesReferenced.Add (newF.LastTimeReferenced);
 
-			Debug.Log ("Adding old reference: " + oldAssertion.TimesReferenced.Count);
+			//Debug.Log ("Adding old reference: " + oldAssertion.TimesReferenced.Count);
 			evf.assertion = oldAssertion;
 			evf.isDuplicate = true;
 			Owner.respondToEvent (evf);
 			return oldAssertion;
 		} else {
-			Debug.Log ("new assertion reference!");
+			//Debug.Log ("new assertion reference!");
 			evf.assertion = newF;
 			AddAssertion (evf.assertion);
 			if (newF.Source == null)
@@ -167,25 +167,40 @@ public class KNDatabase {
 		}
 	}
 
-	public float GetDecayRatio(Assertion a, float maxDecayTime = 300.0f, float compoundDecay = 0.4f) {
+	public float GetDecayRatio(Assertion a, float maxDecayTime = 300.0f, float compoundDecay = 0.4f, bool learn = false) {
 		float ratio = 1.0f;
 		Assertion b = GetAssertion (a);
-		if (b == null)
-			return 1.0f;
-		Debug.Log ("Times referenced: " + b.TimesReferenced.Count);
-		foreach (float t in b.TimesReferenced) {
-			ratio -= compoundDecay * Mathf.Max(0f,(1f - (GameManager.GameTime - t)/maxDecayTime));
+		if (b != null) {
+			Debug.Log ("Times referenced: " + b.TimesReferenced.Count);
+			foreach (float t in b.TimesReferenced) {
+				ratio -= compoundDecay * Mathf.Max (0f, (1f - (GameManager.GameTime - t) / maxDecayTime));
+			}
+		}
+		if (learn) {
+			Debug.Log ("Learning assertion");
+			if (b == null) {
+				LearnAssertion (a);
+			} else {
+				LearnAssertion (b);
+			}
 		}
 		return Mathf.Max(0f,ratio);
 	}
 
-	public float GetScaleRatio(Assertion a, float maxDecayTime = 300.0f, float compoundScale = 0.5f) {
+	public float GetScaleRatio(Assertion a, float maxDecayTime = 300.0f, float compoundScale = 0.5f, bool learn = false) {
 		float ratio = 1.0f;
 		Assertion b = GetAssertion (a);
-		if (b == null)
-			return 1.0f;
-		foreach (float time in b.TimesReferenced) {
-			ratio += compoundScale * Mathf.Max(0f,(1f - (GameManager.GameTime - time)/maxDecayTime));
+		if (b != null) {
+			foreach (float time in b.TimesReferenced) {
+				ratio += compoundScale * Mathf.Max (0f, (1f - (GameManager.GameTime - time) / maxDecayTime));
+			}
+		}
+		if (learn) {
+			if (b == null) {
+				LearnAssertion (a);
+			} else {
+				LearnAssertion (b);
+			}
 		}
 		return Mathf.Max(0f,ratio);
 	}

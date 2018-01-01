@@ -7,4 +7,4 @@ Sol is an action 2D side-scrolling game with increased emphasis on NPC interacti
 ![gameplay](https://raw.githubusercontent.com/DrDoak/Sol/master/Screenshots/gameplay_cropped.gif)
 
 # Builds
-Windows: [Lua.exe](https://drive.google.com/open?id=1CS4Ynqn8rUJCM5WStQ0ZW1VlYrDg5kdM)
+Windows: [Sol Preview Zip](https://drive.google.com/file/d/1dGOQsBgZk6I7oSskvHKLkTSyKHGTIQXp/view?usp=sharing)

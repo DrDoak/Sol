@@ -18,6 +18,7 @@ public class Player : MonoBehaviour {
 	float accelerationTimeAirborne = .2f;
 	float accelerationTimeGrounded = .1f;
 	public float moveSpeed = 8.0f;
+	public bool CharacterSelect = false;
 
 	float gravity;
 	float jumpVelocity;
@@ -66,6 +67,9 @@ public class Player : MonoBehaviour {
 		jumpVelocity = Mathf.Abs(gravity) * timeToJumpApex;
 		jumpVector = new Vector2 (0f, jumpVelocity);
 		gameManager = FindObjectOfType<GameManager> ();
+		if (CharacterSelect == true) {
+			GameManager.StartCharacterSelect ();
+		}
 	}
 
 	public void Reset() {
@@ -110,7 +114,8 @@ public class Player : MonoBehaviour {
 		}else if (movement.canMove && autonomy) {
 			
 			if (Input.GetButtonDown("Menu")) {
-				gameManager.toggleMenu ();
+				GameManager.StartCharacterSelect ();
+				//gameManager.toggleMenu ();
 			}
 			inputY = Input.GetAxis ("Vertical");
 		

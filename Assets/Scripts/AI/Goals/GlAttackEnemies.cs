@@ -18,6 +18,7 @@ public class GlAttackEnemies : Goal {
 	float sightEvent(Event e) {
 		EVSight evs = (EVSight)e;
 		Character tC = evs.ObservedChar;
+		//Debug.Log ("mFaction: " + mChar.faction + " theirs: " + "faction: " + tC.faction);
 		if (tC != null && tC.faction != mChar.faction)
 			return 1f;
 		return 0;

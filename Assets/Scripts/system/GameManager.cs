@@ -25,6 +25,10 @@ public class GameManager : MonoBehaviour {
 	List<string> registeredPermItems;
 	List<Cutscene> currentCutscenes;
 
+	public GameObject SolPrefab;
+	public GameObject SylviaPrefab;
+	public GameObject NachtPrefab;
+
 	void Awake () {
 		if (manager == null) {
 			Object.DontDestroyOnLoad (this);
@@ -68,9 +72,10 @@ public class GameManager : MonoBehaviour {
 		//	a.bottomOfTheWorld = bottomOfWorld;
 		}
 		//mSaves.onRoomLoad (curRoomName);
-		string s = SceneManager.GetActiveScene ().name;
-		if ( s != "MainMenu" && s != "InfoScene") {
-			curPlayer = FindObjectOfType<Player> ().gameObject;
+		//string s = SceneManager.GetActiveScene ().name;
+		Player p = FindObjectOfType<Player> ();
+		if ( p != null) {
+			curPlayer = p.gameObject;
 			Debug.Log ("Found current player; " + curPlayer);
 			cameraInit ();
 		}
@@ -185,5 +190,55 @@ public class GameManager : MonoBehaviour {
 	}
 	public void concludeCutscene(Cutscene c) {
 		currentCutscenes.Remove (c);
+	}
+
+	public static void SetPlayer(GameObject newPlayer,bool deleteCurrentPlayer = true){
+		Vector3 spawnPos = new Vector3 ();
+		if (manager.curPlayer != null) {
+			spawnPos = manager.curPlayer.transform.position;
+		}
+		if (deleteCurrentPlayer) {
+			Destroy (manager.curPlayer);
+		}
+		manager.curPlayer = Instantiate (newPlayer, spawnPos, Quaternion.identity);
+		Debug.Log ("Setting new player; " + manager.curPlayer);
+		manager.cameraInit ();
+	}
+	public static void StartCharacterSelect() {
+		DialogueUnit du = new DialogueUnit {};
+		du.addDialogueOptions (manager.getDialogueOptions (),"Select Character");
+		du.startSequence ();
+	}
+	List<DialogueOption> getDialogueOptions() {
+		List<DialogueOption> options = new List<DialogueOption> (3);
+		OptionGameObjectSelect command = new OptionGameObjectSelect ();
+		command.text = "Sol...";
+		command.gameObject = SolPrefab;
+		command.responseFunction = selectCharacter;
+		options.Add (command);
+
+		OptionGameObjectSelect exclaim = new OptionGameObjectSelect ();
+		exclaim.text = "Sylvia...";
+		exclaim.gameObject = SylviaPrefab;
+		exclaim.responseFunction = selectCharacter;
+		options.Add (exclaim);
+
+		OptionGameObjectSelect askAbout = new OptionGameObjectSelect ();
+		askAbout.text = "Nacht...";
+		askAbout.gameObject = NachtPrefab;
+		askAbout.responseFunction = selectCharacter;
+		options.Add (askAbout);
+
+		DialogueOption leave = new DialogueOption ();
+		leave.text = "cancel";
+		leave.responseFunction = leave.closeSequence;
+		options.Add (leave);
+		return options;
+	}
+
+	void selectCharacter(DialogueOption o) {
+		o.closeSequence ();
+		OptionGameObjectSelect ogos = (OptionGameObjectSelect)o;
+		GameManager.SetPlayer (ogos.gameObject);
 	}
 }

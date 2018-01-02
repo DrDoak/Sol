@@ -67,8 +67,9 @@ public class TextboxManager : MonoBehaviour {
 		GameObject newList = Instantiate (listPrefab);
 		ListSelection nl = newList.GetComponent<ListSelection> ();
 
+		nl.SetTitle (text);
 		nl.addOptions (options);
-		nl.transform.SetPositionAndRotation (new Vector3 (0f, 0f), Quaternion.identity);
+		nl.transform.SetPositionAndRotation (new Vector3 (0f, -50f), Quaternion.identity);
 		nl.transform.SetParent (FindObjectOfType<GameManager> ().gameObject.transform.Find ("UI"), false);
 
 		return nl;

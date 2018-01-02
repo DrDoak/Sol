@@ -118,4 +118,5 @@ public class CharacterManager : MonoBehaviour {
 	public static Character FindChar(string targetName) {
 		return Instance.m_findChar (targetName);;
 	}
+
 }

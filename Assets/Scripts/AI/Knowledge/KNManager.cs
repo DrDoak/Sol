@@ -138,7 +138,7 @@ public class KNManager : MonoBehaviour {
 	}
 	public static DialogueUnit CreateSubjectList(Character speaker,Character listener,DialogueOption.OnSelection selectionFunction) {
 		var du = new DialogueUnit {speaker = speaker, listener = listener};
-		du.addDialogueOptions (Instance.GetSubjectOptions (speaker, true, selectionFunction));
+		du.addDialogueOptions (Instance.GetSubjectOptions (speaker, true, selectionFunction), "Select a Subject: ");
 		listener.processDialogueRequest (speaker, du);
 		return du;
 	}
@@ -198,7 +198,7 @@ public class KNManager : MonoBehaviour {
 	}
 	public static DialogueUnit CreateCommandList(Character speaker, Assertion a, Character listener, DialogueOption.OnSelection selectionFunction) {
 		var du = new DialogueUnit {speaker = speaker, listener = listener};
-		du.addDialogueOptions (Instance.GetCommandOptions (speaker, a, false, selectionFunction));
+		du.addDialogueOptions (Instance.GetCommandOptions (speaker, a, false, selectionFunction),"What will you say?");
 		listener.processDialogueRequest (speaker, du);
 		return du;
 	}
@@ -242,7 +242,7 @@ public class KNManager : MonoBehaviour {
 
 		var du = new DialogueUnit {speaker = dob.speaker, listener = dob.listener,Previous = o.GetSequence()};
 		//Debug.Log ("Previous sequence: " + du.Previous);
-		du.addDialogueOptions (GetVerbOptions(dob.speaker,dob.assertion,true,dob.SelectionFunction));
+		du.addDialogueOptions (GetVerbOptions(dob.speaker,dob.assertion,true,dob.SelectionFunction), "Select a Verb");
 		o.closeSequence();
 		du.startSequence ();
 	}
@@ -269,7 +269,7 @@ public class KNManager : MonoBehaviour {
 	}
 	public static DialogueUnit CreateExclamationList(Character speaker,Character listener,DialogueOption.OnSelection selectionFunction) {
 		var du = new DialogueUnit {speaker = speaker, listener = listener};
-		du.addDialogueOptions (Instance.GetExclamations (speaker, false, selectionFunction));
+		du.addDialogueOptions (Instance.GetExclamations (speaker, false, selectionFunction), "What will you express?");
 		listener.processDialogueRequest (speaker, du);
 		return du;
 	}

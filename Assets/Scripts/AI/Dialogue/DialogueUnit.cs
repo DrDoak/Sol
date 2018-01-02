@@ -142,9 +142,6 @@ public class DialogueUnit  {
 		ne.animation = animation;
 		elements.Add (ne);
 	}
-	public void addDialogueOptions(List<DialogueOption> options) {
-		addDialogueOptions (options, "What do you say?");
-	}
 	public void addOption(DialogueOption option) {
 		if (lastOptionsBox == null) {
 			List<DialogueOption> ops = new List<DialogueOption> ();
@@ -153,7 +150,7 @@ public class DialogueUnit  {
 			lastOptionsBox.options.Add (option);
 		}
 	}
-	public void addDialogueOptions(List<DialogueOption> options,string mainPrompt) {
+	public void addDialogueOptions(List<DialogueOption> options,string mainPrompt = "Make your decision...") {
 		foreach (DialogueOption dop in options) {
 			dop.speaker = speaker;
 			dop.listener = listener;
@@ -175,7 +172,9 @@ public class DialogueUnit  {
 	}
 
 	public void closeSequence() {
-		speaker.setAutonomy (true);
+		if (speaker != null) {
+			speaker.setAutonomy (true);
+		}
 		foreach(Character c in modifiedAnims){
 			c.GetComponent<Animator> ().runtimeAnimatorController = c.animDefault;
 		}

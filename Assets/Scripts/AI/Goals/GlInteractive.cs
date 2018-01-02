@@ -42,7 +42,7 @@ public class GlInteractive : Goal {
 		EVInteract evi = (EVInteract)p.mEvent;
 		DialogueUnit du = new DialogueUnit {speaker = evi.Interactor};
 		du.listener = mChar;
-		du.addDialogueOptions (getDialogueOptions (evi.Interactor));
+		du.addDialogueOptions (getDialogueOptions (evi.Interactor), "What will you say?");
 		evi.Interactor.processDialogueRequest (mChar,du);
 		du.startSequence ();
 	}

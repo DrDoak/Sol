@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ListSelection : MonoBehaviour {
+public class ListSelection : MonoBehaviour{
 	public GameObject kEntry;
 	public DialogueUnit masterSequence;
 	public bool Escapable = true;
@@ -14,6 +14,7 @@ public class ListSelection : MonoBehaviour {
 	List<GameObject> entries;
 	int currEntry = 0;
 	InputField inputField;
+	Text m_titleText;
 	int lastChar = 0;
 	public delegate void optionResponse(DialogueOption thisOption);
 	void Awake() {
@@ -21,7 +22,11 @@ public class ListSelection : MonoBehaviour {
 		fullEntries = new List<DialogueOption> ();
 		entries = new List<GameObject> ();
 		inputField = transform.Find ("SearchField").GetComponent<InputField> ();
+		m_titleText = transform.Find ("TitlePrompt").GetComponentInChildren<Text> ();
 		inputField.Select ();
+	}
+	public void SetTitle(string s) {
+		m_titleText.text = s;
 	}
 	void Update() {
 		if (inputField.text.Length != lastChar) {

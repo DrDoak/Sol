@@ -24,7 +24,7 @@ public class AtkChain : AtkDash {
 	}
 
 	public override void recoveryTick() {
-		if (GetComponent<Player>() && timeSinceStart < (recoveryTime + startUpTime - cancelTolerance)) {
+		if (GetComponent<Player>() && timeSinceStart > (recoveryTime + startUpTime - cancelTolerance)) {
 			if (playerKey != "auto" && Input.GetKeyDown (playerKey)) {
 				tryNewAttack ();
 			}

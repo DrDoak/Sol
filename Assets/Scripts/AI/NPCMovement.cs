@@ -42,7 +42,7 @@ public class NPCMovement : MonoBehaviour {
 		inputY = 0.0f;
 
 		float dist = Vector3.Distance (transform.position, point);
-		if (dist > abandonDistance || dist < minDistance) {
+		if (dist > abandonDistance) {
 			endTarget ();
 		} else {
 			if (movement.canMove) {

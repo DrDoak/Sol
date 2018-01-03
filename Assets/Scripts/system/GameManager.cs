@@ -36,6 +36,7 @@ public class GameManager : MonoBehaviour {
 			initGame ();
 		}else if  (manager != this) {
 			Destroy (gameObject);
+			return;
 		}
 		currentCutscenes = new List<Cutscene> ();
 		registeredPermItems = new List<string> ();
@@ -54,7 +55,10 @@ public class GameManager : MonoBehaviour {
 		}*/
 	}
 	void initRoom(Scene scene, LoadSceneMode mode) {
-		Debug.Log ("initRoom from game. Room:" + SceneManager.GetActiveScene ().name);
+		if (manager != this) {
+			return;
+		}
+		//Debug.Log ("initRoom from game. Room:" + SceneManager.GetActiveScene ().name);
 		GameObject[] obj = GameObject.FindGameObjectsWithTag ("jumpThru");
 
 		foreach (GameObject go in obj) {
@@ -74,10 +78,15 @@ public class GameManager : MonoBehaviour {
 		//mSaves.onRoomLoad (curRoomName);
 		//string s = SceneManager.GetActiveScene ().name;
 		Player p = FindObjectOfType<Player> ();
-		if ( p != null) {
+		if (p != null) {
 			curPlayer = p.gameObject;
-			Debug.Log ("Found current player; " + curPlayer);
+			//Debug.Log ("Found current player; " + curPlayer);
+			transform.Find ("UI").Find ("HUD").gameObject.SetActive (true);
 			cameraInit ();
+		} else {
+			if (transform.Find ("UI").Find ("HUD") != null) {
+				transform.Find ("UI").Find ("HUD").gameObject.SetActive (false);
+			}
 		}
 //		Debug.Log ("Done with init room");
 	}
@@ -104,7 +113,7 @@ public class GameManager : MonoBehaviour {
 				minVertex.y = Mathf.Min (minVertex.y, e.gameObject.transform.position.y +( e.transform.position.y + v2.y)/16f);
 				maxVertex.x = Mathf.Max (maxVertex.x, e.gameObject.transform.position.x +( e.transform.position.x + v2.x)/16f);
 				maxVertex.y = Mathf.Max (maxVertex.y, e.gameObject.transform.position.y +( e.transform.position.y + v2.y)/16f);
-				bottomOfWorld = Mathf.Min (bottomOfWorld, e.gameObject.transform.position.x + (e.transform.position.x + v2.x) / 16f - 15f);
+				//bottomOfWorld = Mathf.Min (bottomOfWorld, e.gameObject.transform.position.x + (e.transform.position.x + v2.x) / 16f - 15f);
 				/*minVertex.x = Mathf.Min (minVertex.x, (v2.x)/20f);
 				minVertex.y = Mathf.Min (minVertex.y, (v2.y)/20f);
 				maxVertex.x = Mathf.Max (maxVertex.x, (v2.x)/20f);
@@ -196,6 +205,7 @@ public class GameManager : MonoBehaviour {
 		Vector3 spawnPos = new Vector3 ();
 		if (manager.curPlayer != null) {
 			spawnPos = manager.curPlayer.transform.position;
+			spawnPos.y += 0.2f;
 		}
 		if (deleteCurrentPlayer) {
 			Destroy (manager.curPlayer);

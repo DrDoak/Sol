@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Attackable : MonoBehaviour {
 
-	public float bottomOfTheWorld = -10.0f;
+	public float bottomOfTheWorld = -30.0f;
 	public float health = 100.0f;
 	public float max_health = 100.0f;
 	public float energy = 0.0f;
@@ -133,7 +133,7 @@ public class Attackable : MonoBehaviour {
 	}
 
 	public void damageObj(float damage) {
-		//Debug.Log ("Damage Taken: " + damage + " Health before: " + health);
+		Debug.Log ("Damage Taken: " + damage + " Health before: " + health);
 		health = Mathf.Max(Mathf.Min(max_health, health - damage),0);
 		if (damage > 0) {
 			GameObject.Instantiate (HitEffect, transform.position, Quaternion.identity);

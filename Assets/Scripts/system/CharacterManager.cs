@@ -34,7 +34,7 @@ public class CharacterManager : MonoBehaviour {
 	}
 
 	void initCharacters(string source) {
-		Debug.Log ("Loading all Characters from Source: " + source);
+	//	Debug.Log ("Loading all Characters from Source: " + source);
 		List<Dictionary<string,string>> subjects = FactCSVImporter.importFile (source);
 		foreach (Dictionary<string,string> d in subjects) {
 			KNSubject sub = KNManager.CopySubject (d ["name"]);
@@ -48,7 +48,7 @@ public class CharacterManager : MonoBehaviour {
 	}
 
 	public void applyLoadedDataToChar(Character c) {
-		Debug.Log ("Applying loaded Data to: " + c.name);
+	//	Debug.Log ("Applying loaded Data to: " + c.name);
 		if (m_LoadedCharData.ContainsKey (c.name)) {
 			Dictionary<string,string> d = m_LoadedCharData [c.name];
 			c.knowledgeGroups = FactCSVImporter.splitStringRow (d ["knowledgeGroups"]);
@@ -79,7 +79,7 @@ public class CharacterManager : MonoBehaviour {
 	}
 
 	void initChar(Character c) {
-		Debug.Log ("Registering Character: " + c.gameObject);
+	//	Debug.Log ("Registering Character: " + c.gameObject);
 		if (m_RegisteredChars.ContainsKey (c.name.ToLower ())) {
 			Debug.Log ("TODO: re-add character information from data");
 			return;

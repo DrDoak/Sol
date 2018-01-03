@@ -17,7 +17,6 @@ public class RPDatabase : MonoBehaviour {
 	void Start () {
 		if (Instance == null)
 			Instance = this;
-		Debug.Log ("Create function");
 		//knm = FindObjectOfType<KNManager> ();
 		m_SubjectTemplates = new List<RPTemplate> ();
 		m_ResponseTemplates = new List<RPTemplate> ();

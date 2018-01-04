@@ -63,7 +63,7 @@ public class GlInteractive : Goal {
 		Assertion statement = new Assertion ();
 		Character me = p.mNPC;
 		statement.AddSubject (KNManager.CopySubject (me.name));
-		statement.AddVerb (KNManager.CopyVerb ("know"),(me.knowledgeBase.GetAssertion(a) != null));
+		statement.AddVerb (KNManager.CopyVerb ("know"),(me.knowledgeBase.GetAssertion(a) == null));
 		statement.AddReceivor (a);
 		Character listener = CharacterManager.FindChar (a.Source.SubjectName);
 		mChar.speaker.EmitResponse(mChar.speaker.Convey (statement, listener));

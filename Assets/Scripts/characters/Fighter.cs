@@ -143,7 +143,7 @@ public class Fighter : MonoBehaviour {
 		}
 	}
 	void startHitState(float st) {
-		Debug.Log ("Starting Hit State with Stun: "+ st);
+		//Debug.Log ("Starting Hit State with Stun: "+ st);
 		endAttack ();
 		if (stunTime > 0.0f) {
 			hitCombo = hitCombo + 1;

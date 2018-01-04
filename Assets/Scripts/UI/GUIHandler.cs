@@ -12,19 +12,6 @@ public class GUIHandler : MonoBehaviour {
 
 	public Slider P1HealthBar;
 	public Slider P1EnergyBar;
-	//public Slider P2EnergyBar;
-	//public Slider P2EnergyShower;
-	//private string P2EnergyShowing;
-	//public Image P2EnergyBarFill;
-
-	//public GameObject P1Instructions;
-	//public GameObject P2Instructions;
-
-	//public Color leftColor;
-	//public Color rightColor;
-
-	//public Dictionary<string, Button> allButtons;
-	//public Dictionary<string, Spawnable> allPowers;
 
 	private bool displayTextMessage = false;
 	private float displayTime;
@@ -52,60 +39,20 @@ public class GUIHandler : MonoBehaviour {
 			Destroy (gameObject);
 		}
 		gameManager = FindObjectOfType<GameManager> ();
-		/*allButtons = gameManager.allButtons;
-		allPowers = gameManager.allPowers;
-		P2EnergyShower.gameObject.SetActive (false);
-		P2EnergyShowing = "";
 
-		P2Instructions.gameObject.SetActive (true);*/
-		//P1Instructions.gameObject.SetActive (true);
 		attemptNumber = 1;
 		mainMenu = false;
 	}
 
 	void Update() {
-		/*
+		
 		var P1 = FindObjectOfType<Player> ();
-		var P1Controller = P1.GetComponent<Attackable> ();
-		//var P2 = FindObjectOfType<PlayerCursor> ();
+		if (P1 != null) {
+			var P1Controller = P1.GetComponent<Attackable> ();
 
-		//P2EnergyBar.value = P2.currentPower;
-
-		P1EnergyBar.value = P1Controller.energy;
-		P1HealthBar.value = P1Controller.health;
-
-		if (displayTextMessage) {
-			if (displayTimePassed < displayTime) {
-				displayTimePassed = Time.time - displayStart;
-			} else {
-				displayTextMessage = false;
-				textMessage = "";
-			}
-		}
-		/*
-		if (flashRed) {
-			if (flashTimePassed < flashTime) {
-				flashTimePassed = Time.time - flashStart;
-				float fTimeRatio = flashTimePassed / flashTime;
-				if (fTimeRatio <= 0.25f || (fTimeRatio > 0.5f && fTimeRatio <= 0.75f)) {
-					P2EnergyBarFill.color = Color.red;
-				} else {
-					P2EnergyBarFill.color = Color.yellow;
-				}
-			} else {
-				flashRed = false;
-			}
-		}*/
-
-		/*
-		if (mainMenu) {
-			if (menuTimePassed < menuTime) {
-				menuTimePassed = Time.time - menuStart;
-			} else {
-				SceneManager.LoadScene ("MainMenu", LoadSceneMode.Single);
-			}
-		}
-		*/
+			P1EnergyBar.value = P1Controller.energy;
+			P1HealthBar.value = P1Controller.health;
+		}			
 	}
 
 	public void displayText(string msg, float dTime) {

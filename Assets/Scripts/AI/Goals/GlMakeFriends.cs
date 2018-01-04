@@ -9,11 +9,19 @@ public class GlMakeFriends : Goal {
 		registerEvent (EventType.Sight, sawFriend, respondToSight, ProposalClass.Relationship);
 		registerEvent (EventType.Ask, answerFriendQuestions);
 	}
-
+		
 	void answerFriendQuestions(Event e) {
 		EVAsk eva = (EVAsk)e;
-				
+		List<Assertion> matches = mChar.knowledgeBase.GetMatches (eva.assertion);
+		//Debug.Log ("Answering questions, matches: " + matches.Count);
+		if (matches.Count > 0) {
+			foreach (Assertion match in matches) {
+				Debug.Log (match.GetID ());
+				//mChar.AddProposal (sawFriend, e, 0.5f);
+			}
+		}			
 	}
+
 	float sawFriend(Event e) {
 		EVSight es = (EVSight)e;
 		if (es.ObservedChar != null && es.onSight) {

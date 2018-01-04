@@ -65,7 +65,6 @@ public class Attackable : MonoBehaviour {
 				} else if (gameObject.name.Contains ("Giant")) {
 //					FindObjectOfType<GameManager> ().soundfx.transform.Find ("GiantDeath").GetComponent<AudioSource> ().Play ();
 				}
-				Debug.Log ("destroying attackable obj");
 				Destroy (gameObject);
 			}
 		}
@@ -133,7 +132,7 @@ public class Attackable : MonoBehaviour {
 	}
 
 	public void damageObj(float damage) {
-		Debug.Log ("Damage Taken: " + damage + " Health before: " + health);
+		//Debug.Log ("Damage Taken: " + damage + " Health before: " + health);
 		health = Mathf.Max(Mathf.Min(max_health, health - damage),0);
 		if (damage > 0) {
 			GameObject.Instantiate (HitEffect, transform.position, Quaternion.identity);

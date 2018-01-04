@@ -31,8 +31,7 @@ public class CameraFollow : MonoBehaviour {
 		if (target != null) {
 			viewSize.y = GetComponent<Camera> ().orthographicSize * 2f;
 			viewSize.x = viewSize.y * GetComponent<Camera> ().aspect;
-			focusArea = new FocusArea (target.GetComponent<Collider2D> ().bounds, focusAreaSize,viewSize);
-
+			focusArea = new FocusArea (target.GetComponent<Collider2D> ().bounds, focusAreaSize,viewSize,minVertex,maxVertex);
 		}
 	}
 	void Update() {
@@ -40,7 +39,6 @@ public class CameraFollow : MonoBehaviour {
 			focusArea.Update (target.GetComponent<Collider2D> ().bounds,minVertex,maxVertex,camConstrained);
 		}
 		Vector2 focusPosition = focusArea.centre + Vector2.up * verticalOffset;
-
 
 		if (focusArea.velocity.x != 0) {
 			lookAheadDirX = Mathf.Sign (focusArea.velocity.x);
@@ -68,7 +66,6 @@ public class CameraFollow : MonoBehaviour {
 		Gizmos.DrawCube (focusArea.centre, focusAreaSize);
 		Gizmos.color = new Color (0, 1, 0, .4f);
 		Gizmos.DrawCube (focusArea.centre, viewSize);*/
-
 	}
 
 	struct FocusArea {
@@ -81,12 +78,25 @@ public class CameraFollow : MonoBehaviour {
 		Vector2 camSize;
 
 
-		public FocusArea(Bounds targetBounds, Vector2 size,Vector2 largeCam) {
+		public FocusArea(Bounds targetBounds, Vector2 size,Vector2 largeCam,Vector2 minVertex, Vector2 maxVertex) {
 			focusSize = size;
-			left = targetBounds.center.x - size.x/2;
-			right = targetBounds.center.x + size.x/2;
-			bottom = targetBounds.min.y;
-			top = targetBounds.min.y + size.y;
+			Vector2 realCenter = new Vector2(targetBounds.center.x,targetBounds.center.y);
+			//Debug.Log("Min: " + (realCenter.y - largeCam.y/2f) + " Max vertex: " + minVertex.y);
+			if (realCenter.x - largeCam.x/2 < minVertex.x + size.x/2f) {
+				realCenter.x = (minVertex.x * 2f + largeCam.x)/2f;
+			} else if (realCenter.x + largeCam.x/2 > maxVertex.x - size.x/2f) {
+				realCenter.x = (maxVertex.x * 2f - largeCam.x)/2f;
+			}
+
+			if (realCenter.y - largeCam.y/2f < minVertex.y + size.y/2f) {
+				realCenter.y = (minVertex.y * 2f + largeCam.y)/2f;
+			} else if (realCenter.y + largeCam.y/2f > maxVertex.y - size.y/2f) {
+				realCenter.y = (maxVertex.y * 2f - largeCam.y)/2f;
+			}
+			left = realCenter.x - size.x/2f;
+			right = realCenter.x + size.x/2f;
+			bottom = realCenter.y - size.y/2f;
+			top = realCenter.y + size.y/2f;
 
 			velocity = Vector2.zero;
 			centre = new Vector2((left+right)/2,(top + bottom)/2);
@@ -104,7 +114,7 @@ public class CameraFollow : MonoBehaviour {
 			bool shift = true;
 			if (camConstrained) {
 				float extra = camSize.x;
-				if (left - (extra/2f) < minVertex.x && shiftX < 0f) {
+				if (left - (extra / 2f) < minVertex.x && shiftX < 0f) {
 					shift = false;
 				}
 				if (right + (extra/2f) > maxVertex.x && shiftX > 0f) {

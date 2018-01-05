@@ -19,6 +19,8 @@ public class RPDatabase : MonoBehaviour {
 			Instance = this;
 		//knm = FindObjectOfType<KNManager> ();
 		m_SubjectTemplates = new List<RPTemplate> ();
+		m_VerbTemplates = new List<RPTemplate> ();
+		m_SubjectTemplates.Add (new RPTListener ());
 		m_ResponseTemplates = new List<RPTemplate> ();
 	}
 	
@@ -31,38 +33,45 @@ public class RPDatabase : MonoBehaviour {
 		m_Init = true;
 	}
 
-	public static List<RPTemplate> GetMatches(string exclamation, Character speaker) {
+	public static List<RPTemplate> GetMatches(string exclamation, Character speaker, Character listener = null) {
 		var responses = new List<RPTemplate> ();
 		foreach (var r in Instance.m_ResponseTemplates) {
-			r.setSpeaker (speaker);
+			r.SetSpeaker (speaker);
+			r.SetListener (listener);
 			if (r.match (exclamation))
 				responses.Add (r);
 		}
 		return responses;
 	}
 
-	public static List<RPTemplate> GetMatches(Assertion a,Character speaker) {
+	public static List<RPTemplate> GetMatches(Assertion a,Character speaker, Character listener = null) {
 		var responses = new List<RPTemplate> ();
 		foreach (var r in Instance.m_ResponseTemplates) {
-			r.setSpeaker (speaker);
+			r.SetSpeaker (speaker);
+			r.SetListener (listener);
 			if (r.match (a))
 				responses.Add (r);
 		}
 		return responses;
 	}
-	public static List<RPTemplate> GetMatches(KNSubject s,Character speaker) {
+	public static List<RPTemplate> GetMatches(KNSubject s,Character speaker, Character listener = null) {
 		var responses = new List<RPTemplate> ();
+		//Debug.Log ("Getting matches for subject; " + s.SubjectName);
 		foreach (var r in Instance.m_SubjectTemplates) {
-			r.setSpeaker (speaker);
+			r.SetSpeaker (speaker);
+			r.SetListener (listener);
 			if (r.match (s))
 				responses.Add (r);
 		}
+		//Debug.Log ("Matches found: " + responses.Count);
 		return responses;
 	}
-	public static List<RPTemplate> GetMatches(KNVerb v,Character speaker) {
+	public static List<RPTemplate> GetMatches(KNVerb v,Character speaker, Character listener = null) {
 		var responses = new List<RPTemplate> ();
+		Debug.Log ("RPL: " + listener);
 		foreach (var r in Instance.m_VerbTemplates) {
-			r.setSpeaker (speaker);
+			r.SetSpeaker (speaker);
+			r.SetListener (listener);
 			if (r.match (v))
 				responses.Add (r);
 		}

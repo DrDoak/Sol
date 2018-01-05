@@ -6,25 +6,34 @@ public class RPTemplate {
 	public string OutputTemplate;
 	public string speechGroup;
 	public Assertion templateAssertion;
-	Character mChar;
+	protected Character mChar;
+	protected Character listener;
 
-	public void setSpeaker(Character speaker) {
+	public void SetSpeaker(Character speaker) {
 		//Debug.Log ("Template setting to: " + speaker);
-		templateAssertion.SetOwner (speaker);
+		if (templateAssertion != null)
+			templateAssertion.SetOwner (speaker);
 		mChar = speaker;
 	}
-	public bool match(Assertion other) {
+	public void SetListener(Character l) {
+		listener = l;
+	}
+	public virtual bool match(Assertion other) {
 		//Debug.Log ("Match me: " + templateAssertion.GetID () + " with " + other.GetID ());
 		//Debug.Log ("Char is: " + a.mChar + " mine is: " + mChar);
-		return templateAssertion.IsMatch (other);
+		if (templateAssertion != null) {
+			return templateAssertion.IsMatch (other);
+		} else {
+			return false;
+		}
 	}
-	public bool match(string exclamation) {
+	public virtual bool match(string exclamation) {
 		return (templateAssertion.Subjects [0].GetID () == exclamation);
 	}
-	public bool match(KNSubject s) {
+	public virtual bool match(KNSubject s) {
 		return false;
 	}
-	public bool match(KNVerb v) {
+	public virtual bool match(KNVerb v) {
 		return false;
 	}
 }

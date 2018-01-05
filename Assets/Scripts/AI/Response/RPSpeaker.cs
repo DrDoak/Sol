@@ -20,9 +20,15 @@ public class RPSpeaker : MonoBehaviour {
 		ResponseLog = new List<RPEntry> ();
 	}
 	public Response ConveySubject( Assertion a, Character listener) {
+		//Debug.Log ("Conveying subject for " + a.GetID ());
 		if (!a.HasSubject)
 			return new Response ();
-		return Convey(a.Subjects[0],listener);
+		//Debug.Log ("First subject is: " + a.Subjects [0].GetID ());
+		if (Types.Equals (a.Subjects [0], a)) {
+			return Convey ((Assertion)a.Subjects [0], listener);
+		} else {
+			return Convey (a.Subjects [0], listener);
+		}
 	}
 	public Response ConveyVerb( Assertion a, Character listener) {
 		if (!a.HasVerb)
@@ -30,30 +36,37 @@ public class RPSpeaker : MonoBehaviour {
 		return Convey(a.Verb,listener);
 	}
 	public Response ConveyReceivor( Assertion a, Character listener) {
+		//Debug.Log ("Conveying receiver for " + a.GetID ());
 		if (!a.HasReceivor)
 			return new Response ();
-		return Convey(a.Receivors[0],listener);
+		//Debug.Log ("First receiver is: " + a.Receivors [0].GetID ());
+		if (Types.Equals (a.Receivors [0], a)) {
+			return Convey ((Assertion)a.Receivors [0], listener);
+		} else {
+			return Convey (a.Receivors [0], listener);
+		}
 	}
-	public Response Convey(string exclamation, Character listener) {
+	public Response Convey(string exc, Character listener) {
 		Response r = new Response ();
 		r.mChar = c;
 		r.speaker = this;
 		r.listener = listener;
-		List<RPTemplate> fullR = RPDatabase.GetMatches (exclamation,c);
+		List<RPTemplate> fullR = RPDatabase.GetMatches (exc,c,listener);
 		RPTemplate best = GetBestResponse (fullR,r);
 		if (best != null) {
 			r.ApplyTemplate (best);
 		} else {
-			r.SetString (exclamation);
+			r.SetString (exc);
 		}
 		return r;
 	}
 	public Response Convey(KNSubject s, Character listener) {
+		Debug.Log ("Conveying subject: " + s.SubjectName + " l: " + listener.name);
 		Response r = new Response ();
 		r.mChar = c;
 		r.speaker = this;
 		r.listener = listener;
-		List<RPTemplate> fullR = RPDatabase.GetMatches (s,c);
+		List<RPTemplate> fullR = RPDatabase.GetMatches (s,c,listener);
 		RPTemplate best = GetBestResponse (fullR,r);
 		if (best != null) {
 			r.ApplyTemplate (best);
@@ -67,7 +80,7 @@ public class RPSpeaker : MonoBehaviour {
 		r.mChar = c;
 		r.speaker = this;
 		r.listener = listener;
-		List<RPTemplate> fullR = RPDatabase.GetMatches (v,c);
+		List<RPTemplate> fullR = RPDatabase.GetMatches (v,c,listener);
 		RPTemplate best = GetBestResponse (fullR,r);
 		if (best != null) {
 			r.ApplyTemplate (best);
@@ -77,18 +90,18 @@ public class RPSpeaker : MonoBehaviour {
 		return r;
 	}
 	public Response Convey(Assertion a,Character listener) {
-		Debug.Log ("Conveying an assertion: " + a.GetID ());
+		//Debug.Log ("Conveying an assertion: " + a.GetID ());
 		Response r = new Response ();
 		r.mChar = c;
 		r.speaker = this;
 		r.listener = listener;
 		r.SetAssertion (a);
-		List<RPTemplate> fullR = RPDatabase.GetMatches (a,c);
-		RPTemplate best = GetBestResponse (fullR,r);
+		List<RPTemplate> fullR = RPDatabase.GetMatches (a, c, listener);
+		RPTemplate best = GetBestResponse (fullR, r);
 		if (best != null) {
 			r.ApplyTemplate (best);
 		} else {
-			r.SetString (a.Convey ());
+			r.SetString (r.StandardConvey());
 		}
 		return r;
 	}

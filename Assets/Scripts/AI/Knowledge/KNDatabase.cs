@@ -23,7 +23,6 @@ public class KNDatabase {
 	public List<KNVerb> MatchingVerbs(Assertion a) {
 		var verbs = new List<KNVerb> ();
 		foreach (var kv in Verbs) {
-			//Debug.Log ("All verbs: " + kv.GetID());
 			bool match = false;
 			if (a.Subjects != null) {
 				foreach (var s in a.Subjects) {

@@ -34,7 +34,7 @@ public class ListSelection : MonoBehaviour{
 		}
 		if (Escapable && Input.GetButtonDown ("Cancel")) {
 			masterSequence.closeSequence ();
-			Debug.Log ("Previous is: " + masterSequence.Previous);
+			//Debug.Log ("Previous is: " + masterSequence.Previous);
 			if (masterSequence.Previous != null) {
 				masterSequence.Previous.RestartSequence ();
 			}

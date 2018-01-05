@@ -13,11 +13,11 @@ public class KNManager : MonoBehaviour {
 
 	[SerializeField] private GameObject m_List;
 
-	CharacterManager cm;
 	KNDatabase m_Database;
 
 	Dictionary<string,KNSubject> m_Subjects;
 	Dictionary<string,KNVerb> m_Verbs;
+	public bool DatabaseInitialized;
 
 	void Awake() {
 		if (Instance == null)
@@ -25,15 +25,18 @@ public class KNManager : MonoBehaviour {
 		m_Database = new KNDatabase ();
 		m_Subjects = new Dictionary<string,KNSubject> ();
 		m_Verbs = new Dictionary<string,KNVerb> ();
+		m_Subjects ["self"] = new KNSubSelf (); //TEST FOR KNSUBSELf
 	}
-	void Start () {		
-		cm = CharacterManager.Instance;
-		m_Subjects ["self"] = new KNSubSelf (); //TEST FOR KNSUBSELF
-		KNImporter.InitDatabase (this,m_EntrySource,m_SubjectSource,m_VerbSource);
+	void Start () {
+		if (!DatabaseInitialized) {
+			InitDatabase ();
+		}
 	}
-		
+	public void InitDatabase() {
+		DatabaseInitialized = true;
+		KNImporter.InitDatabase (this, m_EntrySource, m_SubjectSource, m_VerbSource);
+	}
 	public void AddKnowledgeGroups(KNDatabase kd, string kGroup) {
-		
 		foreach (Assertion a in m_Database.Knowledge.Values) {
 			if (a.KnowledgeGroups.Contains (kGroup)) {
 				kd.AddAssertion (a.CopyAssertion ());
@@ -209,7 +212,6 @@ public class KNManager : MonoBehaviour {
 		foreach (var kv in kd.MatchingVerbs(a)) {
 			if (!kv.IsCommand)
 				continue;
-			//Debug.Log ("Found verb: " + kv.VerbName + " subName: " + sub.subjectName + " canAct: " + kv.canAct(sub));
 			var o = new OptionKnowledgeBase { responseFunction = VerbSelected,
 				text = kv.VerbName, assertion = a.CopyAssertion()};
 			o.assertion.AddVerb( kv);

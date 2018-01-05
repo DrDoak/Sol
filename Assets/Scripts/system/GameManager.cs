@@ -251,4 +251,8 @@ public class GameManager : MonoBehaviour {
 		OptionGameObjectSelect ogos = (OptionGameObjectSelect)o;
 		GameManager.SetPlayer (ogos.gameObject);
 	}
+
+	public static void DisplayLevelText(string title, string description = "") {
+		manager.transform.Find("UI").Find ("LevelText").gameObject.GetComponent<LevelDescription> ().SetDescription (title, description);
+	}
 }

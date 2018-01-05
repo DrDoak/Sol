@@ -30,7 +30,7 @@ public class DialogueUnit  {
 	public void RestartSequence() {
 		var du = new DialogueUnit {speaker = speaker, listener = listener, Previous = Previous,
 			elements = elements};
-		Debug.Log ("Restarting sequence with " + du.elements.Count + " elements");
+		//Debug.Log ("Restarting sequence with " + du.elements.Count + " elements");
 		listener.processDialogueRequest (speaker, du);
 		du.startSequence ();
 	}

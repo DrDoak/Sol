@@ -61,4 +61,12 @@ public class Response {
 		}
 		return finalStr;
 	}
+
+	public string StandardConvey() {
+		string finalStr = "";
+		finalStr += speaker.ConveySubject (assertion, listener).ToString () + " ";
+		finalStr += speaker.ConveyVerb (assertion, listener).ToString () + " ";
+		finalStr += speaker.ConveyReceivor (assertion, listener).ToString ();
+		return finalStr;
+	}
 }

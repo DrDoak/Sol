@@ -14,27 +14,25 @@ public class CharacterManager : MonoBehaviour {
 
 	bool m_InitChar = false;
 
-	List<Character> m_toRegisterCharacters;
 	void Awake () {
 		if (Instance == null)
 			Instance = this;
 		m_RegisteredChars = new Dictionary<string,Character> ();
 		m_LoadedCharData = new Dictionary<string,Dictionary<string,string>> ();
+
 		initCharacters (m_CharDatabase);
-		m_toRegisterCharacters = new List<Character> ();
 	}
 
 	void Start() {}
 
 	void Update () {
-		foreach (Character c in m_toRegisterCharacters) {
-			initChar (c);
-		}
-		m_toRegisterCharacters.Clear ();
 	}
 
 	void initCharacters(string source) {
 	//	Debug.Log ("Loading all Characters from Source: " + source);
+		if (!KNManager.Instance.DatabaseInitialized) {
+			KNManager.Instance.InitDatabase ();
+		}
 		List<Dictionary<string,string>> subjects = FactCSVImporter.importFile (source);
 		foreach (Dictionary<string,string> d in subjects) {
 			KNSubject sub = KNManager.CopySubject (d ["name"]);
@@ -75,16 +73,17 @@ public class CharacterManager : MonoBehaviour {
 	}
 
 	public static void RegisterChar(Character c) {
-		Instance.m_toRegisterCharacters.Add (c);
+		//Instance.m_toRegisterCharacters.Add (c);
+		Instance.initChar (c);
 	}
 
 	void initChar(Character c) {
-	//	Debug.Log ("Registering Character: " + c.gameObject);
+		Debug.Log ("Registering Character: " + c.gameObject);
 		if (m_RegisteredChars.ContainsKey (c.name.ToLower ())) {
-			Debug.Log ("TODO: re-add character information from data");
-			return;
+			Debug.Log ("TODO: re-add character information from save data. Now initializing as if new.");
+			//return;
 		}
-		m_RegisteredChars.Add (c.name.ToLower(), c);
+		m_RegisteredChars[c.name.ToLower()] = c;
 		KNSubject ks = KNManager.CopySubject (c.name);
 		ks.Owner = c;
 		KNManager.Instance.SetSubject (c.name, ks);
@@ -99,7 +98,9 @@ public class CharacterManager : MonoBehaviour {
 	}
 	Character m_findChar(string targetName) {
 		string lowerName = targetName.ToLower ();
+		//Debug.Log ("Searching for character: " + lowerName);
 		foreach (string k in m_RegisteredChars.Keys) {
+			//Debug.Log ("found: " + m_RegisteredChars [k].name.ToLower ());
 			if (m_RegisteredChars[k].name.ToLower () == lowerName) {
 				return m_RegisteredChars[k];
 			}
@@ -116,7 +117,7 @@ public class CharacterManager : MonoBehaviour {
 	}
 
 	public static Character FindChar(string targetName) {
-		return Instance.m_findChar (targetName);;
+		return Instance.m_findChar (targetName);
 	}
 
 }

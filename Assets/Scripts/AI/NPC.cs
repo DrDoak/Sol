@@ -56,11 +56,14 @@ public class NPC : Character {
 		}
 	}
 	public override void setAutonomy(bool au) {
-		
+		//Debug.Log ("Setting autonomy " + gameObject + " to " + au);
 		autonomy = au;
 		if (au) {
 		} else {
 			GetComponent<NPCMovement> ().endTarget ();
+		}
+		if (GetComponent<Player> ()) {
+			GetComponent<Player> ().autonomy = au;
 		}
 	}
 	public void AddProposal(Proposal p, Event e) {

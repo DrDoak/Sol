@@ -40,13 +40,17 @@ public class Cutscene : MonoBehaviour {
 	}
 
 	public void lockCharacter(string charName) {
-		//Debug.Log ("Attempting to lock character: " + charName);
+		Debug.Log ("Attempting to lock character: " + charName);
 		Character c = CharacterManager.FindChar (charName);
-		c.setAutonomy (false);
-		lockedCharacters.Add (c);
+		if (c != null) {
+			c.setAutonomy (false);
+			lockedCharacters.Add (c);
+		} else {
+			Debug.Log ("Unable to Lock Character: " + charName + " character not found");
+		}
 	}
 	public void lockCharacter(Character searchC) { 
-		//Debug.Log ("Attempting to lock character: " + searchC.name);
+		Debug.Log ("Attempting to lock character: " + searchC.name);
 		Character c = cm.findChar(searchC);
 		c.setAutonomy (false);
 		lockedCharacters.Add (c);

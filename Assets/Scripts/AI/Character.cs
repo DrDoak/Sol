@@ -71,19 +71,11 @@ public class Character : Interactable {
 		if (faction == "noFaction" && GetComponent<Attackable> ()) {
 			faction = GetComponent<Attackable> ().faction;
 		}
-		Debug.Log ("Character initialization for: " + gameObject);
 		CharacterManager.RegisterChar (this);
 	}
 
 	public virtual void setAutonomy(bool active) {
-		//Debug.Log ("Setting autonomy " + gameObject + " to " + active);
 		autonomy = active;
-		if (GetComponent<NPC> ()) {
-			GetComponent<NPC> ().setAutonomy(active);
-		}
-		if (GetComponent<Player> ()) {
-			GetComponent<Player> ().autonomy = active;
-		}
 	}
 
 //----Dialogue and interaction

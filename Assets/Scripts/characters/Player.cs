@@ -217,6 +217,9 @@ public class Player : MonoBehaviour {
 		minDistance = 0.2f;
 	}
 	void attackInput(float inputX, float inputY) {
+		if (Input.GetButtonDown ("Sheath")) {
+			gameObject.GetComponent<Fighter> ().ToggleSheath ();
+		}
 		if (Input.GetButtonDown("Attack")) {
 			if (inputY < -0.9f) {
 				if (movement.onGround) {

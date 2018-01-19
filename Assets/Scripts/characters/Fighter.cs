@@ -17,6 +17,13 @@ public class Fighter : MonoBehaviour {
 	public string AnimIdle = "idle";
 	public string AnimHit = "hit";
 
+	public string AnimUnarmedAir = "air_unarmed";
+	public string AnimUnarmedRun = "run_unarmed";
+	public string AnimUnarmedIdle = "idle_unarmed";
+	public string AnimUnarmedHit = "hit_unarmed";
+
+	public bool WeaponSheathed = false;
+
 	string myFac;
 	Movement movement;
 	AnimatorSprite m_anim;
@@ -35,6 +42,10 @@ public class Fighter : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		init ();
+	}
+
+	protected void init() {
 		m_anim = GetComponent<AnimatorSprite> ();
 		movement = GetComponent<Movement> ();
 		gameManager = FindObjectOfType<GameManager> ();
@@ -49,9 +60,7 @@ public class Fighter : MonoBehaviour {
 		}
 		animationRatio = 1f;
 	}
-
-	// Update is called once per frame
-	void Update () {
+	protected void update() {
 		startingNewAttack = false;
 		if (stunTime > 0.0f ) {
 			m_anim.Play (AnimHit);
@@ -110,6 +119,10 @@ public class Fighter : MonoBehaviour {
 		} else {
 			StandardAnimation ();
 		}
+	}
+	// Update is called once per frame
+	void Update () {
+		update ();
 	}
 
 	void addEffect(GameObject attackFX,float lifeTime) {
@@ -208,9 +221,20 @@ public class Fighter : MonoBehaviour {
 		}
 		return false;
 	}
-
+	public void ToggleSheath() {
+		SetSheath (!WeaponSheathed);
+	}
+	public virtual void SetSheath(bool ToSheath) {
+		WeaponSheathed = false;
+		if (ToSheath) {
+			tryAttack ("sheath");
+		} else {
+			tryAttack ("unsheath");
+		}
+		WeaponSheathed = ToSheath;
+	}
 	public bool tryAttack(string attackName) {
-		if (currentAttackName == "none" && attacks.ContainsKey(attackName) && stunTime <= 0.0f) {
+		if (!WeaponSheathed && currentAttackName == "none" && attacks.ContainsKey(attackName) && stunTime <= 0.0f) {
 			hitboxCreated = false;
 			currentAttackName = attackName;
 			currentAttack = attacks[currentAttackName];
@@ -235,14 +259,28 @@ public class Fighter : MonoBehaviour {
 	}
 
 	public void StandardAnimation() {
-		if (!movement.onGround) {
-			//Debug.Log ("Standard Anim Air");
-			m_anim.Play (AnimAir);
-		} else {
-			if (movement.AttemptingMovement) {
-				m_anim.Play (AnimRun);
+		if (WeaponSheathed) {
+			if (!movement.onGround) {
+				string [] air = {AnimUnarmedAir, AnimAir};
+				m_anim.Play (air);
 			} else {
-				m_anim.Play (AnimIdle);
+				if (movement.AttemptingMovement) {
+					string [] run = {AnimUnarmedRun, AnimRun};
+					m_anim.Play (run);
+				} else {
+					string [] idle = {AnimUnarmedIdle, AnimIdle};
+					m_anim.Play (idle);
+				}
+			}
+		} else {
+			if (!movement.onGround) {
+				m_anim.Play (AnimAir);
+			} else {
+				if (movement.AttemptingMovement) {
+					m_anim.Play (AnimRun);
+				} else {
+					m_anim.Play (AnimIdle);
+				}
 			}
 		}
 	}

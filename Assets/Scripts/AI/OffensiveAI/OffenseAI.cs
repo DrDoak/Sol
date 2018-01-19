@@ -29,7 +29,12 @@ public class OffenseAI : MonoBehaviour {
 		reactionSpeed = baseReactionSpeed;
 		decisionMaking = baseDecisionMaking;
 		aggression = baseAggression;
-		allAttacks = new List<AttackInfo>(GetComponents<AttackInfo> ());
+		allAttacks = new List<AttackInfo>();
+		foreach (AttackInfo ai in GetComponents<AttackInfo> ()) {
+			if (ai.name != "sheath" && ai.name != "unsheath") {
+				allAttacks.Add (ai);
+			}
+		}
 		m_fighter = GetComponent<Fighter> ();
 		npcM = GetComponent<NPCMovement> ();
 	}

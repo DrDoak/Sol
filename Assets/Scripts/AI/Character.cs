@@ -134,7 +134,7 @@ public class Character : Interactable {
 	public virtual void respondToEvent(Event e) {}
 
 	public virtual void setTargetPoint(Vector3 targetPoint, float proximity) {
-		GetComponent<Player> ().setTargetPoint (targetPoint, proximity);
+		GetComponent<Playable> ().setTargetPoint (targetPoint, proximity);
 	}
 
 //-----------------------Dialogue conditions----------------

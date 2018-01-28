@@ -171,9 +171,7 @@ public class Fighter : MonoBehaviour {
 	public void registerHit(GameObject otherObj) {
 		if (currentAttack != null) {
 			currentAttack.onHitConfirm (otherObj);
-			if (GetComponent<Player> ()) {
-				GetComponent<Player> ().onHitConfirm(otherObj);
-			}
+			GetComponent<Playable> ().onHitConfirm(otherObj);
 			if (GetComponent<Character> ()) {
 				EVHitConfirm e = new EVHitConfirm ();
 				e.attacker = GetComponent<Character> ();

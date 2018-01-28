@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent (typeof (Fighter))]
-[RequireComponent (typeof (NPCMovement))]
+[RequireComponent (typeof (Playable))]
 public class OffenseAI : MonoBehaviour {
 
 	public List<AttackInfo> allAttacks;
@@ -20,7 +20,7 @@ public class OffenseAI : MonoBehaviour {
 	float decisionMaking;
 	float aggression;
 	Fighter m_fighter;
-	NPCMovement npcM;
+	Playable playable;
 
 	public string currentAction = "wait";
 
@@ -36,15 +36,15 @@ public class OffenseAI : MonoBehaviour {
 			}
 		}
 		m_fighter = GetComponent<Fighter> ();
-		npcM = GetComponent<NPCMovement> ();
+		playable = GetComponent<Playable> ();
 	}
 
 	void Update () {
-		if (currentTarget != null) {
+		if (currentTarget != null && !playable.IsCurrentPlayer) {
 			if (currentAction == "wait") {
 				decideNextAction ();
 			} else if (currentAction == "moveToTarget") {
-				npcM.moveToPoint (currentTarget.transform.position);
+				playable.moveToPoint (currentTarget.transform.position);
 				decideNextAction ();
 			} else if (currentAction == "attack") {
 				if (m_fighter.currentAttackName == "none") {
@@ -78,6 +78,9 @@ public class OffenseAI : MonoBehaviour {
 
 
 	public void setTarget(Character c) {
-		currentTarget = c;		
+		currentTarget = c;
+		if (m_fighter.WeaponSheathed) {
+			m_fighter.ToggleSheath ();
+		}
 	}
 }

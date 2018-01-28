@@ -29,12 +29,12 @@ public class RoomChanger : Interactable {
 		Gizmos.DrawCube (transform.position, transform.localScale);
 	}
 	internal void OnTriggerEnter2D(Collider2D other) {
-		if (onContact && other.gameObject.GetComponent<Player> () ) {
+		if (onContact && other.gameObject.GetComponent<Playable> () ) {
 			changeRoom (other.gameObject);
 		}
 	}
 	protected virtual void changeRoom(GameObject go) {
-		if (go.GetComponent<Player> ()) {
+		if (go.GetComponent<Playable> ()) {
 			if (changerID != "none") {
 				string realDir = dir;
 				string realTarget = targetID;

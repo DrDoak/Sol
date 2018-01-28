@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GlObediance : Goal {
-	public GlObediance() {
+public class GlObedience : Goal {
+	public GlObedience() {
 		registerEvent (EventType.Command, attackCommand);
 	}
 

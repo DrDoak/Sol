@@ -46,7 +46,7 @@ public class GUIHandler : MonoBehaviour {
 
 	void Update() {
 		
-		var P1 = FindObjectOfType<Player> ();
+		var P1 = FindObjectOfType<Playable> ();
 		if (P1 != null) {
 			var P1Controller = P1.GetComponent<Attackable> ();
 

@@ -77,15 +77,18 @@ public class GameManager : MonoBehaviour {
 		}
 		//mSaves.onRoomLoad (curRoomName);
 		//string s = SceneManager.GetActiveScene ().name;
-		Player p = FindObjectOfType<Player> ();
-		if (p != null) {
-			curPlayer = p.gameObject;
-			//Debug.Log ("Found current player; " + curPlayer);
-			transform.Find ("UI").Find ("HUD").gameObject.SetActive (true);
-			cameraInit ();
-		} else {
-			if (transform.Find ("UI").Find ("HUD") != null) {
-				transform.Find ("UI").Find ("HUD").gameObject.SetActive (false);
+		Playable [] pList = FindObjectsOfType<Playable> ();
+		foreach (Playable p in pList) {
+			if (p.IsCurrentPlayer) {
+				curPlayer = p.gameObject;
+				//Debug.Log ("Found current player; " + curPlayer);
+				transform.Find ("UI").Find ("HUD").gameObject.SetActive (true);
+				cameraInit ();
+				break;
+			} else {
+				if (transform.Find ("UI").Find ("HUD") != null) {
+					transform.Find ("UI").Find ("HUD").gameObject.SetActive (false);
+				}
 			}
 		}
 //		Debug.Log ("Done with init room");

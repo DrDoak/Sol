@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿/*using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -108,3 +108,4 @@ public class NPCMovement : MonoBehaviour {
 		minDistance = 0.2f;
 	}
 }
+*/

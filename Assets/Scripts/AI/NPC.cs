@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent (typeof (OffenseAI))]
-[RequireComponent (typeof (NPCMovement))]
+[RequireComponent (typeof (Playable))]
 [RequireComponent (typeof (DialogueParser))]
 public class NPC : Character {
 
@@ -17,6 +17,7 @@ public class NPC : Character {
 	List<Proposal> m_currentProposals;
 	List<Proposal> m_currentActions;
 	List<Goal> m_currentGoals;
+	Playable m_player;
 	int m_lastNumGoals = 0;
 
 	List<Event> m_currentEvents;
@@ -28,6 +29,7 @@ public class NPC : Character {
 		m_currentGoals = new List<Goal> ();
 		m_newProposals = new List<Proposal>();
 		m_currentProposals = new List<Proposal>();
+		m_player = GetComponent<Playable> ();
 		if (SimpleEnemy) {
 			Goal g = (Goal)(System.Activator.CreateInstance(Type.GetType("GlAttackEnemies")));
 			addGoal (g);
@@ -40,13 +42,13 @@ public class NPC : Character {
 	}
 
 	void Update () {
-		//Debug.Log ("Aut: " + autonomy + " :count: " + m_newProposals.Count);
-		if (autonomy && m_newProposals.Count > 0) {
-			//Debug.Log ("Executing Valid proposals");
-			executeValidProposals ();
-			m_currentEvents.Clear ();
+		if (!m_player.IsCurrentPlayer) {
+			if (autonomy && m_newProposals.Count > 0) {
+				executeValidProposals ();
+				m_currentEvents.Clear ();
+			}
+			updateGoalList ();
 		}
-		updateGoalList ();
 	}
 
 	void updateGoalList() {
@@ -60,11 +62,9 @@ public class NPC : Character {
 		autonomy = au;
 		if (au) {
 		} else {
-			GetComponent<NPCMovement> ().endTarget ();
+			GetComponent<Playable> ().endTarget ();
 		}
-		if (GetComponent<Player> ()) {
-			GetComponent<Player> ().autonomy = au;
-		}
+		GetComponent<Playable> ().autonomy = au;
 	}
 	public void AddProposal(Proposal p, Event e) {
 		AddProposal (p, e, -100f);
@@ -162,14 +162,16 @@ public class NPC : Character {
 	public void onHit(Character otherChar) {
 	}
 	public override void respondToEvent(Event e) {
-		//Debug.Log (name + " is responding to event: " + e.eventType);
-		if (!m_currentEvents.Contains (e)) {
-			foreach (Goal g in m_currentGoals) {
-				//Debug.Log ("Goal is : " + g);
-				g.respondToEvent (e);
+		if (!m_player.IsCurrentPlayer) {
+			//Debug.Log (name + " is responding to event: " + e.eventType);
+			if (!m_currentEvents.Contains (e)) {
+				foreach (Goal g in m_currentGoals) {
+					//Debug.Log ("Goal is : " + g);
+					g.respondToEvent (e);
+				}
 			}
+			m_currentEvents.Add (e);
 		}
-		m_currentEvents.Add(e);
 	}
 
 	public override void processDialogueRequest(Character c,DialogueUnit d) {
@@ -179,7 +181,7 @@ public class NPC : Character {
 	}
 	public override void acceptDialogue(Character c,DialogueUnit d) {	}
 	public override void setTargetPoint(Vector3 targetPoint, float proximity) {
-		GetComponent<NPCMovement> ().setTargetPoint (targetPoint, proximity);
+		GetComponent<Playable> ().setTargetPoint (targetPoint, proximity);
 	}
 	public override DialogueSubunit chooseDialogueOption(List<DialogueSubunit> dList) {
 		if (dList.Count > 0) {

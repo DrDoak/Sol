@@ -26,7 +26,7 @@ public class HealthPack : MonoBehaviour {
 
 	internal void OnTriggerEnter2D(Collider2D other)
 	{
-		if (other.gameObject.GetComponent<Player> ()) {
+		if (other.gameObject.GetComponent<Playable> ()) {
 			other.gameObject.GetComponent<Attackable> ().damageObj (-healValue);
 			GameObject.Destroy (gameObject);
 //			FindObjectOfType<GameManager> ().soundfx.gameObject.transform.Find ("PowerUp").GetComponent<AudioSource> ().Play ();

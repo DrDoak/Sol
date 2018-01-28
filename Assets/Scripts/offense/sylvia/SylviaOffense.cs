@@ -9,17 +9,25 @@ public class SylviaOffense : Fighter {
 
 	List<SyKnife> m_knives;
 	Fighter m_fighter;
+	private float m_createTime = 0f;
 	void Start () {	
 		init ();
 		m_knives = new List<SyKnife> ();
 		m_fighter = GetComponent<Fighter> ();
-		SetSheath (WeaponSheathed);
+		if (!WeaponSheathed)
+			SetSheath (WeaponSheathed);
 	}
 	void Update () { 
 		update ();
 		if (m_fighter.stunTime > 0f) {
 			foreach (SyKnife k in m_knives) {
 				k.SetActive (false);
+			}
+		}
+		if (m_createTime > 0f) {
+			m_createTime -= Time.deltaTime;
+			if (m_createTime <= 0f) {
+				createKnives ();
 			}
 		}
 	}
@@ -53,6 +61,7 @@ public class SylviaOffense : Fighter {
 		m_knives.Reverse();
 	}
 
+
 	public override void  SetSheath(bool ToSheath) {
 		WeaponSheathed = false;
 		if (ToSheath) {
@@ -60,15 +69,19 @@ public class SylviaOffense : Fighter {
 			foreach (SyKnife sk in m_knives) {
 				Destroy (sk.gameObject);
 			}
+			m_knives.Clear ();
 		} else {
 			tryAttack ("unsheath");
-			Vector3 pos = transform.position;
-			for (int i = 0; i < NumKnives; i++) {
-				GameObject go = Instantiate (KnifePrefab, new Vector3 (pos.x + Random.Range (-1f, 1f), pos.y + Random.Range (-1f, 1f), pos.z), Quaternion.identity);
-				go.GetComponent<SyKnife> ().User = this;
-				m_knives.Add (go.GetComponent<SyKnife> ());
-			}
+			m_createTime = 0.5f;
 		}
 		WeaponSheathed = ToSheath;
+	}
+	void createKnives() {
+		Vector3 pos = transform.position;
+		for (int i = 0; i < NumKnives; i++) {
+			GameObject go = Instantiate (KnifePrefab, new Vector3 (pos.x + Random.Range (-1f, 1f), pos.y + Random.Range (-1f, 1f), pos.z), Quaternion.identity);
+			go.GetComponent<SyKnife> ().User = this;
+			m_knives.Add (go.GetComponent<SyKnife> ());
+		}
 	}
 }

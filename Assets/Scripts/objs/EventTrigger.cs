@@ -40,7 +40,7 @@ public class EventTrigger : Interactable {
 		Gizmos.DrawCube (transform.position, transform.localScale);
 	}
 	internal void OnTriggerEnter2D(Collider2D other) {
-		if (onContact && other.gameObject.GetComponent<Player> () && currentInterval <= 0.0f) {
+		if (onContact && other.gameObject.GetComponent<Playable> () && currentInterval <= 0.0f) {
 			triggerEvent ();
 		}
 	}

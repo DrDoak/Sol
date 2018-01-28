@@ -48,7 +48,7 @@ public class AtkSuper : AtkDash {
 
 	}
 	public override void recoveryTick() {
-		if (GetComponent<Player>() != null) {
+		if (GetComponent<Playable>() != null) {
 			if (Input.GetKeyDown (playerKey) && attackable.energy >= 20.0f) {
 				successfulInterupt = true;
 				if (Input.GetKey ("a")) {

@@ -8,13 +8,14 @@ using UnityEngine.UI;
 [RequireComponent (typeof (Fighter))]
 [RequireComponent (typeof (Attackable))]
 [RequireComponent (typeof (ReturnToCheckpoint))]
-public class Player : MonoBehaviour {
+public class Playable : MonoBehaviour {
 
 	// Movement 
+	public bool IsCurrentPlayer = false;
 	public Vector2 startPosition = new Vector2 (-4.0f, -3f);
 	public float jumpHeight = 4.0f;
 	public float timeToJumpApex = .4f;
-	public string playerName = "Player 1";
+
 	float accelerationTimeAirborne = .2f;
 	float accelerationTimeGrounded = .1f;
 	public float moveSpeed = 8.0f;
@@ -55,7 +56,7 @@ public class Player : MonoBehaviour {
 	Vector3 targetPoint;
 	public float minDistance = 1.0f;
 	public float abandonDistance = 10.0f;
-	public Player followObj;
+	public Playable followObj;
 
 	internal void Start()  {
 		m_anim = GetComponent<AnimatorSprite> ();
@@ -89,16 +90,15 @@ public class Player : MonoBehaviour {
 			attackable.modifyEnergy (increase);
 		}
 	}
-
-	internal void Update() {
-		timeSinceLastDash += Time.deltaTime;
-		/*
-		if (lastHealth > GetComponent<Attackable> ().health) {
-					Debug.Log ("Reset");
-			FindObjectOfType<PlayerCursor> ().timeSinceLastHit = 0.0f;
+	void Update() {
+		if (IsCurrentPlayer) {
+			playerMovement ();
+		} else {
+			npcMovement ();
 		}
-		lastHealth = GetComponent<Attackable> ().health;*/
+	}
 
+	internal void playerMovement() {
 		if (movement.onGround) {canDoubleJump = true;}
 		inputX = 0.0f;
 		inputY = 0.0f;
@@ -118,12 +118,7 @@ public class Player : MonoBehaviour {
 				//gameManager.toggleMenu ();
 			}
 			inputY = Input.GetAxis ("Vertical");
-		
-			/*if (Input.GetKeyDown (downKey)) {
-				attemptingInteraction = true;
-			} else {
-				attemptingInteraction = false;
-			}*/
+
 			//Movement controls
 			inputX = Input.GetAxis("Horizontal");
 			attackInput (inputX, inputY);
@@ -164,6 +159,20 @@ public class Player : MonoBehaviour {
 			Reset ();
 		movement.AttemptingMovement = (inputX != 0.0f);
 	}
+
+	void npcMovement () {
+		if (targetSet) {
+			if (targetObj) {
+				if (followObj == null) {
+					endTarget ();
+					return;
+				}
+				targetPoint = followObj.transform.position;
+			}
+			moveToPoint (targetPoint);
+		}
+	}
+
 	public void moveToPoint(Vector3 point) {
 		inputX = 0.0f;
 		inputY = 0.0f;
@@ -205,7 +214,7 @@ public class Player : MonoBehaviour {
 		targetSet = true;
 	}
 
-	void setTarget(Player target) {
+	void setTarget(Playable target) {
 		targetObj = true;
 		targetSet = true;
 		followObj = target;
@@ -245,9 +254,9 @@ public class Player : MonoBehaviour {
 			}
 		}
 		if (Input.GetButtonDown("Super")) {
-			/*if (attackable.energy >= 100.0f){
-					gameObject.GetComponent<Fighter> ().tryAttack ("super");
-				}*/
+			if (attackable.energy >= 100.0f){
+				gameObject.GetComponent<Fighter> ().tryAttack ("super");
+			}
 			//FindObjectOfType<KNManager> ().createList (GetComponent<Character> ());
 		}
 		if (Input.GetButtonDown("Special")) {

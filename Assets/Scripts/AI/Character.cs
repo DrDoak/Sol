@@ -29,7 +29,7 @@ public class Character : Interactable {
 
 	//Saving
 	public bool recreated = false;
-	bool registryChecked = false;
+	protected bool registryChecked = false;
 	protected bool autonomy = true;
 	float interactRange = 2.0f;
 
@@ -72,6 +72,7 @@ public class Character : Interactable {
 			faction = GetComponent<Attackable> ().faction;
 		}
 		CharacterManager.RegisterChar (this);
+		Debug.Log ("I am: " + gameObject + " Parser: " + parser);
 	}
 
 	public virtual void setAutonomy(bool active) {
@@ -149,13 +150,6 @@ public class Character : Interactable {
 			presetDS.parseNextElement ();
 		}
 	}
-/*
-	public virtual void initiateDialogueRequest(Character targetChar) {
-		Debug.Log ("dialogue Request initiated");
-		EVInteract se = new EVInteract ();
-		respondToEvent (se);
-	}
-*/
 
 	public virtual DialogueSubunit chooseDialogueOption(List<DialogueSubunit> dList) {
 		choosingDialogue = true;
@@ -167,9 +161,7 @@ public class Character : Interactable {
 		
 //--------Character info
 	public Relationship getCharInfo(Character c) {
-		//Debug.Log ("Getting Character info for: " + c);
 		if (c == null) {
-			//Debug.Log ("Why is the character null?");
 			return null;
 		} else if (charInfo.ContainsKey (c)) {
 			return charInfo [c];
@@ -191,6 +183,7 @@ public class Character : Interactable {
 		say (text, "none");
 	}
 	public void say(string text,string talkTo) {
+		Debug.Log ("Parser: " + parser);
 		parser.say(text,talkTo);
 	}
 	public void endDialogue() {
@@ -199,23 +192,26 @@ public class Character : Interactable {
 
 //-------------Saving:--------------------//
 	public void registryCheck() {
-		/*if (data.regID == "") {
+		if (data.regID == "") {
 			data.regID = "Not Assigned";
 		}
-		if (FindObjectOfType<GameManager>().checkRegistered(gameObject)) {
+		if (GameManager.checkRegistered(gameObject)) {
+			Debug.Log ("Object Already registered, deleting duplicate");
 			Destroy(gameObject);
 		}
-		registryChecked = true;*/
+		registryChecked = true;
 	}
 	void Update () {
-		/*if (!registryChecked) {
+		Debug.Log (registryChecked);
+		if (!registryChecked) {
+			Debug.Log ("Registry check");
 			registryCheck ();
-		}*/
+		}
 	}
 
 	public void StoreData() {
 		//Debug.Log ("storing data");
-		/*data.name = gameObject.name;
+		data.name = gameObject.name;
 		data.pos = transform.position;
 		data.health = GetComponent<Attackable>().health;
 		string properName = "";
@@ -232,27 +228,25 @@ public class Character : Interactable {
 
 	public void LoadData() {
 		name = data.name;
-		/*transform.position = data.pos;
-		GetComponent<Attackable>().health = data.health;*/
+		transform.position = data.pos;
+		GetComponent<Attackable>().health = data.health;
 	}
-	/*
+
 	public void ApplyData() {
 		SaveObjManager.AddCharData(data);
 	}
 
 	void OnEnable() {
-		Debug.Log ("sol on enable");
 		SaveObjManager.OnLoaded += LoadData;
 		SaveObjManager.OnBeforeSave += StoreData;
 		SaveObjManager.OnBeforeSave += ApplyData;
 	}
 
 	void OnDisable() {
-		Debug.Log ("sol on disable");
 		SaveObjManager.OnLoaded -= LoadData;
 		SaveObjManager.OnBeforeSave -= StoreData;
 		SaveObjManager.OnBeforeSave -= ApplyData;
-	}*/
+	}
 }
 
 
@@ -264,5 +258,5 @@ public class CharData {
 	public float health;
 	public string prefabPath;
 	public string targetID;
-	public string targetDir;
+	public RoomDirection targetDir;
 }

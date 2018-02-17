@@ -3,6 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+public enum RoomDirection {
+	LEFT,
+	RIGHT,
+	UP,
+	DOWN,
+	NEUTRAL
+}
+
 public class RoomChanger : Interactable {
 
 	public bool oneTime = true;
@@ -11,17 +19,15 @@ public class RoomChanger : Interactable {
 	public Vector3 newPos = Vector2.zero;
 	public string changerID = "none";
 	public string targetID = "none";
-	public string dir = "neutral";
+	public RoomDirection dir;
 	WorldEvent we;
 	CharacterManager cm;
-	GameManager gm;
 
 	void Start () {
 		init();
 	}
 	protected void init() {
 		cm = FindObjectOfType<CharacterManager> ();
-		gm = FindObjectOfType<GameManager> ();
 	}
 	void Update () {}
 	void OnDrawGizmos() {
@@ -36,35 +42,38 @@ public class RoomChanger : Interactable {
 	protected virtual void changeRoom(GameObject go) {
 		if (go.GetComponent<Playable> ()) {
 			if (changerID != "none") {
-				string realDir = dir;
+				RoomDirection realDir = dir;
 				string realTarget = targetID;
 				if (targetID == "none") {
 					realTarget = changerID;
 				}
-				if (realDir == "neutral") {
+				if (realDir == RoomDirection.NEUTRAL) {
 					float diffX = transform.position.x - go.transform.position.x;
 					float diffY = transform.position.y - go.transform.position.y;
 					if (Mathf.Abs (diffX) > Mathf.Abs (diffY)) {
 						if (diffX < 0f) {
-							realDir = "left";
+							realDir = RoomDirection.LEFT;
 						} else {
-							realDir = "right";
+							realDir = RoomDirection.RIGHT;
 						}
 					} else {
 						if (diffY > 0f) {
-							realDir = "up";
+							realDir = RoomDirection.UP;
 						} else {
-							realDir = "down";
+							realDir = RoomDirection.DOWN;
 						}
 					}
 				}
-				gm.moveItem (go, sceneName, realTarget,realDir);
+				GameManager.moveItem (go, sceneName, realTarget,realDir);
 			} else if (Vector2.Equals(Vector2.zero,newPos)){
-				gm.moveItem (go, sceneName, go.gameObject.transform.position);
+				GameManager.moveItem (go, sceneName, go.gameObject.transform.position);
 			} else {
-				gm.moveItem (go, sceneName, newPos);
+				GameManager.moveItem (go, sceneName, newPos);
 			}
-			gm.loadRoom (sceneName);
+			if (go.GetComponent<Playable> ().IsCurrentPlayer) {
+				GameManager.loadRoom (sceneName);
+			}
+			Destroy (go);
 		} else {
 		}
 	}

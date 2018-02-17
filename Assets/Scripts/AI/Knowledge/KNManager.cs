@@ -10,6 +10,7 @@ public class KNManager : MonoBehaviour {
 	[SerializeField] private string m_EntrySource;
 	[SerializeField] private string m_SubjectSource;
 	[SerializeField] private string m_VerbSource;
+	[SerializeField] private string m_standardGoalsSource;
 
 	[SerializeField] private GameObject m_List;
 
@@ -18,6 +19,7 @@ public class KNManager : MonoBehaviour {
 	Dictionary<string,KNSubject> m_Subjects;
 	Dictionary<string,KNVerb> m_Verbs;
 	public bool DatabaseInitialized;
+	public List<string> standardGoals;
 
 	void Awake() {
 		if (Instance == null)
@@ -35,6 +37,12 @@ public class KNManager : MonoBehaviour {
 	public void InitDatabase() {
 		DatabaseInitialized = true;
 		KNImporter.InitDatabase (this, m_EntrySource, m_SubjectSource, m_VerbSource);
+		List<Dictionary<string,string>> all = FactCSVImporter.importFile (m_standardGoalsSource);
+		List<string> g = new List<string>();
+		foreach (Dictionary<string,string> e in all) {
+			g.Add (e ["standard"]);
+		}
+		Instance.standardGoals = g;
 	}
 	public void AddKnowledgeGroups(KNDatabase kd, string kGroup) {
 		foreach (Assertion a in m_Database.Knowledge.Values) {

@@ -17,6 +17,7 @@ public class AtkSuper : AtkDash {
 	// Use this for initialization
 	void Start () {
 		atk = GetComponent<Attackable> ();
+		init ();
 	}
 
 	

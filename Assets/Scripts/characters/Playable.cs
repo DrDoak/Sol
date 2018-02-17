@@ -37,13 +37,9 @@ public class Playable : MonoBehaviour {
 
 	float inputX = 0.0f;
 	float inputY = 0.0f;
-	bool isJump;
+	//bool isJump;
 	float jumpPersist = 0.0f;
 	float timeSinceLastDash = 0.0f;
-
-	public float mistimedKBRatio = 1.0f;
-	public float mistimedDamageRatio = 1.0f;
-	public float mistimedStunRatio = 1.0f;
 
 	string[] AirDown = new string[] {"air_down","down", "air","attack"};
 	string[] AirSide = new string[] {"air_side","side", "air","attack"};
@@ -137,10 +133,10 @@ public class Playable : MonoBehaviour {
 					movement.addSelfForce (jumpVector, 0f);
 					jumpPersist = 0.2f;
 					//gameManager.soundfx.gameObject.transform.Find ("P1Jump").GetComponent<AudioSource> ().Play ();
-					isJump = true;
+					//isJump = true;
 				} else if (canDoubleJump) {
 					velocity.y = jumpVelocity;
-					isJump = false;
+					//isJump = false;
 					movement.addSelfForce (jumpVector, 0f);
 					//gameManager.soundfx.gameObject.transform.Find ("P1Jump").GetComponent<AudioSource> ().Play ();
 					canDoubleJump = false;

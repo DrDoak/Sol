@@ -13,10 +13,8 @@ public class AtkCounter : AttackInfo {
 	void Start () {
 		attackable = GetComponent<Attackable> ();
 		fighter = GetComponent<Fighter> ();
+		init ();
 	}
-		
-	// Update is called once per frame
-	void Update () {}
 
 	public override void onAttack() {
 //		Debug.Log ("adding resistance");

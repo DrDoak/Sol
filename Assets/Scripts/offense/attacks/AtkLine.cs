@@ -7,8 +7,9 @@ public class AtkLine : AttackInfo {
 	public float range = 0f;
 	public Vector2 direction = new Vector2 (0f, 0f);
 
-	void Start () {}
-	void Update () {}
+	void Start () {
+		init ();
+	}
 
 	public override void onAttack() {
 		Vector2 realKB = knockback;

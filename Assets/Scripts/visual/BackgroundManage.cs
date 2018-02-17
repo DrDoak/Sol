@@ -13,9 +13,6 @@ public class BackgroundManage : MonoBehaviour {
 	private float viewZone = 16;
 	private int leftIndex;
 	private int rightIndex;
-	public float currLeft = 0f;
-	public float currRight = 0f;
-	public float currCam = 0f;
 
 	private Vector2 lastCamera;
 
@@ -49,10 +46,6 @@ public class BackgroundManage : MonoBehaviour {
 		}
 		lastCamera = new Vector2 (cameraTransform.position.x, cameraTransform.position.y);
 		if (scrolling) {
-			
-			currLeft = layers [leftIndex].position.x;
-			currRight = layers [rightIndex].position.x;
-			currCam = cameraTransform.position.x;
 			if (cameraTransform.position.x < (layers [leftIndex].transform.position.x + viewZone))
 				ScrollLeft ();
 			if (cameraTransform.position.x > (layers [rightIndex].transform.position.x - viewZone))

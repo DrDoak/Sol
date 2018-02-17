@@ -40,6 +40,9 @@ public class GlMakeFriends : Goal {
 	}
 	void respondToSight(Proposal p) {
 		EVSight es = (EVSight)p.mEvent;
+/*		Debug.Log (es);
+		Debug.Log (es.ObservedChar);
+		Debug.Log (mChar.speaker);*/
 		mChar.speaker.EmitResponse(mChar.speaker.Convey("greeting", es.ObservedChar));
 	}
 	void greeting(Event e) {

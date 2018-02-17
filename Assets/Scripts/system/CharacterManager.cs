@@ -25,11 +25,9 @@ public class CharacterManager : MonoBehaviour {
 
 	void Start() {}
 
-	void Update () {
-	}
+	void Update () {}
 
 	void initCharacters(string source) {
-	//	Debug.Log ("Loading all Characters from Source: " + source);
 		if (!KNManager.Instance.DatabaseInitialized) {
 			KNManager.Instance.InitDatabase ();
 		}

@@ -13,10 +13,9 @@ public class AtkChain : AtkDash {
 	bool hit;
 	bool conclude = false;
 
-	void Start () {}
-	// Update is called once per frame
-	void Update () {}
-
+	void Start () {
+		init ();
+	}
 
 	public override void onAttack() {
 		base.onAttack ();

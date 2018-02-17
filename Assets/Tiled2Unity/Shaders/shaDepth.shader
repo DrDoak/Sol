@@ -2,10 +2,10 @@
 {
 	Properties
 	{
-		[PerRendererData] _MainTex("Tiled Texture", 2D) = "white" {}
+		_MainTex("Tiled Texture", 2D) = "white" {}
 		_Color("Tint", Color) = (1,1,1,1)
 		_CutOff("Cut off", float) = 0.1
-		[MaterialToggle] PixelSnap("Pixel snap", Float) = 1
+		[MaterialToggle] PixelSnap("Pixel snap", Float) = 0
 	}
 
 	SubShader

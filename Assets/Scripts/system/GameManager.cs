@@ -18,7 +18,7 @@ public class GameManager : MonoBehaviour {
 	new public GameObject audio;
 	public float introTime;
 
-	//public SaveObjManager mSaves;
+	public SaveObjManager SaveMgr;
 	public StatusMenuManager smm;
 	string curRoomName;
 	bool toInit = false;
@@ -30,11 +30,11 @@ public class GameManager : MonoBehaviour {
 	public GameObject NachtPrefab;
 
 	void Awake () {
-		if (manager == null) {
+		if (GameManager.manager == null) {
 			Object.DontDestroyOnLoad (this);
-			manager = this;
+			GameManager.manager = this;
 			initGame ();
-		}else if  (manager != this) {
+		}else if  (GameManager.manager != this) {
 			Destroy (gameObject);
 			return;
 		}
@@ -43,19 +43,23 @@ public class GameManager : MonoBehaviour {
 		SceneManager.sceneLoaded += initRoom;
 		GameTime = 0f;
 	}
+
 	void Start() {
 		smm = GetComponent<StatusMenuManager> ();
-		//initRoom (null,null);
 	}
 
 	void initGame() {
-	/*	if (mSaves == null) {
-			mSaves = new SaveObjManager ();
-			mSaves.resetRoomData ();
-		}*/
+		if (SaveMgr == null) {
+			SaveMgr = new SaveObjManager ();
+			SaveMgr.resetRoomData ();
+		}
 	}
 	void initRoom(Scene scene, LoadSceneMode mode) {
-		if (manager != this) {
+		this.m_initRoom ();
+	}
+	void m_initRoom() {
+		GameManager gm = GameManager.manager;
+		if (gm == null) {
 			return;
 		}
 		//Debug.Log ("initRoom from game. Room:" + SceneManager.GetActiveScene ().name);
@@ -70,12 +74,12 @@ public class GameManager : MonoBehaviour {
 		}
 		foundPlayer = false;
 		curRoomName = SceneManager.GetActiveScene ().name;
-		bottomOfWorld = float.MinValue;
-		Attackable[] atkM = FindObjectsOfType<Attackable> ();
+		//gm.bottomOfWorld = float.MinValue;
+		/*Attackable[] atkM = FindObjectsOfType<Attackable> ();
 		foreach (Attackable a in atkM) {
 		//	a.bottomOfTheWorld = bottomOfWorld;
-		}
-		//mSaves.onRoomLoad (curRoomName);
+		}*/
+		SaveMgr.onRoomLoad (curRoomName);
 		//string s = SceneManager.GetActiveScene ().name;
 		Playable [] pList = FindObjectsOfType<Playable> ();
 		foreach (Playable p in pList) {
@@ -93,6 +97,7 @@ public class GameManager : MonoBehaviour {
 		}
 //		Debug.Log ("Done with init room");
 	}
+
 	void cameraInit() {
 		GameObject camGO = FindObjectOfType<Camera> ().gameObject;
 		if (camGO.GetComponent<CameraFollow> () == null) { 
@@ -101,8 +106,6 @@ public class GameManager : MonoBehaviour {
 			cf = camGO.GetComponent<CameraFollow> ();
 		}
 		cf.focusAreaSize = new Vector2 (2f, 3f);
-		//cf.verticalOffset = 2f;
-		//cf.lookAheadDstX = 2f;
 		cf.lookSmoothTimeX = 1f;
 		cf.target = curPlayer.GetComponent<Movement>();
 		camGO.GetComponent<Camera> ().orthographicSize = 10f;
@@ -148,7 +151,6 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void setDebug(bool debugActive) {
-		//Debug.Log ("Switching debug mode to: " +debug);
 		debug = debugActive;
 		smm.setDebug (debug);
 	}
@@ -156,38 +158,50 @@ public class GameManager : MonoBehaviour {
 		smm.toggleMenu ();
 	}
 
-	public void moveItem(GameObject gm,string newRoom, Vector3 newPos) {
-	/*	Debug.Log ("Moving item to " + newRoom + " at position: " + newPos);
+	public static void moveItem(GameObject gm,string newRoom, Vector3 newPos) {
+		GameManager.manager.m_moveItem (gm,newRoom,newPos);
+	}
+	void m_moveItem(GameObject gm,string newRoom, Vector3 newPos) {
+		Debug.Log ("Moving item to " + newRoom + " at position: " + newPos);
 		gm.GetComponent<PersItem> ().targetID = null;
 		gm.GetComponent<Character> ().StoreData ();
-		mSaves.moveItem (gm.GetComponent<Character> ().data, newRoom, newPos);*/
-	}
-	public void moveItem(GameObject gm,string newRoom, string newID,string newDir) {
-		/*Debug.Log ("Moving item to " + newRoom + " at position: " + newID + " direction: " + newDir);
-		Debug.Log (gm);
-		Debug.Log(gm.GetComponent<Character>());
-		gm.GetComponent<Character> ().StoreData ();
-		mSaves.moveItem (gm.GetComponent<Character> ().data, newRoom, newID,newDir);*/
+		SaveMgr.moveItem (gm.GetComponent<Character> ().data, newRoom, newPos);
 	}
 
-	public void loadRoom(string name) {
+	public static void moveItem(GameObject gm,string newRoom, string newID,RoomDirection newDir) {
+		GameManager.manager.m_moveItem (gm, newRoom, newID, newDir);
+	}
+
+	void m_moveItem(GameObject gm,string newRoom, string newID,RoomDirection newDir) {
+		Debug.Log ("Moving item to " + newRoom + " at position: " + newID + " direction: " + newDir);
+		gm.GetComponent<Character> ().StoreData ();
+		SaveMgr.moveItem (gm.GetComponent<Character> ().data, newRoom, newID,newDir);
+	}
+
+	public static void loadRoom(string name) {
+		Debug.Log ("---LOADING ROOM: " + name);
+		GameManager.manager.SaveMgr.ResaveRoom ();
 		SceneManager.LoadScene (name, LoadSceneMode.Single);
 	}
-	public bool checkRegistered(GameObject go) {
-		string id = go.name + "-" + SceneManager.GetActiveScene ().name + go.transform.position.ToString ();
+	public static bool checkRegistered(GameObject go) {
+		return GameManager.manager.m_checkRegister (go);
+	}
+
+	bool m_checkRegister(GameObject go) {
 		Character c = go.GetComponent<Character> ();
+		string id = c.name + "-" + SceneManager.GetActiveScene ().name + ((int)go.transform.position.x).ToString() + ((int)go.transform.position.y).ToString();
+		//Debug.Log ("Checking if character: " + c + " registered id is: " + c.data.regID);
 		//Debug.Log ("incoming ID: " + c.data.regID);
 		if (c.data.regID != "Not Assigned") {
 			id = c.data.regID;
 		}
-		//Debug.Log ("check registered: " + id);
 		if (registeredPermItems.Contains(id) ){
 			if (c.recreated) {
-				//Debug.Log ("Recreated entity.");
+				Debug.Log ("Recreated entity.");
 				c.recreated = false;
 				return false;
 			} else {
-				//Debug.Log ("already registered, removing");
+				Debug.Log ("already registered, removing");
 				return true;
 			}
 		}
@@ -195,6 +209,7 @@ public class GameManager : MonoBehaviour {
 		registeredPermItems.Add(id);
 		c.data.regID = id;
 		//Debug.Log ("saved ID is: " + c.data.regID);
+		//Debug.Log ("Length of registry is: " + registeredPermItems.Count);
 		return false;
 	}
 	public void addCutscene(Cutscene c) {

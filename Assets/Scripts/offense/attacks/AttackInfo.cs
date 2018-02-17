@@ -33,14 +33,17 @@ public class AttackInfo : MonoBehaviour {
 	protected Attackable attackable;
 
 	void Start () {
+		init ();
+	}
+
+	protected void init() {
 		fighter = GetComponent<Fighter> ();
 		attackable = GetComponent<Attackable> ();
-		if (!UniqueAIPrediction){
+		if (UniqueAIPrediction == false){
 			AIPredictionHitbox = HitboxScale;
 			AIPredictionOffset = HitboxOffset;
 		}
 	}
-
 	// Update is called once per frame
 	void Update () {}
 

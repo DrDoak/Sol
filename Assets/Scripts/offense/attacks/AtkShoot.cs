@@ -12,11 +12,7 @@ public class AtkShoot : AttackInfo {
 	void Start () {
 		mShoot = GetComponent<Shooter> ();
 		movt = GetComponent<Movement> ();
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
+		init ();
 	}
 
 	public override void onAttack () {

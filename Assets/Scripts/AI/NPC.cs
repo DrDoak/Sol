@@ -10,6 +10,7 @@ public class NPC : Character {
 
 	public OffenseAI offense;
 	public bool SimpleEnemy = false;
+	public bool StandardAI = false;
 	public List<string> GoalNames;
 
 	// Use this for initialization
@@ -31,8 +32,14 @@ public class NPC : Character {
 		m_currentProposals = new List<Proposal>();
 		m_player = GetComponent<Playable> ();
 		if (SimpleEnemy) {
-			Goal g = (Goal)(System.Activator.CreateInstance(Type.GetType("GlAttackEnemies")));
+			Goal g = (Goal)(System.Activator.CreateInstance (Type.GetType ("GlAttackEnemies")));
 			addGoal (g);
+		}
+		if (StandardAI) {
+			foreach (string goalName in KNManager.Instance.standardGoals) {
+				Goal g = (Goal)(System.Activator.CreateInstance(Type.GetType(goalName)));
+				addGoal (g);
+			}
 		}
 
 		foreach (string goalName in GoalNames) {
@@ -42,6 +49,9 @@ public class NPC : Character {
 	}
 
 	void Update () {
+		if (!registryChecked) {
+			registryCheck ();
+		}
 		if (!m_player.IsCurrentPlayer) {
 			if (autonomy && m_newProposals.Count > 0) {
 				executeValidProposals ();

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 
-public class SaveObjManager : MonoBehaviour {
+public class SaveObjManager {
 	//Dictionary<string, Dictionary<string,GameObject>> roomItems = new Dictionary<string,Dictionary<string,GameObject>>();
 	//Dictionary<string,GameObject> curRoomInfo;
 	static RoomChanger [] roomChangers;
@@ -27,7 +27,6 @@ public class SaveObjManager : MonoBehaviour {
 		return ids;
 	}
 	public void onRoomLoad(string roomName) {
-	//	Debug.Log ("________________ON LOAD ROOM!: " + roomName);
 		//curRoomInfo = getRoom(roomName);
 		curRoom = roomName;
 		roomChangers = GameObject.FindObjectsOfType<RoomChanger> ();
@@ -48,7 +47,7 @@ public class SaveObjManager : MonoBehaviour {
 	}*/
 
 	public void recreateItems(string RoomName) {
-		Debug.Log ("Recreating items for room: " + RoomName);
+		//Debug.Log ("Recreating items for room: " + RoomName);
 		LoadRoom (savePath + RoomName);
 	}
 	/*
@@ -82,31 +81,39 @@ public class SaveObjManager : MonoBehaviour {
 	}*/
 	public void moveItem(CharData item,string newRoom,Vector3 newPos) {
 		Debug.Log ("moving item: " + item.name + " to " + newRoom);
+		refreshPersItems();
 		DelCharData (item);
 		CharacterSaveContainer cc = LoadChars(savePath + newRoom);
 		item.pos = newPos;
 		string json = JsonUtility.ToJson(new CharacterSaveContainer());
-		//Debug.Log (json);
 		cc.actors.Add (item);
-		//Debug.Log ("items: " + item);
-		//Debug.Log ("cc: " + cc);
-		//Debug.Log ("actors: " + cc.actors);
 		Save (savePath + newRoom, cc);
+		ResaveRoom ();
 	}
-	public void moveItem(CharData item,string newRoom,string newID, string dir) {
-		Debug.Log ("moving item: " + item.name + " to " + newRoom);
+	public void moveItem(CharData item,string newRoom,string newID, RoomDirection dir) {
+		refreshPersItems();
 		DelCharData (item);
 		CharacterSaveContainer cc = LoadChars(savePath + newRoom);
 		item.targetID = newID;
 		item.targetDir = dir;
 		cc.actors.Add (item);
-
-		Debug.Log ("items: " + item);
-		Debug.Log ("cc: " + cc);
-		Debug.Log ("actors: " + cc.actors);
 		Save (savePath+newRoom, cc);
+		ResaveRoom ();
+		LoadChars (savePath + curRoom);
 	}
-
+	public void refreshPersItems() {
+		Character [] cList = Object.FindObjectsOfType<Character>();
+		charContainer.actors.Clear ();
+		foreach (Character c in cList) {
+			c.StoreData ();
+			//Debug.Log ("Adding character: " + c);
+			charContainer.actors.Add(c.data);
+		}
+	}
+	public void ResaveRoom() {
+		//Debug.Log ("Resaved characters: " + charContainer.actors.Count);
+		Save (savePath + curRoom, charContainer);
+	}
 	//-----------------------------------------------------------
 	//-----------------------------------------------------------
 
@@ -122,7 +129,7 @@ public class SaveObjManager : MonoBehaviour {
 	public static void LoadRoom(string path) {
 		
 		charContainer = LoadChars(path);	
-		Debug.Log ("items to recreate: " + charContainer.actors.Count);
+		//Debug.Log ("items to recreate: " + charContainer.actors.Count);
 		foreach (CharData data in charContainer.actors) {
 			Character c = CreateChar (data, data.prefabPath,
 				data.pos, Quaternion.identity);
@@ -135,23 +142,21 @@ public class SaveObjManager : MonoBehaviour {
 		charContainer.actors.Clear();
 	}
 	private static CharacterSaveContainer LoadChars(string path) {
-		//Debug.Log ("loading Chars from path: " + path);
 		if (File.Exists(path+ ".txt"))
 		{
-			Debug.Log("char data found");
 			string json = File.ReadAllText(path+ ".txt");
-			Debug.Log ("found text; " + json);
+			//Debug.Log ("Chars from path: " + path + " : " + json);
 			return JsonUtility.FromJson<CharacterSaveContainer>(json);
 		} else {
-			Debug.Log("no save data found, creating new file");
-			charContainer = new CharacterSaveContainer();
-			SaveActors(path,charContainer);
-			return charContainer;
+			//Debug.Log("no save data found, creating new file");
+			CharacterSaveContainer cc = new CharacterSaveContainer();
+			SaveActors(path,cc);
+			return cc;
 		} 
 
 	}
 	public static Character CreateChar(string path, Vector3 position, Quaternion rotation) {
-		Debug.Log ("instantiating new object: " + path);
+		//Debug.Log ("recreating object: " + path);
 		GameObject prefab = Resources.Load<GameObject>(path);
 		GameObject go = GameObject.Instantiate(prefab, position, rotation) as GameObject;
 		Character actor = go.GetComponent<Character>() ?? go.AddComponent<Character>();
@@ -159,19 +164,20 @@ public class SaveObjManager : MonoBehaviour {
 		return actor;
 	}
 	public static Character CreateChar(CharData data, string path, Vector3 position, Quaternion rotation) {
+		//Debug.Log ("Recreating character");
 		Character actor = null;
 		if (data.targetID != null) {
 			Vector3 nv = data.pos;
 			bool found = false;
 			foreach (RoomChanger rm in roomChangers) {
 				if (rm.changerID == data.targetID) {
-					if (data.targetDir == "left") {
+					if (data.targetDir == RoomDirection.LEFT) {
 							nv = rm.transform.position - new Vector3 (rm.GetComponent<BoxCollider2D> ().size.x + 3f, 0f);
-					} else if (data.targetDir == "right") {
+					} else if (data.targetDir == RoomDirection.RIGHT) {
 							nv = rm.transform.position + new Vector3 (rm.GetComponent<BoxCollider2D> ().size.x + 3f, 0f);
-					} else if (data.targetDir == "up") {
+					} else if (data.targetDir == RoomDirection.UP) {
 							nv = rm.transform.position + new Vector3 (0f, rm.GetComponent<BoxCollider2D> ().size.y + 3f, 0f);
-					} else if (data.targetDir == "down") {
+					} else if (data.targetDir == RoomDirection.DOWN) {
 							nv = rm.transform.position - new Vector3 (0f, rm.GetComponent<BoxCollider2D> ().size.x + 3f, 0f);
 					}
 					found = true;
@@ -179,24 +185,24 @@ public class SaveObjManager : MonoBehaviour {
 				}
 			}
 			if (found) {
-				Debug.Log ("recreating from room changer");
 				actor = CreateChar(path, nv, rotation);
 			} else {
-				Debug.Log ("recreating at ... place");
 				actor = CreateChar(path, nv, rotation);
 			}
 		} else {
 			actor = CreateChar(path, data.pos, rotation);
 		}
-		Debug.Log ("old regID: " + data.regID);
+		//Debug.Log ("old regID: " + data.regID);
 		actor.data = data;
 		return actor;
 	}
 	public static void AddCharData(CharData data) {
+		//Debug.Log ("Adding character");
 		charContainer.actors.Add(data);
 	}
 	public static void DelCharData(CharData data) {
 		charContainer.actors.Remove (data);
+		//Debug.Log (charContainer.actors.Count);
 	}
 
 	//Saving --------------------
@@ -204,12 +210,13 @@ public class SaveObjManager : MonoBehaviour {
 		//OnBeforeSave();
 		//ClearSave(path);
 		SaveActors(path, actors);
-		ClearActorList();
+		//actors.actors.Clear ();
 	}
 	private static void SaveActors(string path, CharacterSaveContainer actors) {
 		string json = JsonUtility.ToJson(actors);
 		//Debug.Log ("jsoN: " + json);
 		//Debug.Log ("save to path: " + path+".txt");
+		//Debug.Log("Saving: " + json.ToString() + " to path: " + path);
 		StreamWriter sw = File.CreateText(path + ".txt");
 		sw.Close();
 		File.WriteAllText(path+ ".txt", json);

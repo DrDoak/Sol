@@ -10,12 +10,7 @@ public class AtkItem : AttackInfo {
 	public float velocityTime;
 	// Use this for initialization
 	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
+		init ();
 	}
 
 	public override void onAttack() {

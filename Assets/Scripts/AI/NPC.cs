@@ -35,16 +35,15 @@ public class NPC : Character {
 			Goal g = (Goal)(System.Activator.CreateInstance (Type.GetType ("GlAttackEnemies")));
 			addGoal (g);
 		}
+		foreach (string goalName in GoalNames) {
+			Goal g = (Goal)(System.Activator.CreateInstance(Type.GetType(goalName)));
+			addGoal (g);
+		}
 		if (StandardAI) {
 			foreach (string goalName in KNManager.Instance.standardGoals) {
 				Goal g = (Goal)(System.Activator.CreateInstance(Type.GetType(goalName)));
 				addGoal (g);
 			}
-		}
-
-		foreach (string goalName in GoalNames) {
-			Goal g = (Goal)(System.Activator.CreateInstance(Type.GetType(goalName)));
-			addGoal (g);
 		}
 	}
 
@@ -92,7 +91,7 @@ public class NPC : Character {
 
 	public void AddProposal(Goal.executionMethod ex, Event e, float rating, ProposalClass pClass = ProposalClass.None) {
 		Proposal p = new Proposal();
-		Debug.Log ("Method: " + ex + " proposed with rating: " + rating);
+		//Debug.Log ("Method: " + ex + " proposed with rating: " + rating);
 		p.mMethod = ex;
 		p.rating = rating;
 		p.mNPC = this;
@@ -145,12 +144,10 @@ public class NPC : Character {
 
 	//Goals and GoalResponse
 	public void addGoal(Goal g) {
-		if (!m_currentGoals.Contains (g)) {
+		if (!m_currentGoals.Contains (g) && !GoalNames.Contains (g.GetType ().ToString ())) {
 			g.mChar = this;
 			m_currentGoals.Add (g);
-			if (!GoalNames.Contains (g.GetType ().ToString ())) {
-				GoalNames.Add (g.GetType ().ToString ());
-			}
+			GoalNames.Add (g.GetType ().ToString ());
 		}
 	}
 	public void removeGoal(Goal g) {

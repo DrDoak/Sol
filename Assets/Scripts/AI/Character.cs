@@ -72,7 +72,7 @@ public class Character : Interactable {
 			faction = GetComponent<Attackable> ().faction;
 		}
 		CharacterManager.RegisterChar (this);
-		Debug.Log ("I am: " + gameObject + " Parser: " + parser);
+		//Debug.Log ("I am: " + gameObject + " Parser: " + parser);
 	}
 
 	public virtual void setAutonomy(bool active) {
@@ -183,7 +183,6 @@ public class Character : Interactable {
 		say (text, "none");
 	}
 	public void say(string text,string talkTo) {
-		Debug.Log ("Parser: " + parser);
 		parser.say(text,talkTo);
 	}
 	public void endDialogue() {

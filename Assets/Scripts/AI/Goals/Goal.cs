@@ -76,7 +76,7 @@ public class Goal {
 				//Debug.Log ("Relationship retrieved: " + ci);
 				float rating = eM ( e );
 				if (rating != 0.0 && rating != 1.0) {
-					Debug.Log("Goal " + this.GetType() + " has rating: " + rating);
+					Debug.Log("Char:" + mChar.name + " Event: " + eventName + " Goal: " + this.GetType() + " Rating: " + rating + " Class: "+ execToClass[ execMethods[eM]]);
 				}
 				if (execMethods.ContainsKey(eM) && rating > 0.0) {
 					Proposal p = new Proposal ();

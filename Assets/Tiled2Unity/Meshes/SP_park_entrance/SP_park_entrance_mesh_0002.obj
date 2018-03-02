@@ -1,0 +1,24 @@
+﻿# Tiled2Unity generated file. Do not modify by hand.
+# Wavefront file for 'SP_park_entrance_mesh_0002.obj'
+
+# Vertices (Count = 4)
+v -416 -576 0
+v -448 -576 0
+v -448 -544 0
+v -416 -544 0
+
+# Texture cooridinates (Count = 4)
+vt 0.7 0.9
+vt 0.8 0.9
+vt 0.8 1
+vt 0.7 1
+
+# Normal
+vn 0 0 -1
+
+# Mesh description
+g SP_park_entrance_mesh_0002
+
+# Faces
+f 1/1/1 2/2/1 3/3/1 4/4/1
+

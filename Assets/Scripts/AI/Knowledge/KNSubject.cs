@@ -16,6 +16,9 @@ public class KNSubject {
 		Parents = new List<KNSubject> ();
 		Contradictions = new List<KNSubject> ();
 	}
+	public bool EqualsID(string id) {
+		return Equals (KNManager.CopySubject (id));
+	}
 	public override bool Equals( System.Object obj ) {
 		if (obj == null)
 			return false;

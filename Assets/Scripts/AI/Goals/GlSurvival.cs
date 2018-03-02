@@ -14,6 +14,19 @@ public class GlSurvival: Goal {
 		//registerEvent (EventType.Sight, sightEvent,attackOnSight);
 		registerEvent (EventType.Attack, sawAttackEvent,initiateAttack);
 		registerEvent (EventType.Hit, hitEvent, initiateAttack,ProposalClass.Action);
+		registerEvent (EventType.Fact, factEvent, dislikeDangerousPeople, ProposalClass.Relationship);
+	}
+
+	float factEvent(Event e) {
+		EVFact ef = (EVFact)e;
+		Assertion ea = ef.assertion;
+		if (mChar.knowledgeBase.Match(ea.Subjects[0],"character") && mChar.knowledgeBase.Match(ea.Verb,"attack")) {
+			return 0.1f;
+		}
+		return 0.0f;
+	}
+	void dislikeDangerousPeople(Proposal p) {
+		
 	}
 
 	float sightEvent(Event e) {

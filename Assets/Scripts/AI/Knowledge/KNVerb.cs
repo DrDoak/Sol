@@ -45,6 +45,9 @@ public class KNVerb {
 		}
 		return false;
 	}
+	public bool EqualsID(string id) {
+		return Equals (KNManager.CopyVerb (id));
+	}
 	public override bool Equals( System.Object obj ) {
 		if (obj == null)
 			return false;

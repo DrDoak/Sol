@@ -10,7 +10,7 @@ public class GlPeace : Goal {
 
 	float hitMe(Event e) {
 		EVHitConfirm eva = (EVHitConfirm)e;
-		if (eva.ObjectHit == mChar.gameObject) {
+		if (eva.ObjectHit.GetComponent<Character>()) {
 			Personality pers = mChar.PersonalityData;
 			Relationship r = mChar.getCharInfo (eva.attacker);
 			float peaceVal = 0.4f + pers.agreeableness - (pers.temperament * 0.2f) + r.GetFavorScaled();

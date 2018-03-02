@@ -6,8 +6,8 @@ exclamation,general,yes,,,Yes
 exclamation,general,no,,,No
 exclamation,general,pain,,,Ouch!
 exclamation,general,stop,,,"Stop that, $L!"
-exclamation,general,greeting,,,Hello!
-exclamation,general,greeting,,,Greetings.
+exclamation,general,greeting,,,Hello $L!
+exclamation,general,greeting,,,Greetings $L!
 exclamation,general,disinterest,,,. . .
 exclamation,general,disinterest,,,ok. . .
 exclamation,general,disinterest,,,mmhmm. . .

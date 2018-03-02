@@ -26,7 +26,16 @@ public class Assertion : KNSubject{
 	public bool HasReceivor = false;
 	public List<KNSubject> Receivors;
 
+	public Assertion(string sub, string v, string rec) {
+		init ();
+		AddSubject (KNManager.CopySubject (sub));
+		AddVerb (KNManager.CopyVerb (v));
+		AddReceivor (KNManager.CopySubject (rec));
+	}
 	public Assertion() {
+		init ();
+	}
+	void init() {
 		KnowledgeGroups = new List<string> ();
 		Subjects = new List<KNSubject> ();
 		Receivors = new List<KNSubject> ();

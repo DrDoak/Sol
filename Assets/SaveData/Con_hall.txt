@@ -1,0 +1,1 @@
+{"actors":[{"regID":"Sol-Spear_Park-18-2","name":"Sol","pos":{"x":84.13262939453125,"y":-28.072500228881837,"z":0.0},"health":100.0,"prefabPath":"Sol","targetID":"left","targetDir":1}]}

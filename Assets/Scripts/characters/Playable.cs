@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using TMPro;
 
 //Governs player input
 [RequireComponent (typeof (PersItem))]
@@ -82,7 +83,7 @@ public class Playable : MonoBehaviour {
 			if (!movement.onGround) {
 				increase *= 1.5f;
 			}
-			GameObject.FindGameObjectWithTag ("ComboCount").GetComponent<Text> ().text = "Last Combo: " + mF.hitCombo.ToString ();
+			GameObject.FindGameObjectWithTag ("ComboCount").GetComponent<TextMeshProUGUI> ().text = "Last Combo: " + mF.hitCombo.ToString ();
 			attackable.modifyEnergy (increase);
 		}
 	}

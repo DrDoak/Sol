@@ -19,7 +19,7 @@ public class GlObserve : Goal{
 		Assertion a = new Assertion ();
 		EVInteract evi = (EVInteract)p.mEvent;
 		a.AddSubject (KNManager.CopySubject (evi.Interactor.name));
-		a.AddVerb (KNManager.CopyVerb("interact"));
+		a.AddVerb (KNManager.CopyVerb(KNCommonVerbs.Interact));
 		a.AddReceivor(KNManager.CopySubject(evi.Interactee.name));
 		mChar.knowledgeBase.LearnAssertion (a);
 	}

@@ -230,6 +230,7 @@ public class GameManager : MonoBehaviour {
 		}
 		manager.curPlayer = Instantiate (newPlayer, spawnPos, Quaternion.identity);
 		Debug.Log ("Setting new player; " + manager.curPlayer);
+		manager.curPlayer.GetComponent<Playable> ().IsCurrentPlayer = true;
 		manager.cameraInit ();
 	}
 	public static void StartCharacterSelect() {

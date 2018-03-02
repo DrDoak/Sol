@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class ListSelection : MonoBehaviour{
 	public GameObject kEntry;
@@ -14,7 +15,7 @@ public class ListSelection : MonoBehaviour{
 	List<GameObject> entries;
 	int currEntry = 0;
 	InputField inputField;
-	Text m_titleText;
+	TextMeshProUGUI m_titleText;
 	int lastChar = 0;
 	public delegate void optionResponse(DialogueOption thisOption);
 	void Awake() {
@@ -22,7 +23,7 @@ public class ListSelection : MonoBehaviour{
 		fullEntries = new List<DialogueOption> ();
 		entries = new List<GameObject> ();
 		inputField = transform.Find ("SearchField").GetComponent<InputField> ();
-		m_titleText = transform.Find ("TitlePrompt").GetComponentInChildren<Text> ();
+		m_titleText = transform.Find ("TitlePrompt").GetComponentInChildren<TextMeshProUGUI> ();
 		inputField.Select ();
 	}
 	public void SetTitle(string s) {
@@ -39,9 +40,9 @@ public class ListSelection : MonoBehaviour{
 				masterSequence.Previous.RestartSequence ();
 			}
 		}
-		//float inputY = Input.GetAxis ("Vertical");
-		//if (Mathf.Abs (inputY) > 0.4f)
-		//	changeOption (inputY);
+		float inputY = Input.GetAxis ("Vertical");
+		if (Mathf.Abs (inputY) > 0.4f)
+			changeOption (inputY);
 		/*if (Input.GetButtonDown("Submit")) {
 			selectHighlightedOption ();
 		}*/
@@ -91,7 +92,7 @@ public class ListSelection : MonoBehaviour{
 		DOption.parentList = this;
 		if (!displayedNames.Contains(name)) {
 			GameObject newEntry = Instantiate (kEntry);
-			newEntry.GetComponent<Text> ().text = name;
+			newEntry.GetComponent<TextMeshProUGUI> ().text = name;
 			newEntry.GetComponent<ListOptionButton> ().mDialogOption = DOption;
 			newEntry.transform.SetParent(transform.Find ("List").Find ("Grid"),false);
 			if (!fullEntries.Contains (DOption)) {
@@ -107,7 +108,7 @@ public class ListSelection : MonoBehaviour{
 		if (displayedNames.Contains(name)) {
 			List<GameObject> preserveList = new List<GameObject>();
 			foreach (GameObject e in entries) {
-				if (e.GetComponent<Text>().text == name) {
+				if (e.GetComponent<TextMeshProUGUI> ().text == name) {
 					displayedNames.Remove (name);
 					Destroy(e);
 				} else {

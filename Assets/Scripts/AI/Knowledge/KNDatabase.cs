@@ -51,6 +51,29 @@ public class KNDatabase {
 		}
 		return DOs;
 	}
+
+	public bool Match(KNSubject sub1, string sub2) {
+		return Match (sub1, KNManager.CopySubject (sub2));
+	}
+
+	public bool Match(KNSubject sub1, KNSubject sub2) {
+		if (sub1.Equals (sub2)) {
+			return true;
+		} else {
+			return HasMatch (new Assertion (sub1.SubjectName, "isa", sub2.SubjectName));
+		}
+	}
+	public bool Match(KNVerb ver1, string ver2) {
+		return Match (ver1, KNManager.CopyVerb (ver2));
+	}
+
+	public bool Match(KNVerb ver1, KNVerb ver2) {
+		if (ver1.Equals (ver2)) {
+			return true;
+		} else {
+			return HasMatch (new Assertion (ver1.VerbName, "isa", ver2.VerbName));
+		}
+	}
 	public bool HasMatch(Assertion matchA) {
 		foreach (var a in Knowledge.Values) {
 			if (a.IsMatch (matchA))
@@ -170,13 +193,13 @@ public class KNDatabase {
 		float ratio = 1.0f;
 		Assertion b = GetAssertion (a);
 		if (b != null) {
-			Debug.Log ("Times referenced: " + b.TimesReferenced.Count);
+			//Debug.Log ("Times referenced: " + b.TimesReferenced.Count);
 			foreach (float t in b.TimesReferenced) {
 				ratio -= compoundDecay * Mathf.Max (0f, (1f - (GameManager.GameTime - t) / maxDecayTime));
 			}
 		}
 		if (learn) {
-			Debug.Log ("Learning assertion");
+			//Debug.Log ("Learning assertion");
 			if (b == null) {
 				LearnAssertion (a);
 			} else {

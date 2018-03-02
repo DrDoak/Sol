@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class DialogBox: MonoBehaviour {
 	public TextboxManager mManager;
@@ -158,9 +159,9 @@ public class DialogBox: MonoBehaviour {
 			pos.x -= 180;
 			pos.y -=  50 + (maxSelections * sizeDelta.y);
 			rt.position = pos;
-			newTextOption.GetComponent<Text> ().text = o.text;
-			newTextOption.GetComponent<Text> ().color = textColor;
-			newTextOption.GetComponent<Text>().transform.SetParent(GetComponent<Canvas>().transform,false);
+			newTextOption.GetComponent<TextMeshProUGUI> ().text = o.text;
+			newTextOption.GetComponent<TextMeshProUGUI> ().color = textColor;
+			newTextOption.GetComponent<TextMeshProUGUI>().transform.SetParent(GetComponent<Canvas>().transform,false);
 			maxSelections = maxSelections + 1;
 			options.Add (newTextOption);
 		}
@@ -172,8 +173,8 @@ public class DialogBox: MonoBehaviour {
 	}
 
 	void deselectCurrentOption() {
-		options [currentSelection].GetComponent<Text> ().fontSize = 12;
-		options [currentSelection].GetComponent<Text> ().color = textColor;
+		options [currentSelection].GetComponent<TextMeshProUGUI> ().fontSize = 12;
+		options [currentSelection].GetComponent<TextMeshProUGUI> ().color = textColor;
 	}
 	public void highlightOption(int option) {
 		if (option < 0) {
@@ -183,8 +184,8 @@ public class DialogBox: MonoBehaviour {
 		}
 		if (option < maxSelections) {
 			deselectCurrentOption ();
-			options [option].GetComponent<Text> ().color = Color.white;
-			options [option].GetComponent<Text> ().fontSize = 14;
+			options [option].GetComponent<TextMeshProUGUI> ().color = Color.white;
+			options [option].GetComponent<TextMeshProUGUI> ().fontSize = 14;
 			currentSelection = option;
 		}
 	}

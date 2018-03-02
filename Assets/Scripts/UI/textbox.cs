@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class textbox : MonoBehaviour {
 
@@ -19,7 +20,7 @@ public class textbox : MonoBehaviour {
 	float timeSinceStop = 0f;
 	int lastCharacter;
 	public float pauseAfterType = 2f;
-	Text mText;
+	TextMeshProUGUI mText;
 	Color tC;
 	public bool conclude = false;
 
@@ -28,7 +29,7 @@ public class textbox : MonoBehaviour {
 		line = GetComponent<LineRenderer> ();
 		line.sortingOrder = 0;
 		line.transform.position = new Vector3 (transform.position.x, transform.position.y, -3);
-		mText = GetComponentInChildren<Text> ();
+		mText = GetComponentInChildren<TextMeshProUGUI> ();
 		if (!typing) {
 			mText.text = fullText;
 		}
@@ -46,7 +47,8 @@ public class textbox : MonoBehaviour {
 	}
 	public void initColor() {
 		GetComponentInChildren<Image> ().color = tC;
-		GetComponentInChildren<Text> ().color = new Color(1.0f - tC.r,1.0f - tC.g, 1.0f - tC.b,tC.a + 0.5f);
+		float avgCol = (1.0f - tC.r + 1.0f - tC.g + 1.0f - tC.b)/3f;
+		GetComponentInChildren<TextMeshProUGUI> ().color = new Color(avgCol,avgCol,avgCol,tC.a + 0.5f);
 		line.startColor = tC;
 		line.endColor = tC;
 	}

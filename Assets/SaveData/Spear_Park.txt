@@ -1,1 +1,1 @@
-{"actors":[]}
+{"actors":[{"regID":"Sylvia-Spear_Park-8-4","name":"Sylvia","pos":{"x":-8.09000015258789,"y":-5.072500228881836,"z":0.0},"health":100.0,"prefabPath":"Sylvia","targetID":"","targetDir":0},{"regID":"Nacht-Spear_Park3-4","name":"Nacht","pos":{"x":3.569999933242798,"y":-5.180000305175781,"z":0.0},"health":220.0,"prefabPath":"Nacht","targetID":"","targetDir":0}]}

@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-/*
+/* Events:
  * Sight: on-sight, out of sight
  * Attack: Saw someone do an attack, may not have hit anything.
  * Hit: Hit something, could be me.
@@ -86,10 +86,10 @@ public class GlInteractive : Goal {
 		askAbout.responseFunction = startAsk;
 		options.Add (askAbout);
 
-		/*DialogueOption talkAbout = new DialogueOption ();
+		DialogueOption talkAbout = new DialogueOption ();
 		talkAbout.text = "Tell Fact...";
-		talkAbout.responseFunction = startAsk;
-		options.Add (talkAbout);*/
+		talkAbout.responseFunction = startTell;
+		options.Add (talkAbout);
 
 		DialogueOption leave = new DialogueOption ();
 		leave.text = "Leave";
@@ -147,6 +147,20 @@ public class GlInteractive : Goal {
 		var evf = new EVAsk ();
 		evf.assertion = okb.assertion;
 		Debug.Log ("Asking a question: " + evf.assertion.GetID());
+		mChar.respondToEvent (evf);
+	}
+	void startTell(DialogueOption d) {
+		d.closeSequence ();
+		DialogueUnit du = KNManager.CreateSubjectList(d.speaker,d.listener,respondFact);
+		du.Previous = d.GetSequence ();
+		du.startSequence ();
+	}
+	void respondFact(DialogueOption o) {
+		OptionKnowledgeBase okb = (OptionKnowledgeBase)o;
+		o.closeSequence ();
+		var evf = new EVFact ();
+		evf.assertion = okb.assertion;
+		Debug.Log ("Telling someone: " + evf.assertion.GetID() + " source: " + okb.assertion.Source);
 		mChar.respondToEvent (evf);
 	}
 }

@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class LevelDescription : MonoBehaviour {
 
 	string m_title;
 	string m_description;
-	Text m_textTitle;
-	Text m_textDescription;
+	TextMeshProUGUI m_textTitle;
+	TextMeshProUGUI m_textDescription;
 	Image m_box;
 	float m_displayTime = 0f;
 	float m_alpha = 0f;
@@ -18,8 +19,8 @@ public class LevelDescription : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		m_box = GetComponent<Image> ();
-		m_textTitle = transform.Find ("Title").GetComponent<Text> ();
-		m_textDescription = transform.Find ("Description").GetComponent<Text> ();
+		m_textTitle = transform.Find ("Title").GetComponent<TextMeshProUGUI> ();
+		m_textDescription = transform.Find ("Description").GetComponent<TextMeshProUGUI> ();
 		setAlpha (0f);
 	}
 	
